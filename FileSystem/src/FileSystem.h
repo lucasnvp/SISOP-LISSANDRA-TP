@@ -7,8 +7,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
+
+#include "servidor/servidor.h"
+#include "serializador/serializador.h"
+#include "serializador/estructuras.h"
 
 #include "config/Config_filesystem.h"
+
+#define NUEVA_CONEXION  1
+#define INSERT          2
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/config.txt";
 Type_Config config;
@@ -16,5 +24,16 @@ Type_Config config;
 char* PATH_LOG = "/home/utnso/Gank-mid/Logs/logFileSystem.txt";
 t_log* log_Console;
 t_log* log_FileSystem;
+
+// Variables para el servidor
+fd_set master;   	// conjunto maestro de descriptores de fichero
+
+// Variables hilos
+pthread_t thread_server;
+//pthread_t thread_consola;
+
+void init_log(char* pathLog);
+void server(void* args);
+void connection_handler(uint32_t socket, uint32_t command);
 
 #endif //TP_2019_1C_GANK_MID_FILESYSTEM_H

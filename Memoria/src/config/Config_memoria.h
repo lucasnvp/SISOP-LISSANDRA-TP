@@ -15,6 +15,7 @@
 
 typedef struct ConfigType{
     uint32_t PUERTO_ESCUCHA;
+    uint32_t CANT_CONEXIONES;
     char* IP_FS;
     uint32_t PUERTO_FS;
     char** IP_SEEDS;

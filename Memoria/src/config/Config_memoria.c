@@ -10,6 +10,7 @@ Type_Config load_config(char* path){
     auxConfig = config_create(path);
 
     config.PUERTO_ESCUCHA = config_get_int_value(auxConfig, "PUERTO_ESCUCHA");
+    config.CANT_CONEXIONES = config_get_int_value(auxConfig, "CANT_CONEXIONES");
     config.IP_FS = strdup(config_get_string_value(auxConfig, "IP_FS"));
     config.PUERTO_FS = config_get_int_value(auxConfig, "PUERTO_FS");
     config.IP_SEEDS = config_get_array_value(auxConfig, "IP_SEEDS");
@@ -30,7 +31,8 @@ void print_config(Type_Config auxConfig, t_log* log_Console){
     log_info(log_Console, "----------------------");
     log_info(log_Console, "Configuracion:");
     log_info(log_Console, "PUERTO_ESCUCHA = %d",auxConfig.PUERTO_ESCUCHA);
-    log_info(log_Console, "IP_FS = %d",auxConfig.IP_FS);
+    log_info(log_Console, "CANT_CONEXIONES = %d",auxConfig.CANT_CONEXIONES);
+    log_info(log_Console, "IP_FS = %s",auxConfig.IP_FS);
     log_info(log_Console, "PUERTO_FS = %d",auxConfig.PUERTO_FS);
 
     log_info(log_Console, "SEEDS : IP | Port:");

@@ -22,6 +22,17 @@ add_library (Librerias STATIC
         commons/temporal.c
         commons/txt.h
         commons/txt.c
+
+        commonsfunctions/functions.c
+        commonsfunctions/functions.h
+
+        serializador/estructuras.c
+        serializador/estructuras.h
+        serializador/serializador.c
+        serializador/serializador.h
+
+        servidor/servidor.c
+        servidor/servidor.h
         )
 
 TARGET_INCLUDE_DIRECTORIES(Librerias PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

@@ -6,3 +6,4 @@ add_executable(Memoria
         )
 
 target_link_libraries (Memoria PRIVATE Librerias)
+target_link_libraries (Memoria PRIVATE pthread)

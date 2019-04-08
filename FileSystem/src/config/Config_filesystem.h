@@ -15,6 +15,7 @@
 
 typedef struct ConfigType{
     uint32_t PUERTO_ESCUCHA;
+    uint32_t CANT_CONEXIONES;
     char* PUNTO_MONTAJE;
     uint32_t RETARDO;
     uint32_t TAMANO_VALUE;

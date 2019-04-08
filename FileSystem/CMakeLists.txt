@@ -4,3 +4,4 @@ add_executable(FILESYSTEM
         src/config/Config_filesystem.c src/config/Config_filesystem.h)
 
 target_link_libraries (FILESYSTEM PRIVATE Librerias)
+target_link_libraries (FILESYSTEM PRIVATE pthread)

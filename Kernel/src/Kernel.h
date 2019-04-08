@@ -17,4 +17,9 @@ char* PATH_LOG = "/home/utnso/Gank-mid/Logs/logKernel.txt";
 t_log* log_Console;
 t_log* log_Kernel;
 
+uint32_t SERVIDOR_MEMORIA;
+
+void init_log(char* pathLog);
+void connect_server_Memoria();
+
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

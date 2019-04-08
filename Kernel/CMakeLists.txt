@@ -6,3 +6,4 @@ add_executable(Kernel
         )
 
 target_link_libraries (Kernel PRIVATE Librerias)
+target_link_libraries (Kernel PRIVATE pthread)

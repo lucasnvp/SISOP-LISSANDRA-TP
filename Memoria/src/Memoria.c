@@ -22,7 +22,11 @@ int main(){
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
-    pthread_join(thread_server, (void**) NULL);
+    //Creo el hilo de la consola
+    pthread_create(&thread_consola, NULL, (void*) memory_console, "Consola");
+
+//    pthread_join(thread_server, (void**) NULL);
+    pthread_join(thread_consola, (void**) NULL);
 
     return EXIT_SUCCESS;
 }
@@ -115,4 +119,88 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "Error al recibir el comando");
     }
     return;
+}
+
+void memory_console() {
+    char * com;
+    char * linea;
+    t_comandos * comandos;
+
+    while (true) {
+        comandos = (t_comandos*) malloc (sizeof(t_comandos));
+        linea = readline("\nMemoria> ");
+
+        if (strlen(linea) > 0) {
+            log_info(log_Memoria, "Linea de Consola: %s", linea);
+            add_history(linea);
+
+            com = strtok(linea, " ");
+            comandos->comando = (char*) malloc (sizeof(char) * strlen(com));
+            strcpy(comandos->comando, com);
+            comandos->cantArgs = 0;
+
+            com = strtok(NULL, " ");
+            uint32_t i = 0;
+            while (i < 4 && com) {
+                comandos->arg[i] = (char*) malloc (sizeof(char) * strlen(com));
+                strcpy(comandos->arg[i], com);
+                comandos->cantArgs++;
+                com = strtok(NULL, " ");
+                i++;
+            }
+            free(com);
+
+            if (!strcmp(comandos->comando, "exit")) {
+                if (comandos->cantArgs == 0) {
+                    free(comandos->comando);
+                    break;
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "select")) {
+                if (comandos->cantArgs == 0) {
+                    comando_select();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "insert")) {
+                if (comandos->cantArgs == 0) {
+                    comando_insert();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "create")) {
+                if (comandos->cantArgs == 0) {
+                    comando_create();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "describe")) {
+                if (comandos->cantArgs == 0) {
+                    comando_describe();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "drop")) {
+                if (comandos->cantArgs == 0) {
+                    comando_drop();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else print_console((void*) log_error, "Comando incorrecto.");
+
+            // Libero toda la memoria
+            for (i = 0; i < comandos->cantArgs; i++)
+                free(comandos->arg[i]);
+
+            free(comandos->comando);
+        }
+        free(linea);
+    }
 }

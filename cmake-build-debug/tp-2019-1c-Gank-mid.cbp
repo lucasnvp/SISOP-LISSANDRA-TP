@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="tp-2019-1c-Gank-mid"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Librerias\;CMake Files\Kernel\;CMake Files\Memoria\;CMake Files\FileSystem\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Librerias">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/libLibrerias.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 Librerias"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Librerias/fast">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/libLibrerias.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 Librerias/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Kernel">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Kernel" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 Kernel"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Kernel/fast">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Kernel" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 Kernel/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Memoria">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Memoria" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 Memoria"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Memoria/fast">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Memoria" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 Memoria/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FILESYSTEM">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/FILESYSTEM" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 FILESYSTEM"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FILESYSTEM/fast">
+				<Option output="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/FILESYSTEM" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/tp-2019-1c-Gank-mid/Librerias"/>
+					<Add directory="/usr/include/c++/5"/>
+					<Add directory="/usr/include/i386-linux-gnu/c++/5"/>
+					<Add directory="/usr/include/c++/5/backward"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/i686-linux-gnu/5/include-fixed"/>
+					<Add directory="/usr/include/i386-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 FILESYSTEM/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/tp-2019-1c-Gank-mid/cmake-build-debug/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/src/FileSystem.c">
+			<Option target="FILESYSTEM"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/src/FileSystem.h">
+			<Option target="FILESYSTEM"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/src/comandos/comandos.c">
+			<Option target="FILESYSTEM"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/src/comandos/comandos.h">
+			<Option target="FILESYSTEM"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/src/config/Config_filesystem.c">
+			<Option target="FILESYSTEM"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/src/config/Config_filesystem.h">
+			<Option target="FILESYSTEM"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/src/Kernel.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/src/Kernel.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/src/comandos/comandos.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/src/comandos/comandos.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/src/config/Config_kernel.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/src/config/Config_kernel.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/bitarray.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/bitarray.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/dictionary.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/dictionary.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/list.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/list.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/node.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/queue.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/collections/queue.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/config.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/config.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/error.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/error.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/log.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/log.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/process.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/process.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/string.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/string.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/temporal.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/temporal.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/txt.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commons/txt.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commonsfunctions/functions.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/commonsfunctions/functions.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/serializador/estructuras.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/serializador/estructuras.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/serializador/serializador.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/serializador/serializador.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/servidor/servidor.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/servidor/servidor.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/src/Memoria.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/src/Memoria.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/src/comandos/comandos.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/src/comandos/comandos.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/src/config/Config_memoria.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/src/config/Config_memoria.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Librerias/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Librerias\"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Kernel/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Kernel\"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/Memoria/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Memoria\"/>
+		</Unit>
+		<Unit filename="/home/utnso/tp-2019-1c-Gank-mid/FileSystem/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\FileSystem\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

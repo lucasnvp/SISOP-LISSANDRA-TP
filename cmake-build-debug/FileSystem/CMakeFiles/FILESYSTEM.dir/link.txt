@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/FILESYSTEM.dir/src/FileSystem.c.o CMakeFiles/FILESYSTEM.dir/src/config/Config_filesystem.c.o CMakeFiles/FILESYSTEM.dir/src/comandos/comandos.c.o  -o FILESYSTEM ../Librerias/libLibrerias.a -lpthread -lreadline 

@@ -2,6 +2,8 @@
 
 ## Integrantes
 - Lucas Visser
+- Nicolás Fonseca
+- Facundo Nicolás Domínguez
 
 ## Path del proyecto
 `/home/utnso/Gank-mid`

@@ -2,6 +2,7 @@
 
 ## Integrantes
 - Lucas Visser
+- Guido Beltrame
 
 ## Path del proyecto
 `/home/utnso/Gank-mid`

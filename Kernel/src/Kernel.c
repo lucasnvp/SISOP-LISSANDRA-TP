@@ -92,28 +92,28 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 0) {
-                    comando_insert();
+                    comando_insert(SERVIDOR_MEMORIA);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "create")) {
                 if (comandos->cantArgs == 0) {
-                    comando_create();
+                    comando_create(SERVIDOR_MEMORIA);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
                 if (comandos->cantArgs == 0) {
-                    comando_describe();
+                    comando_describe(SERVIDOR_MEMORIA);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "drop")) {
                 if (comandos->cantArgs == 0) {
-                    comando_drop();
+                    comando_drop(SERVIDOR_MEMORIA);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

@@ -111,12 +111,24 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "Se realizo una nueva conexion");
             break;
         }
-        case INSERT: {
+        case COMAND_INSERT: {
             log_info(log_Memoria, "Insert");
             break;
         }
-        case KERNEL_SELECT: {
+        case COMAND_SELECT: {
             log_info(log_Memoria, "El kernel envio un select");
+            break;
+        }
+        case COMAND_CREATE: {
+            log_info(log_Memoria, "El kernel envio un create");
+            break;
+        }
+        case COMAND_DESCRIBE: {
+            log_info(log_Memoria, "El kernel envio un describe");
+            break;
+        }
+        case COMAND_DROP: {
+            log_info(log_Memoria, "El kernel envio un drop");
             break;
         }
         default:

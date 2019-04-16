@@ -7,10 +7,12 @@
 
 #include "commons/log.h"
 
+#define MEM_SELECT 100
+
 t_log* log_Kernel;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
-void comando_select();
+void comando_select(u_int32_t socket);
 void comando_insert();
 void comando_create();
 void comando_describe();

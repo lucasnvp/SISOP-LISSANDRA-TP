@@ -11,7 +11,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
-#include "comandos/comandos.h"
+#include <serializador/serializador.h>
 
 #include "config/Config_kernel.h"
 #include "comandos/comandos.h"

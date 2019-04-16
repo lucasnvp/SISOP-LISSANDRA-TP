@@ -115,6 +115,10 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "Insert");
             break;
         }
+        case KERNEL_SELECT: {
+            log_info(log_Memoria, "El kernel envio un select");
+            break;
+        }
         default:
             log_info(log_Memoria, "Error al recibir el comando");
     }

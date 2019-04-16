@@ -20,6 +20,7 @@
 
 #define NUEVA_CONEXION  1
 #define INSERT          2
+#define KERNEL_SELECT   100
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
 Type_Config config;

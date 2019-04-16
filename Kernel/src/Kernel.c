@@ -85,7 +85,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 0) {
-                    comando_select();
+                    comando_select(SERVIDOR_MEMORIA);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

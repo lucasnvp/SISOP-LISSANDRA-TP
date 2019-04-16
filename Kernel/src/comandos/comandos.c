@@ -9,8 +9,9 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(){
+void comando_select(u_int32_t socket){
     print_console((void*) log_info, "Comando select");
+    serializar_int(socket, MEM_SELECT);
 }
 
 void comando_insert(){

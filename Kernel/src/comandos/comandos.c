@@ -28,3 +28,12 @@ void comando_describe(){
 void comando_drop(){
     print_console((void*) log_info, "Comando drop");
 }
+
+void comando_run(char* path){
+    if(ValidarArchivo(path)){
+        print_console((void*) log_info, "Comando Run");
+    } else{
+        print_console((void*) log_info, "No se encontro el archivo");
+        log_warning(log_Kernel, "No se encontro el archivo");
+    }
+}

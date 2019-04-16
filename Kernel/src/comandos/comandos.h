@@ -15,5 +15,6 @@ void comando_insert();
 void comando_create();
 void comando_describe();
 void comando_drop();
+void comando_run(char* path);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

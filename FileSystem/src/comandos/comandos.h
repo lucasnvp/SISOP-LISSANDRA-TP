@@ -6,6 +6,7 @@
 #define TP_2019_1C_GANK_MID_COMANDOS_H
 
 #include "commons/log.h"
+#include "commonsfunctions/functions.h"
 
 t_log* log_FileSystem;
 

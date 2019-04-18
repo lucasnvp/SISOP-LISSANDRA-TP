@@ -103,6 +103,10 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_FileSystem, "Insert");
             break;
         }
+        case CREATE: {
+            log_info(log_FileSystem, "Create");
+            break;
+        }
         default:
             log_info(log_FileSystem, "Error al recibir el comando");
     }
@@ -160,7 +164,7 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "create")) {
+            else if (!strcmp(comandos->comando, "CREATE")) {
                 if (comandos->cantArgs == 0) {
                     comando_create();
                 }

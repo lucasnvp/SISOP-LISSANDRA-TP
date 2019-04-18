@@ -20,6 +20,7 @@
 
 #define NUEVA_CONEXION  1
 #define INSERT          2
+#define CREATE          3
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/config.txt";
 Type_Config config;

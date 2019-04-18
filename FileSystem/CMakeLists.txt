@@ -5,7 +5,7 @@ add_executable(FILESYSTEM
         src/config/Config_filesystem.h
         src/comandos/comandos.c
         src/comandos/comandos.h
-        )
+        src/setup/setup.c src/setup/setup.h)
 
 target_link_libraries (FILESYSTEM PRIVATE Librerias)
 target_link_libraries (FILESYSTEM PRIVATE pthread)

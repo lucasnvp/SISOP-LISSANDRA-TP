@@ -3,6 +3,7 @@
 //
 
 #include "FileSystem.h"
+#include "setup/setup.h"
 
 int main(){
     system("clear"); /* limpia la pantalla al empezar */
@@ -16,13 +17,16 @@ int main(){
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
 
+    //Config. inicial de FS
+    punto_montaje_setup(config.PUNTO_MONTAJE);
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
 
-//    pthread_join(thread_server, (void**) NULL);
+    //pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
     return EXIT_SUCCESS;
@@ -36,7 +40,7 @@ void init_log(char* pathLog){
 
 void server(void* args) {
     fd_set read_fds; 	// conjunto temporal de descriptores de fichero para select()
-    uint32_t fdmax;			// número máximo de descriptores de fichero
+    uint32_t fdmax;		// número máximo de descriptores de fichero
     int i;				// variable para el for
     FD_ZERO(&master);	// borra los conjuntos maestro
     FD_ZERO(&read_fds);	// borra los conjuntos temporal

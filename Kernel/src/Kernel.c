@@ -87,36 +87,41 @@ void consola() {
             }
 
             else if (!strcmp(comandos->comando, "select")) {
-                if (comandos->cantArgs == 0) {
-                    comando_select(SERVIDOR_MEMORIA);
+                if (comandos->cantArgs == 2) {
+                    comando_select(SERVIDOR_MEMORIA, comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
-                if (comandos->cantArgs == 0) {
-                    comando_insert(SERVIDOR_MEMORIA);
+                if (comandos->cantArgs == 3) {
+                    comando_insert(SERVIDOR_MEMORIA, comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "create")) {
-                if (comandos->cantArgs == 0) {
-                    comando_create(SERVIDOR_MEMORIA);
+                if (comandos->cantArgs == 4) {
+                    comando_create(
+                            SERVIDOR_MEMORIA,
+                            comandos->arg[0],
+                            comandos->arg[1],
+                            atoi(comandos->arg[2]),
+                            atoi(comandos->arg[3]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 0) {
-                    comando_describe(SERVIDOR_MEMORIA);
+                if (comandos->cantArgs == 1) {
+                    comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "drop")) {
-                if (comandos->cantArgs == 0) {
-                    comando_drop(SERVIDOR_MEMORIA);
+                if (comandos->cantArgs == 1) {
+                    comando_drop(SERVIDOR_MEMORIA, comandos->arg[0]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

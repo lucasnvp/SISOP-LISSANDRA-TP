@@ -142,7 +142,7 @@ void consola() {
             }
             free(com);
 
-            if (!strcmp(comandos->comando, "exit")) {
+            if (!strcmp(comandos->comando, "EXIT")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
                     break;
@@ -165,8 +165,12 @@ void consola() {
             }
 
             else if (!strcmp(comandos->comando, "CREATE")) {
-                if (comandos->cantArgs == 0) {
-                    comando_create();
+                if (comandos->cantArgs == 4) {
+                    char* table = comandos->arg[0];
+                    char* consistencia = comandos->arg[1];
+                    char* cantidad_particiones = comandos->arg[2];
+                    char* compactacion = comandos->arg[3];
+                    comando_create(table, consistencia, cantidad_particiones, compactacion);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

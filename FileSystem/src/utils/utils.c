@@ -6,11 +6,11 @@ void crear_carpeta(char* path) {
     mkdir(path, 0777);
 }
 
-void crear_metadata_table(char* nueva_tabla) {
+void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion) {
     char* metadatabin = string_new();
     string_append(&metadatabin, nueva_tabla);
     string_append(&metadatabin, "/Metadata.bin");
-    new_metadata_table(metadatabin);
+    new_metadata_table(metadatabin, consistencia, particiones, compactacion);
     metadata_table_setup(metadatabin);
 }
 
@@ -24,11 +24,26 @@ void crear_metadata_table(char* nueva_tabla) {
     return nueva_tabla;
 }*/
 
-void new_metadata_table(char* metadatabin){
+void new_metadata_table(char* metadatabin, char* consistencia, char* particiones, char* compactacion){
+    char* _consistencia = string_new();
+    string_append(&_consistencia, "CONSISTENCY=");
+    string_append(&_consistencia, consistencia);
+    string_append(&_consistencia, "\n");
+
+    char* _particiones = string_new();
+    string_append(&_particiones, "PARTITIONS=");
+    string_append(&_particiones, particiones);
+    string_append(&_particiones, "\n");
+
+    char* _compactacion = string_new();
+    string_append(&_compactacion, "COMPACTATION_TIME=");
+    string_append(&_compactacion, compactacion);
+    string_append(&_compactacion, "\n");
+
     FILE * metadata_table = fopen(metadatabin, "w+b");
-    fwrite(CONSISTENCY,1,strlen(CONSISTENCY),metadata_table);
-    fwrite(PARTITIONS,1,strlen(PARTITIONS),metadata_table);
-    fwrite(COMPACTATION_TIME,1,strlen(COMPACTATION_TIME),metadata_table);
+    fwrite(_consistencia,1,strlen(_consistencia),metadata_table);
+    fwrite(_particiones,1,strlen(_particiones),metadata_table);
+    fwrite(_compactacion,1,strlen(_compactacion),metadata_table);
     fclose(metadata_table);
 }
 

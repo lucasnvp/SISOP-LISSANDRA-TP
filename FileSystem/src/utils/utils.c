@@ -55,6 +55,15 @@ t_config * obtener_metadata_table(char* metadatabin){
     return config_create(metadatabin);
 }
 
+void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
+    puts("--------------------------------------");
+    printf("Metadata de la tabla: %s \n", nombre_tabla);
+    printf("CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
+    printf("PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
+    printf("COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
+    puts("--------------------------------------");
+}
+
 void crear_particiones(char* path, int cantidad_particiones) {
 
     for(int i = 0; i < cantidad_particiones; i++) {

@@ -142,26 +142,28 @@ void consola() {
             }
             free(com);
 
+            string_to_upper(comandos->comando);
+
             if (!strcmp(comandos->comando, "EXIT")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
                     break;
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 0) {
                     comando_select();
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 0) {
                     comando_insert();
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "CREATE")) {
@@ -172,7 +174,7 @@ void consola() {
                     char* compactacion = comandos->arg[3];
                     comando_create(table, consistencia, cantidad_particiones, compactacion);
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "DESCRIBE")) {
@@ -184,7 +186,7 @@ void consola() {
                     char* table = comandos->arg[0];
                     comando_describe(table);
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "DROP")) {

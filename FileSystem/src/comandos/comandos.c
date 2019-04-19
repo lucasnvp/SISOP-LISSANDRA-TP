@@ -23,8 +23,8 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
     char* table = _table;
     int cantidad_particiones = atoi(particiones);
 
-    // TODO: no funciona bien el to upper
-    //string_to_upper(&table);
+    string_to_upper(table);
+    string_to_upper(consistencia);
 
     char* nueva_tabla = strdup(montajeTablas);
     string_append(&nueva_tabla, table);
@@ -33,12 +33,14 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
 
     if( existe == true ) {
         log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre %s", table);
+        printf("Se intentó crear una carpeta ya existente con el nombre %s", table);
         // TODO: retornar error, validar con los demás
     } else {
         crear_carpeta(nueva_tabla);
         crear_metadata_table(nueva_tabla, consistencia, particiones, compactacion);
         crear_particiones(nueva_tabla, cantidad_particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
+        printf("Se creo una carpeta a través del comando CREATE: %s \n", table);
     }
 }
 
@@ -49,6 +51,8 @@ void comando_describe_all(){
 void comando_describe(char* nombre_tabla){
     print_console((void*) log_info, "Comando describe \n");
 
+    string_to_upper(nombre_tabla);
+
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, nombre_tabla);
     string_append(&tabla_objetivo, "/Metadata.bin");
@@ -58,12 +62,7 @@ void comando_describe(char* nombre_tabla){
     if( existe == true) {
         t_config * metadata = obtener_metadata_table(tabla_objetivo);
 
-        puts("--------------------------------------");
-        printf("Metadata de la tabla: %s \n", nombre_tabla);
-        printf("CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
-        printf("PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
-        printf("COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
-        puts("--------------------------------------");
+        mostrar_metadata_tabla(metadata, nombre_tabla);
 
         config_destroy(metadata);
 
@@ -77,6 +76,8 @@ void comando_describe(char* nombre_tabla){
 
 void comando_drop(char* table){
     print_console((void*) log_info, "Comando drop \n");
+
+    string_to_upper(table);
 
     char* tabla_objetivo = strdup(montajeTablas);
     string_append(&tabla_objetivo, table);

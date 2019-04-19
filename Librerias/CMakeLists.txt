@@ -33,6 +33,8 @@ add_library (Librerias STATIC
 
         servidor/servidor.c
         servidor/servidor.h
-        )
+
+        parser/parser.c
+        parser/parser.h)
 
 TARGET_INCLUDE_DIRECTORIES(Librerias PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

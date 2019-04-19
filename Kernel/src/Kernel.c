@@ -12,6 +12,9 @@ int main(){
     //Inicializar Log
     init_log(PATH_LOG);
 
+    //Inicializar Queue
+    init_queue();
+
     //Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
@@ -125,6 +128,13 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
+            else if (!strcmp(comandos->comando, "metrics")) {
+                if (comandos->cantArgs == 0) {
+                    comando_metrics();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
             else print_console((void*) log_error, "Comando incorrecto.");
 
             // Libero toda la memoria
@@ -135,4 +145,11 @@ void consola() {
         }
         free(linea);
     }
+}
+
+void init_queue(){
+    QUEUE_NEW = queue_create();
+    QUEUE_READY = queue_create();
+    QUEUE_EXIT = queue_create();
+    QUEUE_EXEC = queue_create();
 }

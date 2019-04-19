@@ -42,3 +42,7 @@ void comando_run(char* path){
         log_warning(log_Kernel, "No se encontro el archivo");
     }
 }
+
+void comando_metrics(){
+    print_console((void*) log_info, "Comando metrics");
+}

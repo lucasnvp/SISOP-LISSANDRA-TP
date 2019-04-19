@@ -11,10 +11,16 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+#include <commons/collections/queue.h>
 #include <serializador/serializador.h>
 
 #include "config/Config_kernel.h"
 #include "comandos/comandos.h"
+
+t_queue * QUEUE_NEW;
+t_queue * QUEUE_READY;
+t_queue * QUEUE_EXIT;
+t_queue * QUEUE_EXEC;
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/config/config.txt";
 Type_Config config;
@@ -37,5 +43,6 @@ typedef struct {
 void init_log(char* pathLog);
 void connect_server_Memoria();
 void consola();
+void init_queue();
 
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

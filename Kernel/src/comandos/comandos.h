@@ -22,5 +22,6 @@ void comando_create(u_int32_t socket);
 void comando_describe(u_int32_t socket);
 void comando_drop(u_int32_t socket);
 void comando_run(char* path);
+void comando_metrics();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

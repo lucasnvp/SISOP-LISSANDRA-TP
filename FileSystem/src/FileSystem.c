@@ -180,13 +180,13 @@ void consola() {
             else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
                     comando_describe_all();
+                } else {
+                    if (comandos->cantArgs == 1) {
+                        char* table = comandos->arg[0];
+                        comando_describe(table);
+                    }
+                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
-
-                if (comandos->cantArgs == 1) {
-                    char* table = comandos->arg[0];
-                    comando_describe(table);
-                }
-                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "DROP")) {

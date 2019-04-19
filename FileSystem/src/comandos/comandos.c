@@ -45,7 +45,8 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
 }
 
 void comando_describe_all(){
-    print_console((void*) log_info, "Comando describe");
+    print_console((void*) log_info, "Comando describe \n");
+    mostrar_metadatas();
 }
 
 void comando_describe(char* nombre_tabla){

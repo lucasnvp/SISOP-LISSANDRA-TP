@@ -64,11 +64,43 @@ void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
     puts("--------------------------------------");
 }
 
+void mostrar_metadatas() {
+
+    DIR *d = opendir(montajeTablas);
+
+    if (d) {
+        struct dirent *p;
+
+        while (p=readdir(d)) {
+
+            /* Skip the names "." and ".." as we don't want to recurse on them. */
+            if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+            {
+                continue;
+            }
+
+            char* path = string_duplicate(montajeTablas);
+            string_append(&path, p->d_name);
+            string_append(&path, "/Metadata.bin");
+
+            t_config * metadata = obtener_metadata_table(path);
+            mostrar_metadata_tabla(metadata, p->d_name);
+
+            free(path);
+            config_destroy(metadata);
+        }
+
+        closedir(d);
+    }
+
+}
+
 void crear_particiones(char* path, int cantidad_particiones) {
 
     for(int i = 0; i < cantidad_particiones; i++) {
         char* particion = crear_path_particion(path, i);
         asignar_bloques(particion);
+        //TODO: free(particion) ???
     }
 }
 

@@ -178,7 +178,7 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "drop")) {
+            else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 0) {
                     comando_drop();
                 }

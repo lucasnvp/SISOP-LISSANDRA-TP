@@ -20,5 +20,11 @@ char* settear_path_tabla(char* nombre_tabla);
 void new_metadata_table(char* metadatabin);
 void metadata_table_setup(char* metadatabin);
 void crear_metadata_table(char* nueva_tabla);
+void asignar_bloques(char* path);
+int32_t bloque_libre(t_bitarray* auxBitArray);
+void crear_particiones(char* path, int cantidad_particiones);
+char* crear_path_particion(char* path, int numero_particion);
+void borrar_particion(char* path);
+char** get_bloques_array(char* path);
 
 #endif //TP_2019_1C_GANK_MID_UTILS_H

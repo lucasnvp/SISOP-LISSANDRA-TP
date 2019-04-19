@@ -42,13 +42,41 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
     }
 }
 
-void comando_describe(){
+void comando_describe_all(){
     print_console((void*) log_info, "Comando describe");
 }
 
-void comando_drop(){
+void comando_describe(char* nombre_tabla){
+    print_console((void*) log_info, "Comando describe \n");
+
+    char* tabla_objetivo = string_duplicate(montajeTablas);
+    string_append(&tabla_objetivo, nombre_tabla);
+    string_append(&tabla_objetivo, "/Metadata.bin");
+
+    int existe = ValidarArchivo(tabla_objetivo);
+
+    if( existe == true) {
+        t_config * metadata = obtener_metadata_table(tabla_objetivo);
+
+        puts("--------------------------------------");
+        printf("Metadata de la tabla: %s \n", nombre_tabla);
+        printf("CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
+        printf("PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
+        printf("COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
+        puts("--------------------------------------");
+
+        config_destroy(metadata);
+
+        log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: ", nombre_tabla);
+
+    } else {
+        log_info(log_FileSystem, "No existe una tabla con el nombre ", nombre_tabla);
+        printf("NO EXISTE UNA TABLA CON EL NOMBRE: %s \n", nombre_tabla);
+    }
+}
+
+void comando_drop(char* table){
     print_console((void*) log_info, "Comando drop \n");
-    char* table = "gabe";
 
     char* tabla_objetivo = strdup(montajeTablas);
     string_append(&tabla_objetivo, table);

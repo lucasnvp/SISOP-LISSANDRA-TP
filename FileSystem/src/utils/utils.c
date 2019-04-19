@@ -11,7 +11,7 @@ void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particion
     string_append(&metadatabin, nueva_tabla);
     string_append(&metadatabin, "/Metadata.bin");
     new_metadata_table(metadatabin, consistencia, particiones, compactacion);
-    metadata_table_setup(metadatabin);
+    free(metadatabin);
 }
 
 /*char* settear_path_tabla(char* nombre_tabla) {
@@ -45,15 +45,14 @@ void new_metadata_table(char* metadatabin, char* consistencia, char* particiones
     fwrite(_particiones,1,strlen(_particiones),metadata_table);
     fwrite(_compactacion,1,strlen(_compactacion),metadata_table);
     fclose(metadata_table);
+    free(_consistencia);
+    free(_particiones);
+    free(_compactacion);
 }
 
-void metadata_table_setup(char* metadatabin){
-    //Obtener Datos Metadata
-    metadataTableConfig = config_create(metadatabin);
-    CONSISTENCY = config_get_int_value(metadataTableConfig, "CONSISTENCY");
-    PARTITIONS = config_get_int_value(metadataTableConfig, "PARTITIONS");
-    COMPACTATION_TIME = config_get_int_value(metadataTableConfig, "COMPACTATION_TIME");
-    config_destroy(metadataTableConfig);
+t_config * obtener_metadata_table(char* metadatabin){
+    //TODO: AHRE ESTO TIENE SENTIDO SOLO POR GANAR EXPRESIVIDAD?
+    return config_create(metadatabin);
 }
 
 void crear_particiones(char* path, int cantidad_particiones) {
@@ -94,6 +93,7 @@ void asignar_bloques(char* path) {
             fwrite(bloquesDelArchivo,1,strlen(bloquesDelArchivo),newFD);
 
             bitarray_set_bit(bitarray, bloque_to_add);
+            free(bloquesDelArchivo);
         } else{
             // TODO: que hacer si no hay bloques libres? Deberia permitirte crear la tabla igual (como esta ahora?) o debería retornar error
             //No hay bloques
@@ -103,7 +103,6 @@ void asignar_bloques(char* path) {
 }
 
 int32_t bloque_libre(t_bitarray* auxBitArray) {
-    bool testBit;
     for(i = 0; i <= bitarray_get_max_bit(auxBitArray); i++){
         if(bitarray_test_bit(auxBitArray, i) == false){
             return i;

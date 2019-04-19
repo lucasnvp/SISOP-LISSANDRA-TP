@@ -9,16 +9,10 @@
 #include <commons/config.h>
 #include <commons/string.h>
 
-static const char* CONSISTENCY = "CONSISTENCY=SC\n";
-static const char* PARTITIONS = "PARTITIONS=4\n";
-static const char* COMPACTATION_TIME = "COMPACTATION_TIME=60000\n";
-
-t_config * metadataTableConfig;
-
 void crear_carpeta(char* path);
 char* settear_path_tabla(char* nombre_tabla);
 void new_metadata_table(char* metadatabin, char* consistencia, char* particiones, char* compactacion);
-void metadata_table_setup(char* metadatabin);
+t_config * obtener_metadata_table(char* metadatabin);
 void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion);
 void asignar_bloques(char* path);
 int32_t bloque_libre(t_bitarray* auxBitArray);

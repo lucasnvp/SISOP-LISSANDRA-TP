@@ -175,16 +175,22 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "describe")) {
+            else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
-                    comando_describe();
+                    comando_describe_all();
+                }
+
+                if (comandos->cantArgs == 1) {
+                    char* table = comandos->arg[0];
+                    comando_describe(table);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "DROP")) {
-                if (comandos->cantArgs == 0) {
-                    comando_drop();
+                if (comandos->cantArgs == 1) {
+                    char* table = comandos->arg[0];
+                    comando_drop(table);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

@@ -5,7 +5,12 @@
 #ifndef TP_2019_1C_GANK_MID_COMANDOS_H
 #define TP_2019_1C_GANK_MID_COMANDOS_H
 
-#include "commons/log.h"
+#include <semaphore.h>
+
+#include <commons/log.h>
+#include <commons/collections/queue.h>
+
+#include "../api/api.h"
 
 #define COMAND_SELECT   100
 #define COMAND_INSERT   101
@@ -21,7 +26,7 @@ void comando_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value);
 void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void comando_describe(u_int32_t socket, char* tabla);
 void comando_drop(u_int32_t socket, char* tabla);
-void comando_run(char* path);
+void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_EXECUTE);
 void comando_metrics();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

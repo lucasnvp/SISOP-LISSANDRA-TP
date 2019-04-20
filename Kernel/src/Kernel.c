@@ -12,8 +12,8 @@ int main(){
     //Inicializar Log
     init_log(PATH_LOG);
 
-    //Inicializar Queue
-    init_queue();
+    //Inicializar Queue y Semaforos
+    init_queue_and_sem();
 
     //Configuracion inicial
     config = load_config(PATH_CONFIG);
@@ -25,6 +25,15 @@ int main(){
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
 
+    //Hilo de metricas
+    pthread_create(&thread_metricas, NULL, (void*) metricas, "Consola");
+
+    // Hilo de ejecucion
+    pthread_create(&thread_exec, NULL, (void*) execute, "Consola");
+
+    // El join estan comentados, para que funcione el comando exit.
+//    pthread_join(thread_metricas, (void**) NULL);
+//    pthread_join(thread_exec, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
     return EXIT_SUCCESS;
@@ -34,6 +43,7 @@ void init_log(char* pathLog){
     mkdir("/home/utnso/Gank-mid/Logs",0755);
     log_Console = log_create(pathLog, "Kernel", true, LOG_LEVEL_INFO);
     log_Kernel = log_create(pathLog, "Kernel", false, LOG_LEVEL_INFO);
+    log_Kernel_api = log_Kernel;
 }
 
 void connect_server_Memoria(){
@@ -128,7 +138,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "run")) {
                 if (comandos->cantArgs == 1) {
-                    comando_run(comandos->arg[0]);
+                    comando_run(comandos->arg[0], QUEUE_READY, &SEM_EXECUTE);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -152,9 +162,77 @@ void consola() {
     }
 }
 
-void init_queue(){
+void init_queue_and_sem(){
     QUEUE_NEW = queue_create();
     QUEUE_READY = queue_create();
     QUEUE_EXIT = queue_create();
     QUEUE_EXEC = queue_create();
+
+    sem_init(&SEM_EXECUTE,0,0);	//Hay procesos para ejecutar
+}
+
+void metricas(){
+    while(true){
+        sleep(5000000000);
+        log_warning(log_Kernel, "Mostrar Metricas");
+    }
+}
+
+void execute(){
+    while(true){
+        //Hay procesos para ejecutar
+        sem_wait(&SEM_EXECUTE);
+        log_info(log_Kernel, "EXECUTE");
+        char* path_to_run = queue_pop(QUEUE_READY);
+        log_info(log_Kernel, "Path to run: %s", path_to_run);
+
+        FILE * fp;
+        char * line = NULL;
+        size_t len = 0;
+        ssize_t read;
+
+        fp = fopen(path_to_run, "r");
+
+        while ((read = getline(&line, &len, fp)) != -1) {
+            t_lql_operacion parsed = parse(line);
+
+            if(parsed.valido){
+                switch(parsed.keyword){
+                    case SELECT:
+                        api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
+                        break;
+                    case INSERT:
+                        api_insert(SERVIDOR_MEMORIA,
+                                parsed.argumentos.INSERT.tabla,
+                                parsed.argumentos.INSERT.key,
+                                parsed.argumentos.INSERT.value);
+                        break;
+                    case CREATE:
+                        api_create(
+                                SERVIDOR_MEMORIA,
+                                parsed.argumentos.CREATE.tabla,
+                                parsed.argumentos.CREATE.consistencia,
+                                parsed.argumentos.CREATE.particiones,
+                                parsed.argumentos.CREATE.compactacion);
+                        break;
+                    case DESCRIBE:
+                        api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+                        break;
+                    case DROP:
+                        api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
+                        break;
+                    default:
+                        fprintf(stderr, "No pude interpretar <%s>\n", line);
+                }
+
+                destruir_operacion(parsed);
+            } else {
+                fprintf(stderr, "La linea <%s> no es valida\n", line);
+            }
+        }
+
+        fclose(fp);
+        if (line)
+            free(line);
+    }
 }

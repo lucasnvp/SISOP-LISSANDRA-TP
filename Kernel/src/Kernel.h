@@ -10,12 +10,17 @@
 #include <pthread.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <semaphore.h>
 
 #include <commons/collections/queue.h>
 #include <serializador/serializador.h>
+#include <parser/parser.h>
 
 #include "config/Config_kernel.h"
 #include "comandos/comandos.h"
+#include "api/api.h"
+
+sem_t SEM_EXECUTE; //Hay procesos para ejecutar
 
 t_queue * QUEUE_NEW;
 t_queue * QUEUE_READY;
@@ -33,6 +38,8 @@ uint32_t SERVIDOR_MEMORIA;
 
 // Variables hilos
 pthread_t thread_consola;
+pthread_t thread_metricas;
+pthread_t thread_exec;
 
 typedef struct {
     uint32_t cantArgs;
@@ -43,6 +50,8 @@ typedef struct {
 void init_log(char* pathLog);
 void connect_server_Memoria();
 void consola();
-void init_queue();
+void init_queue_and_sem();
+void metricas();
+void execute();
 
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

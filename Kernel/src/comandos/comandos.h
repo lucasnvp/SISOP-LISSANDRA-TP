@@ -11,6 +11,7 @@
 #include <commons/collections/queue.h>
 
 #include "../api/api.h"
+#include "../tads/script.h"
 
 #define COMAND_SELECT   100
 #define COMAND_INSERT   101

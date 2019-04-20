@@ -183,15 +183,15 @@ void execute(){
         //Hay procesos para ejecutar
         sem_wait(&SEM_EXECUTE);
         log_info(log_Kernel, "EXECUTE");
-        char* path_to_run = queue_pop(QUEUE_READY);
-        log_info(log_Kernel, "Path to run: %s", path_to_run);
+        script_tad* scripToRun = (script_tad*)queue_pop(QUEUE_READY);
+        log_info(log_Kernel, "Path to run: %s", scripToRun->path);
 
         FILE * fp;
         char * line = NULL;
         size_t len = 0;
         ssize_t read;
 
-        fp = fopen(path_to_run, "r");
+        fp = fopen(scripToRun->path, "r");
 
         while ((read = getline(&line, &len, fp)) != -1) {
             t_lql_operacion parsed = parse(line);

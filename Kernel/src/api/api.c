@@ -31,12 +31,12 @@ void api_describe(u_int32_t socket, char* tabla){
     serializar_int(socket, COMAND_DESCRIBE);
     // todo Envio la info a la memoria
     // todo Confirmacion de la operacion
-    log_info(log_Kernel_api, "DESCRIBE - TABLA: <%s>\t", tabla);
+    log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
 }
 
 void api_drop(u_int32_t socket, char* tabla){
     serializar_int(socket, COMAND_DROP);
     // todo Envio la info a la memoria
     // todo Confirmacion de la operacion
-    log_info(log_Kernel_api, "DROP - TABLA: <%s>\t", tabla);
+    log_info(log_Kernel_api, "DROP => TABLA: <%s>\t", tabla);
 }

@@ -17,7 +17,7 @@
 #define CRITERIO_EC "EC"
 
 t_lql_operacion parse(char* line){
-    if(line == NULL || string_equals_ignore_case(line, "")){
+    if(line == NULL || string_equals_ignore_case(line, "") || string_equals_ignore_case(line, "\n")){
 //        fprintf(stderr, "No pude interpretar una linea vacia\n");
         RETURN_ERROR;
     }

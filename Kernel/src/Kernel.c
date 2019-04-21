@@ -243,12 +243,14 @@ void execute(){
                         api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
                         break;
                     default:
-                        log_warning(log_Kernel, "No pude interpretar <%s>\n", line);
+                        log_warning(log_Kernel, "No pude interpretar <%s>", line);
+                        break;
                 }
 
                 destruir_operacion(parsed);
             } else {
-                log_warning(log_Kernel, "La linea <%s> no es valida\n", line);
+                log_warning(log_Kernel, "La linea <%s> no es valida", line);
+                break;
             }
 
             // todo Revisar donde va contador

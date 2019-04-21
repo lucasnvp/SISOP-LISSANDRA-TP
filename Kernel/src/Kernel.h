@@ -36,6 +36,7 @@ t_log* log_Console;
 t_log* log_Kernel;
 
 uint32_t SERVIDOR_MEMORIA;
+bool KERNEL_READY;
 
 // Variables hilos
 pthread_t thread_consola;

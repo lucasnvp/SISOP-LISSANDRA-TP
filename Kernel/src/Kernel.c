@@ -8,6 +8,7 @@ int main(){
     system("clear"); /* limpia la pantalla al empezar */
 
     puts("Proceso Kernel");
+    KERNEL_READY = true;
 
     //Inicializar Log
     init_log(PATH_LOG);
@@ -90,6 +91,7 @@ void consola() {
 
             if (!strcmp(comandos->comando, "exit")) {
                 if (comandos->cantArgs == 0) {
+                    KERNEL_READY = false;
                     free(comandos->comando);
                     break;
                 }
@@ -174,7 +176,7 @@ void init_queue_and_sem(){
 }
 
 void metricas(){
-    while(true){
+    while(KERNEL_READY){
         sleep(5);
         // Comienzo del mutex
         pthread_mutex_lock(&mutexMetricas);
@@ -198,7 +200,7 @@ void metricas(){
 }
 
 void execute(){
-    while(true){
+    while(KERNEL_READY){
         //Hay procesos para ejecutar
         sem_wait(&SEM_EXECUTE);
         log_info(log_Kernel, "EXECUTE");

@@ -215,6 +215,10 @@ void execute(){
         fp = fopen(scripToRun->path, "r");
 
         while ((read = getline(&line, &len, fp)) != -1) {
+            // Retardo de operacion
+            usleep(config.RETARDO * 100);
+
+            // Parseo la linea
             t_lql_operacion parsed = parse(line);
 
             if(parsed.valido){

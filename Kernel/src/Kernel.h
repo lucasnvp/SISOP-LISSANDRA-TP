@@ -20,6 +20,7 @@
 #include "comandos/comandos.h"
 #include "api/api.h"
 
+pthread_mutex_t mutexMetricas; // Bloqueo el hilo para mostrar las metricas y no se haga otra cosa
 sem_t SEM_EXECUTE; //Hay procesos para ejecutar
 
 t_queue * QUEUE_NEW;

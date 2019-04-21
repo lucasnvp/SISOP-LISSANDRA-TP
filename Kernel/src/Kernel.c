@@ -168,13 +168,32 @@ void init_queue_and_sem(){
     QUEUE_EXIT = queue_create();
     QUEUE_EXEC = queue_create();
 
+    pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
+
     sem_init(&SEM_EXECUTE,0,0);	//Hay procesos para ejecutar
 }
 
 void metricas(){
     while(true){
-        sleep(5000000000);
+        sleep(5);
+        // Comienzo del mutex
+        pthread_mutex_lock(&mutexMetricas);
+        // todo clonar la queue exit
+        t_queue * QUEUE_EXIT_AUX = QUEUE_EXIT;
+        uint32_t QUEUE_SIZE = queue_size(QUEUE_EXIT_AUX);
+
+        log_warning(log_Kernel, "--------------------------------");
         log_warning(log_Kernel, "Mostrar Metricas");
+        log_warning(log_Kernel, "QUEUE SIZE: %d", QUEUE_SIZE);
+        for (int k = 0; k < QUEUE_SIZE; ++k) {
+            script_tad* scripToPrint = (script_tad*)queue_pop(QUEUE_EXIT_AUX);
+            log_warning(log_Kernel, "Info del path: %s", scripToPrint->path);
+            log_warning(log_Kernel, "Cantidad de lineas ejecutadas: %d", scripToPrint->lineas_ejecutadas);
+        }
+        log_warning(log_Kernel, "--------------------------------");
+
+        // Libero el mutex
+        pthread_mutex_unlock(&mutexMetricas);
     }
 }
 
@@ -222,17 +241,24 @@ void execute(){
                         api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
                         break;
                     default:
-                        fprintf(stderr, "No pude interpretar <%s>\n", line);
+                        log_warning(log_Kernel, "No pude interpretar <%s>\n", line);
                 }
 
                 destruir_operacion(parsed);
             } else {
-                fprintf(stderr, "La linea <%s> no es valida\n", line);
+                log_warning(log_Kernel, "La linea <%s> no es valida\n", line);
             }
+
+            // todo Revisar donde va contador
+            scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
         }
 
         fclose(fp);
         if (line)
             free(line);
+
+        // Fin del programa
+        queue_push(QUEUE_EXIT, scripToRun);
+
     }
 }

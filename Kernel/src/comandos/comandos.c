@@ -39,7 +39,7 @@ void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_EXECUTE){
         print_console((void*) log_info, "Comando Run");
 
         // Nuevo script
-        script_tad* newScript = script_new(0, path);
+        script_tad* newScript = script_new(path);
         // Lo agrego a la cola de READY
         queue_push(QUEUE_READY, newScript);
         // Ejecutar proceso

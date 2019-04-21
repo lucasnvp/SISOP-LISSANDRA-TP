@@ -13,6 +13,6 @@ typedef struct script_tad{
     char* path;
 }script_tad;
 
-script_tad* script_new(uint32_t lineas_ejecutadas, char* path);
+script_tad* script_new(char* path);
 
 #endif //TP_2019_1C_GANK_MID_SCRIPT_H

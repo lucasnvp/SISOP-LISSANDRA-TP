@@ -18,7 +18,7 @@
 
 t_lql_operacion parse(char* line){
     if(line == NULL || string_equals_ignore_case(line, "")){
-        fprintf(stderr, "No pude interpretar una linea vacia\n");
+//        fprintf(stderr, "No pude interpretar una linea vacia\n");
         RETURN_ERROR;
     }
 
@@ -34,7 +34,7 @@ t_lql_operacion parse(char* line){
     char* tabla = split[1];
 
     if(tabla == NULL){
-        fprintf(stderr, "No habia una tabla en la linea <%s>\n", (line)); \
+//        fprintf(stderr, "No habia una tabla en la linea <%s>\n", (line)); \
 		RETURN_ERROR;
     }
 
@@ -70,7 +70,7 @@ t_lql_operacion parse(char* line){
         ret.keyword = DROP;
         ret.argumentos.DROP.tabla = split[1];
     } else {
-        fprintf(stderr, "No se encontro el keyword <%s>\n", keyword);
+//        fprintf(stderr, "No se encontro el keyword <%s>\n", keyword);
         RETURN_ERROR;
     }
 

@@ -177,7 +177,7 @@ void init_queue_and_sem(){
 
 void metricas(){
     while(KERNEL_READY){
-        sleep(5);
+        sleep(30);
         // Comienzo del mutex
         pthread_mutex_lock(&mutexMetricas);
         // todo clonar la queue exit

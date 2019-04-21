@@ -9,6 +9,7 @@
 
 #include <commons/log.h>
 #include <commons/collections/queue.h>
+#include <commonsfunctions/functions.h>
 
 #include "../api/api.h"
 #include "../tads/script.h"

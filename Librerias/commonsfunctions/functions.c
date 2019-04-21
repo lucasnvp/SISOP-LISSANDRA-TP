@@ -9,7 +9,7 @@ uint32_t mbToBytes(uint32_t mBytes){
 }
 
 bool ValidarArchivo(char* path){
-	uint32_t archivo_existente;
+	bool archivo_existente;
 	if(access(path, F_OK) != -1){
 		archivo_existente = true;
 	} else{

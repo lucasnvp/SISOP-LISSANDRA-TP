@@ -124,7 +124,7 @@ void asignar_bloques(char* path) {
         fwrite(TAMANIO_BLOQUE,1,strlen(TAMANIO_BLOQUE),newFD);
 
         //Agregar el bloque
-        int32_t bloque_to_add = bloque_libre(bitarray);
+        int bloque_to_add = bloque_libre();
 
         if(bloque_to_add != -1){
             char* bloquesDelArchivo = string_new();
@@ -136,16 +136,20 @@ void asignar_bloques(char* path) {
             bitarray_set_bit(bitarray, bloque_to_add);
             free(bloquesDelArchivo);
         } else{
-            // TODO: que hacer si no hay bloques libres? Deberia permitirte crear la tabla igual (como esta ahora?) o debería retornar error
+            // TODO: que hacer si no hay bloques libres? Deberia permitirte crear la tabla igual (como esta ahora?) o debería retornar error?
             //No hay bloques
         }
         fclose(newFD);
     }
 }
 
-int32_t bloque_libre(t_bitarray* auxBitArray) {
-    for(i = 0; i <= bitarray_get_max_bit(auxBitArray); i++){
-        if(bitarray_test_bit(auxBitArray, i) == false){
+int bloque_libre() {
+    // TODO: BUENO ESTO ES TERRRRRRRRRIBLE NEGRADA en el if deberia ir el get max bin pero por algun razon anda mal
+    for(i = 0; i < CANT_BLOQUES; i++){
+        if(bitarray_test_bit(bitarray, i) == false){
+            printf("Bloque libre: %i \n", i);
+            printf("Maximos bloques: %i \n", bitarray_get_max_bit(bitarray));
+            printf("Cantidad bloques: %i \n", CANT_BLOQUES);
             return i;
         }
     }

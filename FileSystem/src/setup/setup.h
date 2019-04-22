@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -14,7 +15,7 @@
 #include <commons/string.h>
 
 static const char* TAMANIO_BLOQUE = "TAMANIO_BLOQUES=64\n";
-static const char* CANTIDAD_BLOQUE = "CANTIDAD_BLOQUES=5192\n";
+static const char* CANTIDAD_BLOQUE = "CANTIDAD_BLOQUES=10\n";
 static const char* MAGIC_NUMBER = "MAGIC_NUMBER=LISSANDRA\n";
 
 t_config * metadataConfig;

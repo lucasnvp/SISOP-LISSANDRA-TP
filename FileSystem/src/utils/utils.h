@@ -17,7 +17,7 @@ void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla);
 void mostrar_metadatas();
 void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion);
 void asignar_bloques(char* path);
-int32_t bloque_libre(t_bitarray* auxBitArray);
+int bloque_libre();
 void crear_particiones(char* path, int cantidad_particiones);
 char* crear_path_particion(char* path, int numero_particion);
 void borrar_particion(char* path);

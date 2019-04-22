@@ -80,24 +80,23 @@ void bitmap_setup(char* bitmapbin){
     struct stat bitmapStat;
     int32_t fd = open(bitmapbin,O_RDWR);
     fstat(fd,&bitmapStat);
-    mmapBitmap = mmap(0,bitmapStat.st_size,PROT_READ|PROT_WRITE, MAP_SHARED, fd,0);
-    bitarray = bitarray_create_with_mode(mmapBitmap,bitmapStat.st_size, LSB_FIRST);
+    mmapBitmap = mmap(NULL,bitmapStat.st_size,PROT_READ|PROT_WRITE, MAP_SHARED, fd,0);
+    bitarray = bitarray_create_with_mode(mmapBitmap,bitmapStat.st_size/sizeof(int), MSB_FIRST);
 }
 
 void new_bitmap_setup(char* bitmapbin){
-    bitmap = fopen(bitmapbin, "w+b");
-    char data[CANT_BLOQUES];
-    t_bitarray* bitarray_aux = bitarray_create_with_mode(data,sizeof(data),LSB_FIRST);
-    for(i=0; i <= CANT_BLOQUES; i++){
-        bitarray_clean_bit(bitarray_aux, i);
-    }
-    fwrite(bitarray_aux,1,sizeof(bitarray_aux),bitmap);
+    bitmap = fopen(bitmapbin, "wb+");
+    char* arrayLoco;
+    printf("CANTIDAD BLOQUES: %i \n", CANT_BLOQUES);
+    arrayLoco = calloc(1, CANT_BLOQUES);
+    fwrite(arrayLoco, 1, CANT_BLOQUES, bitmap);
+    free(arrayLoco);
     fclose(bitmap);
 }
 
 void bloques_setup(){
     FILE * newBloque;
-    for(i=0; i <= CANT_BLOQUES; i++){
+    for(i=0; i <= CANT_BLOQUES-1; i++){
         char* nroBloque = string_new();
         string_append(&nroBloque, montajeBloques);
         string_append(&nroBloque, string_itoa(i));

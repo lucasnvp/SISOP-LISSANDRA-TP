@@ -47,6 +47,7 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
 void comando_describe_all(){
     print_console((void*) log_info, "Comando describe \n");
     mostrar_metadatas();
+    log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para todas las tablas");
 }
 
 void comando_describe(char* nombre_tabla){

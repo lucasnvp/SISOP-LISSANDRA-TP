@@ -81,13 +81,14 @@ void bitmap_setup(char* bitmapbin){
     int32_t fd = open(bitmapbin,O_RDWR);
     fstat(fd,&bitmapStat);
     mmapBitmap = mmap(NULL,bitmapStat.st_size,PROT_READ|PROT_WRITE, MAP_SHARED, fd,0);
-    bitarray = bitarray_create_with_mode(mmapBitmap,bitmapStat.st_size/sizeof(int), MSB_FIRST);
+    bitarray = bitarray_create_with_mode(mmapBitmap,bitmapStat.st_size/8, LSB_FIRST);
+
+    // Divido por 8 porque tengo que pasarle bits
 }
 
 void new_bitmap_setup(char* bitmapbin){
     bitmap = fopen(bitmapbin, "wb+");
     char* arrayLoco;
-    printf("CANTIDAD BLOQUES: %i \n", CANT_BLOQUES);
     arrayLoco = calloc(1, CANT_BLOQUES);
     fwrite(arrayLoco, 1, CANT_BLOQUES, bitmap);
     free(arrayLoco);

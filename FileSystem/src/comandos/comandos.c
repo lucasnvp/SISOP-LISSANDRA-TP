@@ -41,6 +41,7 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
         crear_particiones(nueva_tabla, cantidad_particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
         printf("Se creo una carpeta a través del comando CREATE: %s \n", table);
+        cantidad_bloquesLibres();
     }
 }
 

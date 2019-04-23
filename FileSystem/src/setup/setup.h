@@ -15,7 +15,7 @@
 #include <commons/string.h>
 
 static const char* TAMANIO_BLOQUE = "TAMANIO_BLOQUES=64\n";
-static const char* CANTIDAD_BLOQUE = "CANTIDAD_BLOQUES=10\n";
+static const char* CANTIDAD_BLOQUE = "CANTIDAD_BLOQUES=24\n";
 static const char* MAGIC_NUMBER = "MAGIC_NUMBER=LISSANDRA\n";
 
 t_config * metadataConfig;

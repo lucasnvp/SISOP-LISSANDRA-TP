@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "commons/string.h"
 #include "../comandos/comandos.h"
+#include "../setup/setup.h"
 #include <commons/bitarray.h>
 #include <commons/config.h>
 #include <commons/string.h>
@@ -18,6 +19,7 @@ void mostrar_metadatas();
 void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion);
 void asignar_bloques(char* path);
 int bloque_libre();
+void cantidad_bloquesLibres();
 void crear_particiones(char* path, int cantidad_particiones);
 char* crear_path_particion(char* path, int numero_particion);
 void borrar_particion(char* path);

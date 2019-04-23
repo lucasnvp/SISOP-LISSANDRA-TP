@@ -1,6 +1,5 @@
 
 #include "utils.h"
-#include "../setup/setup.h"
 
 void crear_carpeta(char* path) {
     mkdir(path, 0777);
@@ -144,17 +143,28 @@ void asignar_bloques(char* path) {
 }
 
 int bloque_libre() {
-    // TODO: BUENO ESTO ES TERRRRRRRRRIBLE NEGRADA en el if deberia ir el get max bin pero por algun razon anda mal
-    for(i = 0; i < CANT_BLOQUES; i++){
+    for(i = 0; i < bitarray_get_max_bit(bitarray); i++){
         if(bitarray_test_bit(bitarray, i) == false){
-            printf("Bloque libre: %i \n", i);
-            printf("Maximos bloques: %i \n", bitarray_get_max_bit(bitarray));
-            printf("Cantidad bloques: %i \n", CANT_BLOQUES);
             return i;
         }
     }
     //No hay bloques
     return -1;
+}
+
+void cantidad_bloquesLibres(){
+
+    int bloques_libres = 0;
+    int bloque_libre;
+    int bit = 0;
+    int tamMaximo = CANT_BLOQUES;
+    while(bit < tamMaximo)
+    {
+        bloque_libre = bitarray_test_bit(bitarray,bit);
+        if(bloque_libre == 0)bloques_libres ++;
+        bit++;
+    }
+    printf("La cantidad de bloques libres que tengo es: %i \n", bloques_libres);
 }
 
 void borrar_particion(char* path) {

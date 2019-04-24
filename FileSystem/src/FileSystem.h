@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <time.h>
 
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
@@ -17,6 +18,8 @@
 
 #include "config/Config_filesystem.h"
 #include "comandos/comandos.h"
+#include "commons/collections/dictionary.h"
+#include "utils/utils.h"
 
 #define NUEVA_CONEXION  1
 #define INSERT          2

@@ -20,6 +20,9 @@ int main(){
     //Config. inicial de FS
     punto_montaje_setup(config.PUNTO_MONTAJE);
 
+    //Inicializa Memtable
+    inicilizar_memtable();
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
@@ -152,18 +155,38 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
-            else if (!strcmp(comandos->comando, "select")) {
+            else if (!strcmp(comandos->comando, "SELECT")) {
                 if (comandos->cantArgs == 0) {
                     comando_select();
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
-            else if (!strcmp(comandos->comando, "insert")) {
-                if (comandos->cantArgs == 0) {
-                    comando_insert();
+            else if (!strcmp(comandos->comando, "INSERT")) {
+                if (comandos->cantArgs == 4) {
+                    char* table = comandos->arg[0];
+                    char* key_string = comandos->arg[1];
+                    char* value = comandos->arg[2];
+                    char* timestamp_string = comandos->arg[3];
+
+                    int key = atoi(key_string);
+                    int timestamp = atoi(timestamp_string);
+
+                    comando_insert(table, key, value, timestamp);
+                } else {
+
+                    if (comandos->cantArgs == 3) {
+                        char* table = comandos->arg[0];
+                        char* key_string = comandos->arg[1];
+                        char* value = comandos->arg[2];
+
+                        int key = atoi(key_string);
+                        int timestamp = (int) time(NULL);
+
+                        comando_insert(table, key, value, timestamp);
+                    }
+                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "CREATE")) {
@@ -172,6 +195,7 @@ void consola() {
                     char* consistencia = comandos->arg[1];
                     char* cantidad_particiones = comandos->arg[2];
                     char* compactacion = comandos->arg[3];
+
                     comando_create(table, consistencia, cantidad_particiones, compactacion);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");

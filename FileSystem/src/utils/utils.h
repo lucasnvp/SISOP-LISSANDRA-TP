@@ -10,7 +10,10 @@
 #include <commons/config.h>
 #include <commons/string.h>
 
+static int CANTIDAD_TABLAS = 0;
+
 void crear_carpeta(char* path);
+void inicilizar_memtable();
 char* settear_path_tabla(char* nombre_tabla);
 void new_metadata_table(char* metadatabin, char* consistencia, char* particiones, char* compactacion);
 t_config * obtener_metadata_table(char* metadatabin);

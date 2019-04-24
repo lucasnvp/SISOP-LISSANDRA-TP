@@ -5,6 +5,10 @@ void crear_carpeta(char* path) {
     mkdir(path, 0777);
 }
 
+void inicilizar_memtable() {
+    memtable = dictionary_create();
+}
+
 void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion) {
     char* metadatabin = string_new();
     string_append(&metadatabin, nueva_tabla);

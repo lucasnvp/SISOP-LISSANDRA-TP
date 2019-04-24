@@ -10,18 +10,21 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
 }
 
 void comando_select(){
-    print_console((void*) log_info, "Comando select");
+    print_console((void*) log_info, "Comando select \n");
 }
 
-void comando_insert(){
-    print_console((void*) log_info, "Comando insert");
+void comando_insert(char* table, int key, char* value, int timestamp){
+    print_console((void*) log_info, "Comando insert \n");
+    registo_tad * registoTad = new_registro_tad(timestamp, key, value);
+    dictionary_put(memtable, table, registoTad);
+    // TODO: por cada key(tabla) el value debe ser una lista de regitro_tad
+    printf("hola");
 }
 
-void comando_create(char* _table, char* consistencia, char* particiones, char* compactacion) {
+void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion) {
     print_console((void*) log_info, "Se ejecuta el comando create\n");
 
-    char* table = _table;
-    int cantidad_particiones = atoi(particiones);
+    int particiones = atoi(cantidad_particiones);
 
     string_to_upper(table);
     string_to_upper(consistencia);
@@ -37,11 +40,14 @@ void comando_create(char* _table, char* consistencia, char* particiones, char* c
         // TODO: retornar error, validar con los demás
     } else {
         crear_carpeta(nueva_tabla);
-        crear_metadata_table(nueva_tabla, consistencia, particiones, compactacion);
-        crear_particiones(nueva_tabla, cantidad_particiones);
+        crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
+        crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
         printf("Se creo una carpeta a través del comando CREATE: %s \n", table);
         cantidad_bloquesLibres();
+        CANTIDAD_TABLAS++;
+        log_info(log_FileSystem, "La cantidad total de tablas actual es: ", CANTIDAD_TABLAS);
+        printf("La cantidad total de tablas actual es: %i \n", CANTIDAD_TABLAS);
     }
 }
 

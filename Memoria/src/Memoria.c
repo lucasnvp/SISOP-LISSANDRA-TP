@@ -23,6 +23,10 @@ int main(){
 
     memoriaPrincipal = alocar_MemoriaPrincipal();
 
+    // Inicializamos la tabla de segmentos
+
+    tablaDeSegmentos = NULL;
+
 	//TODO Hilo de Gossiping
 
 
@@ -43,17 +47,70 @@ int main(){
     return EXIT_SUCCESS;
 }
 
+reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){
+    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
+    reg_segmento* _ultimoRegistroDeSegmento = NULL;
+
+    while(_tablaDeSegmentos != NULL) {
+
+        _ultimoRegistroDeSegmento = _tablaDeSegmentos;
+
+        if (validarNombreTabla(nombreTabla, _tablaDeSegmentos->nombreTabla)){
+            return _tablaDeSegmentos;
+        }
+        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento;
+    }
+    return agregarRegistroDeSegmento(nombreTabla, _ultimoRegistroDeSegmento);
+}
+
+reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoRegistroDeSegmento){
+    reg_segmento* nuevoRegistroDeSegmento = malloc(sizeof(reg_segmento));
+    nuevoRegistroDeSegmento->nombreTabla = nombreTabla;
+    nuevoRegistroDeSegmento->siguienteRegistroSegmento = NULL;
+
+    if(ultimoRegistroDeSegmento == NULL){
+        tablaDeSegmentos = nuevoRegistroDeSegmento;
+    } else {
+        ultimoRegistroDeSegmento->siguienteRegistroSegmento = nuevoRegistroDeSegmento;
+    }
+
+    return nuevoRegistroDeSegmento;
+}
+
+
+reg_segmento* inicializarTablaDeSegmentos(){
+    reg_segmento* aux = malloc(sizeof(reg_segmento));
+    aux->siguienteRegistroSegmento = NULL;
+    return aux;
+}
+
+bool validarNombreTabla(char* nombreBuscado, char* nombreTabla){
+    return strcmp(nombreBuscado, nombreTabla) == 0;
+}
+
+bool validarExistenciaDeSegmento(char* nombreTabla){
+    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
+    while(_tablaDeSegmentos != NULL) {
+        if (validarNombreTabla(nombreTabla, _tablaDeSegmentos->nombreTabla)){
+            return true;
+        }
+        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento;
+    }
+    return false;
+}
+
+
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);
     tiempoDump = deserializar_int(servidorFileSystem);
 }
 
-void* alocar_MemoriaPrincipal() {
-    void* aux = malloc(config.TAM_MEM);
+registo_tad* alocar_MemoriaPrincipal() {
+    registo_tad* aux = malloc(config.TAM_MEM);
     return aux;
 }
 
-void* desalocar_MemoriaPrincipal() {
+void desalocar_MemoriaPrincipal() {
     free(memoriaPrincipal);
 }
 

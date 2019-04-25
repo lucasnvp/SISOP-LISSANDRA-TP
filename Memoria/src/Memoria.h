@@ -34,8 +34,41 @@ t_log* log_Memoria;
 
 uint32_t SERVIDOR_FILESYSTEM;
 
+
+// Estructura de los registros de la tabla de gossiping
+
+typedef struct reg_gossiping{
+    uint32_t idMemoria;
+    char** ipSeeds;
+    char** puertoSeeds;
+
+}reg_gossiping;
+
+// Estructura de los registros de la tabla de páginas
+
+typedef struct reg_pagina{
+    uint32_t idPagina;
+    registo_tad* punteroAPagina;
+    bool flagModificado;
+    reg_pagina* siguienteRegistroPagina;
+}reg_pagina;
+
+//Estructura de los registro de la tabla de segmentacion
+
+typedef struct reg_segmento{
+    uint32_t idSegmento;
+    char* nombreTabla;
+    void* baseSegmento;
+    uint32_t cantPaginas;
+    reg_pagina* primerRegistroPagina;
+    reg_segmento* siguienteRegistroSegmento;
+}reg_segmento;
+
 uint32_t tamanoValue;
 uint32_t tiempoDump;
+
+// Direccion de la tabla de segmentos
+reg_segmento* tablaDeSegmentos;
 
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero
@@ -55,26 +88,19 @@ typedef struct {
 
 //TODO definir estructura de cada registro de la tabla de gossiping(readme)
 
-// Estructura de los registros de la tabla de gossiping
 
-typedef struct {
-    uint32_t idMemoria;
-    char** ipSeeds;
-    char** puertoSeeds;
+bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
+bool validarExistenciaDeSegmento(char* nombreTabla);
 
-} reg_gossiping;
+reg_segmento* inicializarTablaDeSegmentos();
+reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);
+reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoSegmento);
 
-// Estructura de los registros de la página
+registo_tad* alocar_MemoriaPrincipal();
 
-typedef struct {
-    uint32_t idPagina;
-    registo_tad* punteroARegistro;
-    bool flagModificado;
-} reg_pagina;
-
+void crearRegistroDeSegmento(char* nombreTabla);
 void recibir_valores_FileSystem(uint32_t servidorFileSystem);
-void* alocar_MemoriaPrincipal();
-void* desalocar_MemoriaPrincipal();
+void desalocar_MemoriaPrincipal();
 void init_log(char* pathLog);
 void connect_server_FileSystem();
 void server(void* args);

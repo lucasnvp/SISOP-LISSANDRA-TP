@@ -19,12 +19,16 @@ int main(){
     //Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
+    configFilePathSize = string_length(PATH_CONFIG);
 
     //Conexion al servidor FileSystem
     connect_server_Memoria();
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
+
+    // Hilo de config
+    pthread_create(&thread_config, NULL, (void*) watching_config, "Consola");
 
     //Hilo de metricas
     pthread_create(&thread_metricas, NULL, (void*) metricas, "Consola");
@@ -171,6 +175,7 @@ void init_queue_and_sem(){
     QUEUE_EXEC = queue_create();
 
     pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
+    pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
 
     sem_init(&SEM_EXECUTE,0,0);	//Hay procesos para ejecutar
 }
@@ -268,5 +273,39 @@ void execute(){
         // Fin del programa
         queue_push(QUEUE_EXIT, scripToRun);
 
+    }
+}
+
+void watching_config(){
+    bufferInotifySize = sizeof(struct inotify_event) + configFilePathSize + 1;
+
+    while (KERNEL_READY){
+        fd_inotify = inotify_init();
+
+        if (fd_inotify < 0) {
+            log_error(log_Kernel, "inotify_init");
+        }
+
+        wd_inotify = inotify_add_watch(fd_inotify, PATH_CONFIG, IN_MODIFY);
+
+        struct inotify_event* event = malloc(bufferInotifySize);
+
+        length_inotify = read(fd_inotify, event, bufferInotifySize);
+
+        if (length_inotify < 0) {
+            log_error(log_Kernel, "Read");
+        }
+
+        if (event->mask == IN_MODIFY) {
+            pthread_mutex_lock(&mutexConfig);
+            config = load_config(PATH_CONFIG);
+            print_config(config, log_Kernel);
+            pthread_mutex_unlock(&mutexConfig);
+        }
+
+        free(event);
+
+        (void) inotify_rm_watch(fd_inotify, wd_inotify);
+        (void) close(fd_inotify);
     }
 }

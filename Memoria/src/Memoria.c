@@ -19,6 +19,12 @@ int main(){
     //Conexion al servidor FileSystem
     connect_server_FileSystem();
 
+
+	//TODO Crear el espacio de memoria leyendo la configuracion que es enviada por el file system
+
+	//TODO Hilo de Gossiping
+
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
@@ -43,6 +49,10 @@ void connect_server_FileSystem(){
 
     //Si conecto, informo
     if(SERVIDOR_FILESYSTEM > 1){
+
+		//TODO Recibir tamano_value y tiempo_dump de File System
+		//lo necesitamos para crear el espacio de la memoria (tamano_value) y el tiempo de dump
+
         log_info(log_Console,"Connected successfully to the File System");
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de File System");
@@ -107,6 +117,9 @@ void server(void* args) {
 
 void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
+
+		//TODO aca se reciben los comandos de lo que se conecte a la memoria
+
         case NUEVA_CONEXION: {
             log_info(log_Memoria, "Se realizo una nueva conexion");
             break;
@@ -165,7 +178,7 @@ void memory_console() {
                 i++;
             }
             free(com);
-
+			//TODO Case con cada uno de los comandos que acepta la consola de memoria
             if (!strcmp(comandos->comando, "exit")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);

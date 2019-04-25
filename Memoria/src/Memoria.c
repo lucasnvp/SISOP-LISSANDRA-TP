@@ -19,8 +19,9 @@ int main(){
     //Conexion al servidor FileSystem
     connect_server_FileSystem();
 
+    // Se crea el espacio para la memoria principal
 
-	//TODO Crear el espacio de memoria leyendo la configuracion que es enviada por el file system
+    memoriaPrincipal = alocar_MemoriaPrincipal();
 
 	//TODO Hilo de Gossiping
 
@@ -34,7 +35,26 @@ int main(){
 //    pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
+
+    // Se elimina el espacio para la memoria principal
+
+    desalocar_MemoriaPrincipal();
+
     return EXIT_SUCCESS;
+}
+
+void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
+    tamanoValue = deserializar_int(servidorFileSystem);
+    tiempoDump = deserializar_int(servidorFileSystem);
+}
+
+void* alocar_MemoriaPrincipal() {
+    void* aux = malloc(config.TAM_MEM);
+    return aux;
+}
+
+void* desalocar_MemoriaPrincipal() {
+    free(memoriaPrincipal);
 }
 
 void init_log(char* pathLog){
@@ -51,7 +71,13 @@ void connect_server_FileSystem(){
     if(SERVIDOR_FILESYSTEM > 1){
 
 		//TODO Recibir tamano_value y tiempo_dump de File System
+
 		//lo necesitamos para crear el espacio de la memoria (tamano_value) y el tiempo de dump
+
+		// acá va la función recibir_valores_fileSystem, por ahora se hardcodean los valores
+
+        tamanoValue = 16;
+        tiempoDump = 4;
 
         log_info(log_Console,"Connected successfully to the File System");
     } else{

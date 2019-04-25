@@ -34,12 +34,18 @@ t_log* log_Memoria;
 
 uint32_t SERVIDOR_FILESYSTEM;
 
+uint32_t tamanoValue;
+uint32_t tiempoDump;
+
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero
 
 // Variables hilos
 pthread_t thread_server;
 pthread_t thread_consola;
+
+// Dirección de la Memoria Principal
+void* memoriaPrincipal;
 
 typedef struct {
     uint32_t cantArgs;
@@ -62,11 +68,13 @@ typedef struct {
 
 typedef struct {
     uint32_t idPagina;
-    registro_tad* punteroARegistro;
+    registo_tad* punteroARegistro;
     bool flagModificado;
 } reg_pagina;
 
-
+void recibir_valores_FileSystem(uint32_t servidorFileSystem);
+void* alocar_MemoriaPrincipal();
+void* desalocar_MemoriaPrincipal();
 void init_log(char* pathLog);
 void connect_server_FileSystem();
 void server(void* args);

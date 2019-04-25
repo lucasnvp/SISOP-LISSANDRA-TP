@@ -49,7 +49,22 @@ typedef struct {
 
 //TODO definir estructura de cada registro de la tabla de gossiping(readme)
 
-//TODO definir la esstructura de cada Pagina de memoria (readme)
+// Estructura de los registros de la tabla de gossiping
+
+typedef struct {
+    uint32_t idMemoria;
+    char** ipSeeds;
+    char** puertoSeeds;
+
+} reg_gossiping;
+
+// Estructura de los registros de la página
+
+typedef struct {
+    uint32_t idPagina;
+    registro_tad* punteroARegistro;
+    bool flagModificado;
+} reg_pagina;
 
 
 void init_log(char* pathLog);

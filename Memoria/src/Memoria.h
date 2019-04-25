@@ -43,12 +43,6 @@ typedef struct {
     char * arg[4];
 } t_comandos;
 
-//TODO definir estructura de cada registro de la tabla de gossiping(readme)
-
-//TODO definir la esstructura de cada Pagina de memoria (readme)
-
-
-
 void init_log(char* pathLog);
 void connect_server_FileSystem();
 void server(void* args);

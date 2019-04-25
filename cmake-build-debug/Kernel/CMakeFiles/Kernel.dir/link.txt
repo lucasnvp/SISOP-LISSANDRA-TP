@@ -1,1 +1,1 @@
-/usr/bin/cc  -g   CMakeFiles/Kernel.dir/src/Kernel.c.o CMakeFiles/Kernel.dir/src/config/Config_kernel.c.o CMakeFiles/Kernel.dir/src/comandos/comandos.c.o  -o Kernel ../Librerias/libLibrerias.a -lpthread -lreadline 
+/usr/bin/cc -g   CMakeFiles/Kernel.dir/src/Kernel.c.o CMakeFiles/Kernel.dir/src/config/Config_kernel.c.o CMakeFiles/Kernel.dir/src/comandos/comandos.c.o  -o Kernel ../Librerias/libLibrerias.a -lpthread -lreadline 

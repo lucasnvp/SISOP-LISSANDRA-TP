@@ -90,7 +90,6 @@ typedef struct {
 
 
 bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
-bool validarExistenciaDeSegmento(char* nombreTabla);
 
 reg_segmento* inicializarTablaDeSegmentos();
 reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);

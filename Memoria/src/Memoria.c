@@ -105,11 +105,7 @@ reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoR
 
 // Inicializa la tabla de segmentos
 
-reg_segmento* inicializarTablaDeSegmentos(){
-    reg_segmento* aux = malloc(sizeof(reg_segmento));
-    aux->siguienteRegistroSegmento = NULL;
-    return aux;
-}
+
 
 bool validarNombreTabla(char* nombreBuscado, char* nombreTabla){
     return strcmp(nombreBuscado, nombreTabla) == 0;

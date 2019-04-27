@@ -3,12 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "commons/string.h"
 #include "../comandos/comandos.h"
 #include "../setup/setup.h"
 #include <commons/bitarray.h>
 #include <commons/config.h>
 #include <commons/string.h>
+#include <commons/collections/dictionary.h>
+#include <commons/collections/list.h>
 
 static int CANTIDAD_TABLAS = 0;
 

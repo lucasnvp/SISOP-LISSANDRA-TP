@@ -15,10 +15,27 @@ void comando_select(){
 
 void comando_insert(char* table, int key, char* value, int timestamp){
     print_console((void*) log_info, "Comando insert \n");
-    registo_tad * registoTad = new_registro_tad(timestamp, key, value);
-    dictionary_put(memtable, table, registoTad);
-    // TODO: por cada key(tabla) el value debe ser una lista de regitro_tad
-    printf("hola");
+
+    int existe = ValidarArchivo(table);
+
+    if( existe != true ) {
+        log_info(log_FileSystem, "Se intento insertar en una tabla no existente %s", table);
+        printf("Se intento insertar en una tabla no existente %s", table);
+        return;
+    }
+
+    registro_tad * registroTad = new_registro_tad(timestamp, key, value);
+
+    t_list * list;
+
+    if(!dictionary_has_key(memtable, table)) {
+        list = list_create();
+    } else {
+        list = dictionary_get(memtable, table);
+    }
+
+    list_add(list, registroTad);
+    dictionary_put(memtable, table, list);
 }
 
 void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion) {
@@ -44,6 +61,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
         printf("Se creo una carpeta a través del comando CREATE: %s \n", table);
+
         cantidad_bloquesLibres();
         CANTIDAD_TABLAS++;
         log_info(log_FileSystem, "La cantidad total de tablas actual es: ", CANTIDAD_TABLAS);

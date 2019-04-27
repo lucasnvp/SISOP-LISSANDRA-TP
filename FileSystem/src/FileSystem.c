@@ -172,6 +172,7 @@ void consola() {
                     int key = atoi(key_string);
                     int timestamp = atoi(timestamp_string);
 
+                    string_to_upper(table);
                     comando_insert(table, key, value, timestamp);
                 } else {
 
@@ -183,6 +184,7 @@ void consola() {
                         int key = atoi(key_string);
                         int timestamp = (int) time(NULL);
 
+                        string_to_upper(table);
                         comando_insert(table, key, value, timestamp);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");

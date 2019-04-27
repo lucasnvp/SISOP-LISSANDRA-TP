@@ -12,11 +12,14 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
 void comando_select(char* table, int key){
     print_console((void*) log_info, "Comando select \n");
 
+    char* tabla_objetivo = string_duplicate(montajeTablas);
+    string_append(&tabla_objetivo, table);
 
-    int existe = ValidarArchivo(table);
+    int existe = ValidarArchivo(tabla_objetivo);
+
     if( existe != true ) {
         log_info(log_FileSystem, "No existe la tabla %s", table);
-        printf("Se intento insertar en una tabla no existente %s", table);
+        printf("Se intento buscar en una tabla no existente %s", table);
         return;
     }
 
@@ -27,13 +30,17 @@ void comando_select(char* table, int key){
 
     if(dictionary_has_key(memtable,table)) {
         t_list * list = dictionary_get(memtable,table);
+
         bool mismaKey(registro_tad* registro) {
             registro->key == key;
         }
-        t_list * listaFiltrada = list_filter(list,(void*)mismaKey);
+
+        t_list * listaFiltrada = list_filter(list, (void*) mismaKey);
+
         bool timestampMayor(registro_tad * primera, registro_tad * segunda) {
             primera->timestamp > segunda->timestamp;
         }
+
         list_sort(listaFiltrada,(void *) timestampMayor);
 
         registro_tad * resultado = list_get(listaFiltrada,0);
@@ -50,7 +57,10 @@ void comando_select(char* table, int key){
 
 void comando_insert(char* table, int key, char* value, int timestamp, int socket){
 
-    int existe = ValidarArchivo(table);
+    char* tabla_objetivo = string_duplicate(montajeTablas);
+    string_append(&tabla_objetivo, table);
+
+    int existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
         log_info(log_FileSystem, "Se intento insertar en una tabla no existente %s", table);

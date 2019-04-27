@@ -159,7 +159,7 @@ void consola() {
             }
 
             else if (!strcmp(comandos->comando, "SELECT")) {
-                if (comandos->cantArgs == 0) {
+                if (comandos->cantArgs == 2) {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
                     int key = atoi(key_string);

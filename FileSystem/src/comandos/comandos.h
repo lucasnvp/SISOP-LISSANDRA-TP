@@ -18,10 +18,10 @@ t_dictionary * memtable;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 void comando_select();
-void comando_insert(char* table, int key, char* value, int timestamp);
-void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion);
-void comando_describe_all();
-void comando_describe(char* nombre_tabla);
-void comando_drop(char* nombre_tabla);
+void comando_insert(char* table, int key, char* value, int timestamp,int socket);
+void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion,int socket);
+void comando_describe_all(int socket);
+void comando_describe(char* nombre_tabla,int socket);
+void comando_drop(char* nombre_tabla,int socket);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

@@ -107,6 +107,9 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case CREATE: {
+            //TODO Hacer deserializador de comando create
+
+            //comando_create(table, consistencia, cantidad_particiones, compactacion,socket);
             log_info(log_FileSystem, "Create");
             break;
         }
@@ -173,7 +176,7 @@ void consola() {
                     int timestamp = atoi(timestamp_string);
 
                     string_to_upper(table);
-                    comando_insert(table, key, value, timestamp);
+                    comando_insert(table, key, value, timestamp,-1);
                 } else {
 
                     if (comandos->cantArgs == 3) {
@@ -185,7 +188,7 @@ void consola() {
                         int timestamp = (int) time(NULL);
 
                         string_to_upper(table);
-                        comando_insert(table, key, value, timestamp);
+                        comando_insert(table, key, value, timestamp,-1);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
@@ -198,18 +201,18 @@ void consola() {
                     char* cantidad_particiones = comandos->arg[2];
                     char* compactacion = comandos->arg[3];
 
-                    comando_create(table, consistencia, cantidad_particiones, compactacion);
+                    comando_create(table, consistencia, cantidad_particiones, compactacion,-1);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
-                    comando_describe_all();
+                    comando_describe_all(-1);
                 } else {
                     if (comandos->cantArgs == 1) {
                         char* table = comandos->arg[0];
-                        comando_describe(table);
+                        comando_describe(table,-1);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
@@ -218,7 +221,7 @@ void consola() {
             else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
                     char* table = comandos->arg[0];
-                    comando_drop(table);
+                    comando_drop(table,-1);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

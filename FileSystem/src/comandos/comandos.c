@@ -23,7 +23,8 @@ void comando_select(char* table, int key){
         return;
     }
 
-    t_config * metadata = obtener_metadata_table(table);
+    string_append(&tabla_objetivo, "/Metadata.bin");
+    t_config * metadata = obtener_metadata_table(tabla_objetivo);
     int particiones = config_get_int_value(metadata, "PARTITIONS");
 
     int particion = key % particiones;
@@ -31,21 +32,21 @@ void comando_select(char* table, int key){
     if(dictionary_has_key(memtable,table)) {
         t_list * list = dictionary_get(memtable,table);
 
-        bool mismaKey(registro_tad* registro) {
-            registro->key == key;
+        bool _mismaKey(registro_tad* registro) {
+            return registro->key == key;
         }
 
-        t_list * listaFiltrada = list_filter(list, (void*) mismaKey);
+        t_list * listaFiltrada = list_filter(list, (void*) _mismaKey);
 
-        bool timestampMayor(registro_tad * primera, registro_tad * segunda) {
-            primera->timestamp > segunda->timestamp;
+        bool _timestampMayor(registro_tad * primera, registro_tad * segunda) {
+            return primera->timestamp > segunda->timestamp;
         }
 
-        list_sort(listaFiltrada,(void *) timestampMayor);
+        list_sort(listaFiltrada, (void*) _timestampMayor);
 
         registro_tad * resultado = list_get(listaFiltrada,0);
 
-        printf("VALUE: %s\n",resultado->value);
+        printf("VALUE: %s\n", resultado->value);
     }
 
     //TODO

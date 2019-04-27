@@ -54,7 +54,6 @@ void new_metadata_table(char* metadatabin, char* consistencia, char* particiones
 }
 
 t_config * obtener_metadata_table(char* metadatabin){
-    //TODO: AHRE ESTO TIENE SENTIDO SOLO POR GANAR EXPRESIVIDAD?
     return config_create(metadatabin);
 }
 

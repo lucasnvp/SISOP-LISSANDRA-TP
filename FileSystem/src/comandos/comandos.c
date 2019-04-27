@@ -9,8 +9,43 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(){
+void comando_select(char* table, int key){
     print_console((void*) log_info, "Comando select \n");
+
+
+    int existe = ValidarArchivo(table);
+    if( existe != true ) {
+        log_info(log_FileSystem, "No existe la tabla %s", table);
+        printf("Se intento insertar en una tabla no existente %s", table);
+        return;
+    }
+
+    t_config * metadata = obtener_metadata_table(table);
+    int particiones = config_get_int_value(metadata, "PARTITIONS");
+
+    int particion = key % particiones;
+
+    if(dictionary_has_key(memtable,table)) {
+        t_list * list = dictionary_get(memtable,table);
+        bool mismaKey(registro_tad* registro) {
+            registro->key == key;
+        }
+        t_list * listaFiltrada = list_filter(list,(void*)mismaKey);
+        bool timestampMayor(registro_tad * primera, registro_tad * segunda) {
+            primera->timestamp > segunda->timestamp;
+        }
+        list_sort(listaFiltrada,(void *) timestampMayor);
+
+        registro_tad * resultado = list_get(listaFiltrada,0);
+
+        printf("VALUE: %s\n",resultado->value);
+    }
+
+    //TODO
+    // 1 - Recorrer la Memtable
+    // 2 - Recorrer los TMP y TMPC
+    // 3 - Recorrer los .bin
+    // 4 - Devolver resultado por socket o consola
 }
 
 void comando_insert(char* table, int key, char* value, int timestamp, int socket){

@@ -40,7 +40,7 @@ pthread_t thread_exec;
 pthread_t thread_config;
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/config/config.txt";
-Type_Config config;
+Type_Config* config;
 uint32_t configFilePathSize;
 
 char* PATH_LOG = "/home/utnso/Gank-mid/Logs/logKernel.txt";

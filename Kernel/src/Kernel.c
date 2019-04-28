@@ -31,10 +31,10 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "Consola");
 
     //Hilo de metricas
-    pthread_create(&thread_metricas, NULL, (void*) metricas, "Consola");
+//    pthread_create(&thread_metricas, NULL, (void*) metricas, "Consola");
 
     // Hilo de ejecucion
-    pthread_create(&thread_exec, NULL, (void*) execute, "Consola");
+//    pthread_create(&thread_exec, NULL, (void*) execute, "Consola");
 
     // El join estan comentados, para que funcione el comando exit.
 //    pthread_join(thread_metricas, (void**) NULL);
@@ -53,7 +53,7 @@ void init_log(char* pathLog){
 
 void connect_server_Memoria(){
     //Conexion al servidor Memoria
-    SERVIDOR_MEMORIA = connect_server(config.IP_MEMORIA,config.PUERTO_MEMORIA);
+    SERVIDOR_MEMORIA = connect_server(config->IP_MEMORIA,config->PUERTO_MEMORIA);
 
     //Si conecto, informo
     if(SERVIDOR_MEMORIA > 1){
@@ -221,7 +221,7 @@ void execute(){
 
         while ((read = getline(&line, &len, fp)) != -1) {
             // Retardo de operacion
-            usleep(config.RETARDO * 100);
+            usleep(config->RETARDO * 100);
 
             // Parseo la linea
             t_lql_operacion parsed = parse(line);
@@ -298,6 +298,7 @@ void watching_config(){
 
         if (event->mask == IN_MODIFY) {
             pthread_mutex_lock(&mutexConfig);
+            free_config(config);
             config = load_config(PATH_CONFIG);
             print_config(config, log_Kernel);
             pthread_mutex_unlock(&mutexConfig);

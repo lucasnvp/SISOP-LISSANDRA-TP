@@ -23,6 +23,7 @@ int main(){
 
     memoriaPrincipal = alocar_MemoriaPrincipal();
 
+
     // Inicializamos la tabla de segmentos
 
     tablaDeSegmentos = NULL;
@@ -53,13 +54,26 @@ int main(){
  * Buscar en las páginas de los segmentos si se contiene el key
  * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
  * Solicitar una nueva página libre dentro del segmento
- * Algoritmo de reemplazo
  * Comprobar si la memoria está llena
  * Insert Select Drop Describe
  * Journal, Gossiping
  */
 
 // Obtiene el registro de Segmento. En caso de no encontrarlo, lo crea
+
+
+
+reg_pagina* ocuparUnMarcoConPagina(char* nombreTabla, uint32_t timestamp, uint32_t key, char* value){
+    reg_segmento* registroSegmento = obtenerRegistroDeSegmento(nombreTabla);
+
+    agregarRegistroPaginaAlRegistroSegmento(registroSegmento, )
+
+    //agregar registro de pagina a la tabla de paginas que es apuntada por el segmento
+    //buscar un marco libre
+    //guardar la direccion del marco en el registro de la pagina
+    //ocupar el marco con la pagina
+
+}
 
 reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){
     reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
@@ -111,13 +125,28 @@ bool validarNombreTabla(char* nombreBuscado, char* nombreTabla){
     return strcmp(nombreBuscado, nombreTabla) == 0;
 }
 
+bool validarExistenciaDeSegmento(char* nombreTabla){
+    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
+    while(_tablaDeSegmentos != NULL) {
+        if (validarNombreTabla(nombreTabla, _tablaDeSegmentos->nombreTabla)){
+            return true;
+        }
+        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento;
+    }
+    return false;
+}
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);
     tiempoDump = deserializar_int(servidorFileSystem);
 }
 
+reg_marco* crearTablaDeMarcos(){
+    reg_marco* aux = calloc(config.TAM_MEM/sizeof(registo_tad), sizeof(reg_marco));
+}
+
 registo_tad* alocar_MemoriaPrincipal() {
+    tablaDeMarcos = crearTablaDeMarcos();
     registo_tad* aux = malloc(config.TAM_MEM);
     return aux;
 }

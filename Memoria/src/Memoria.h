@@ -48,7 +48,7 @@ typedef struct reg_gossiping{
 
 typedef struct reg_pagina{
     uint32_t idPagina;
-    registo_tad* punteroAPagina;
+    registo_tad* punteroAMarco;
     bool flagModificado;
     reg_pagina* siguienteRegistroPagina;
 }reg_pagina;
@@ -58,8 +58,8 @@ typedef struct reg_pagina{
 typedef struct reg_segmento{
     uint32_t idSegmento;
     char* nombreTabla;
-    void* baseSegmento;
     uint32_t cantPaginas;
+    char* consistency;
     reg_pagina* primerRegistroPagina;
     reg_segmento* siguienteRegistroSegmento;
 }reg_segmento;
@@ -67,8 +67,16 @@ typedef struct reg_segmento{
 uint32_t tamanoValue;
 uint32_t tiempoDump;
 
+typedef reg_marco{
+    uint32_t numeroMarco;
+    bool marcoOcupado;
+}reg_marco;
+
 // Direccion de la tabla de segmentos
 reg_segmento* tablaDeSegmentos;
+
+//Direccion de la tabla de marcos
+reg_marco* tablaDeMarcos;
 
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero
@@ -90,6 +98,7 @@ typedef struct {
 
 
 bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
+bool validarExistenciaDeSegmento(char* nombreTabla);
 
 reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);
 reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoSegmento);

@@ -66,8 +66,6 @@ int main(){
 reg_pagina* ocuparUnMarcoConPagina(char* nombreTabla, uint32_t timestamp, uint32_t key, char* value){
     reg_segmento* registroSegmento = obtenerRegistroDeSegmento(nombreTabla);
 
-    agregarRegistroPaginaAlRegistroSegmento(registroSegmento, )
-
     //agregar registro de pagina a la tabla de paginas que es apuntada por el segmento
     //buscar un marco libre
     //guardar la direccion del marco en el registro de la pagina
@@ -94,6 +92,33 @@ reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){
     // en caso de no existir, o no haber registro de segmentos, lo agrego
 
     return agregarRegistroDeSegmento(nombreTabla, _ultimoRegistroDeSegmento);
+}
+
+registo_tad* buscarMarcoLibre(){
+    for (int numeroDeMarco = 0; numeroDeMarco < cantDeMarcos ; numeroDeMarco++) { //recorro hasta el final
+        if ( *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado == false ){ // si encuentro uno libre
+            *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado = true;
+            return (memoriaPrincipal + numeroDeMarco * sizeof(registo_tad) ); // retorno la direccion del marco en la memoria
+        }
+    }
+
+    return buscarPaginaParaLiberar();
+
+    // TODO aca iria un funcion que buscar una pagina que no tenga flag modificado, borrar esa pagina y devolver la dirrecion del marco que se libero
+}
+
+registro_tad* buscarPaginaParaLiberar(){
+    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
+    while ( _tablaDeSegmento != NULL ){
+        reg_pagina* pagina = _tablaDeSegmentos->primerRegistroPagina;
+        while ( pagina != NULL){
+            if ( pagina->flagModificado == false){
+                return (pagina->punteroAMarco);
+            }
+            pagina = pagina->siguienteRegistroPagina
+        }
+        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento
+    }
 }
 
 // Agrega un registro de Segmento. En caso de ser el primero, asigna al puntero tablaDeSegmentos el primer registro creado
@@ -142,7 +167,8 @@ void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
 }
 
 reg_marco* crearTablaDeMarcos(){
-    reg_marco* aux = calloc(config.TAM_MEM/sizeof(registo_tad), sizeof(reg_marco));
+    cantDeMarcos = config.TAM_MEM/sizeof(registo_tad);
+    reg_marco* aux = calloc(cantDeMarcos, sizeof(reg_marco));
 }
 
 registo_tad* alocar_MemoriaPrincipal() {

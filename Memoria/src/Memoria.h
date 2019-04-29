@@ -66,11 +66,12 @@ typedef struct reg_segmento{
 
 uint32_t tamanoValue;
 uint32_t tiempoDump;
+uint32_t cantDeMarcos;
 
 typedef reg_marco{
     uint32_t numeroMarco;
     bool marcoOcupado;
-}reg_marco;
+};
 
 // Direccion de la tabla de segmentos
 reg_segmento* tablaDeSegmentos;

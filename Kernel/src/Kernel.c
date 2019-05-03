@@ -28,13 +28,16 @@ int main(){
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
 
     // Hilo de config
-    pthread_create(&thread_config, NULL, (void*) watching_config, "Consola");
+    pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     //Hilo de metricas
-//    pthread_create(&thread_metricas, NULL, (void*) metricas, "Consola");
+//    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
     // Hilo de ejecucion
-//    pthread_create(&thread_exec, NULL, (void*) execute, "Consola");
+    pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
+
+    // Hilo de Planificacion
+    pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");
 
     // El join estan comentados, para que funcione el comando exit.
 //    pthread_join(thread_metricas, (void**) NULL);
@@ -144,7 +147,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "run")) {
                 if (comandos->cantArgs == 1) {
-                    comando_run(comandos->arg[0], QUEUE_READY, &SEM_EXECUTE);
+                    comando_run(comandos->arg[0], QUEUE_READY);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -308,5 +311,14 @@ void watching_config(){
 
         (void) inotify_rm_watch(fd_inotify, wd_inotify);
         (void) close(fd_inotify);
+    }
+}
+
+void planificador(){
+    while (KERNEL_READY) {
+        if (queue_size(QUEUE_READY) >= 1) {
+            // Ejecutar proceso
+            sem_post(&SEM_EXECUTE);
+        }
     }
 }

@@ -34,7 +34,7 @@ void comando_drop(u_int32_t socket, char* tabla){
     api_drop(socket, tabla);
 }
 
-void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_EXECUTE){
+void comando_run(char* path, t_queue* QUEUE_READY){
     if(ValidarArchivo(path)){
         print_console((void*) log_info, "Comando Run");
 
@@ -42,8 +42,6 @@ void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_EXECUTE){
         script_tad* newScript = script_new(path);
         // Lo agrego a la cola de READY
         queue_push(QUEUE_READY, newScript);
-        // Ejecutar proceso
-        sem_post(SEM_EXECUTE);
     } else{
         print_console((void*) log_info, "No se encontro el archivo");
         log_warning(log_Kernel, "No se encontro el archivo");

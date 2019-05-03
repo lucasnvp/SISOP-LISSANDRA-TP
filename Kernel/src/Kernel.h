@@ -38,6 +38,7 @@ pthread_t thread_consola;
 pthread_t thread_metricas;
 pthread_t thread_exec;
 pthread_t thread_config;
+pthread_t thread_planificador;
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/config/config.txt";
 Type_Config* config;
@@ -69,5 +70,6 @@ void init_queue_and_sem();
 void metricas();
 void execute();
 void watching_config();
+void planificador();
 
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

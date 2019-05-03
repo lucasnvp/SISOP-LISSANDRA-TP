@@ -212,11 +212,9 @@ void execute(){
     while(KERNEL_READY){
         //Hay procesos para ejecutar
         sem_wait(&SEM_EXECUTE);
-        log_info(log_Kernel, "EXECUTE");
         script_tad* scripToRun = (script_tad*)queue_pop(QUEUE_READY);
-        log_info(log_Kernel, "Path to run: %s", scripToRun->path);
+        log_info(log_Kernel, "EXECUTE - Path to run: %s", scripToRun->path);
 
-//        FILE * fp;
         char * line = NULL;
         size_t len = 0;
         ssize_t read;
@@ -224,15 +222,12 @@ void execute(){
         bool endOfScript = false;
 
         for (int k = 0; k < config->QUANTUM; ++k) {
-
             // Retardo de operacion
             usleep(config->RETARDO * 100);
 
-//            log_info(log_Kernel, "Quantum %d", k);
             if ((read = getline(&line, &len, scripToRun->fp)) != -1) {
                 parser_line(line);
                 scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
-//                log_info(log_Kernel, "Se ejecuto una linea del scritp: %s", scripToRun->path);
             } else {
                 endOfScript = true;
                 break;
@@ -253,62 +248,6 @@ void execute(){
             // Nuevo script para planificar
             sem_post(&SEM_PLANIFICADOR);
         }
-
-//        fp = fopen(scripToRun->path, "r");
-//
-//        while ((read = getline(&line, &len, fp)) != -1) {
-//            // Retardo de operacion
-//            usleep(config->RETARDO * 100);
-//
-//            // Parseo la linea
-//            t_lql_operacion parsed = parse(line);
-//
-//            if(parsed.valido){
-//                switch(parsed.keyword){
-//                    case SELECT:
-//                        api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
-//                        break;
-//                    case INSERT:
-//                        api_insert(SERVIDOR_MEMORIA,
-//                                parsed.argumentos.INSERT.tabla,
-//                                parsed.argumentos.INSERT.key,
-//                                parsed.argumentos.INSERT.value);
-//                        break;
-//                    case CREATE:
-//                        api_create(
-//                                SERVIDOR_MEMORIA,
-//                                parsed.argumentos.CREATE.tabla,
-//                                parsed.argumentos.CREATE.consistencia,
-//                                parsed.argumentos.CREATE.particiones,
-//                                parsed.argumentos.CREATE.compactacion);
-//                        break;
-//                    case DESCRIBE:
-//                        api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
-//                        break;
-//                    case DROP:
-//                        api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
-//                        break;
-//                    default:
-//                        log_warning(log_Kernel, "No pude interpretar <%s>", line);
-//                        break;
-//                }
-//
-//                destruir_operacion(parsed);
-//            } else {
-//                log_warning(log_Kernel, "La linea <%s> no es valida", line);
-//                break;
-//            }
-//
-//            // todo Revisar donde va contador
-//            scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
-//        }
-//
-//        fclose(fp);
-//        if (line)
-//            free(line);
-//
-//        // Fin del programa
-//        queue_push(QUEUE_EXIT, scripToRun);
 
     }
 }
@@ -355,7 +294,6 @@ void planificador(){
 
         // Ejecutar proceso
         sem_post(&SEM_EXECUTE);
-
     }
 }
 

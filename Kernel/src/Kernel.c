@@ -147,7 +147,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "run")) {
                 if (comandos->cantArgs == 1) {
-                    comando_run(comandos->arg[0], QUEUE_READY);
+                    comando_run(comandos->arg[0], QUEUE_READY, &SEM_PLANIFICADOR);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -180,7 +180,8 @@ void init_queue_and_sem(){
     pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
 
-    sem_init(&SEM_EXECUTE,0,0);	//Hay procesos para ejecutar
+    sem_init(&SEM_EXECUTE,0,0);	        // Hay procesos para ejecutar
+    sem_init(&SEM_PLANIFICADOR,0,0);	// Hay procesos para Planificar
 }
 
 void metricas(){
@@ -215,66 +216,99 @@ void execute(){
         script_tad* scripToRun = (script_tad*)queue_pop(QUEUE_READY);
         log_info(log_Kernel, "Path to run: %s", scripToRun->path);
 
-        FILE * fp;
+//        FILE * fp;
         char * line = NULL;
         size_t len = 0;
         ssize_t read;
 
-        fp = fopen(scripToRun->path, "r");
+        bool endOfScript = false;
 
-        while ((read = getline(&line, &len, fp)) != -1) {
+        for (int k = 0; k < config->QUANTUM; ++k) {
+
             // Retardo de operacion
             usleep(config->RETARDO * 100);
 
-            // Parseo la linea
-            t_lql_operacion parsed = parse(line);
-
-            if(parsed.valido){
-                switch(parsed.keyword){
-                    case SELECT:
-                        api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
-                        break;
-                    case INSERT:
-                        api_insert(SERVIDOR_MEMORIA,
-                                parsed.argumentos.INSERT.tabla,
-                                parsed.argumentos.INSERT.key,
-                                parsed.argumentos.INSERT.value);
-                        break;
-                    case CREATE:
-                        api_create(
-                                SERVIDOR_MEMORIA,
-                                parsed.argumentos.CREATE.tabla,
-                                parsed.argumentos.CREATE.consistencia,
-                                parsed.argumentos.CREATE.particiones,
-                                parsed.argumentos.CREATE.compactacion);
-                        break;
-                    case DESCRIBE:
-                        api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
-                        break;
-                    case DROP:
-                        api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
-                        break;
-                    default:
-                        log_warning(log_Kernel, "No pude interpretar <%s>", line);
-                        break;
-                }
-
-                destruir_operacion(parsed);
+//            log_info(log_Kernel, "Quantum %d", k);
+            if ((read = getline(&line, &len, scripToRun->fp)) != -1) {
+                parser_line(line);
+                scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
+//                log_info(log_Kernel, "Se ejecuto una linea del scritp: %s", scripToRun->path);
             } else {
-                log_warning(log_Kernel, "La linea <%s> no es valida", line);
+                endOfScript = true;
                 break;
             }
-
-            // todo Revisar donde va contador
-            scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
         }
 
-        fclose(fp);
-        if (line)
-            free(line);
+        if (endOfScript) {
+            log_info(log_Kernel, "Se termino de ejecutar el scritp: %s", scripToRun->path);
+            fclose(scripToRun->fp);
+            if (line) {
+                free(line);
+            }
+            // Fin del programa
+            queue_push(QUEUE_EXIT, scripToRun);
+        } else {
+            // Lo agrego a la cola de READY
+            queue_push(QUEUE_READY, scripToRun);
+            // Nuevo script para planificar
+            sem_post(&SEM_PLANIFICADOR);
+        }
 
-        // Fin del programa
-        queue_push(QUEUE_EXIT, scripToRun);
+//        fp = fopen(scripToRun->path, "r");
+//
+//        while ((read = getline(&line, &len, fp)) != -1) {
+//            // Retardo de operacion
+//            usleep(config->RETARDO * 100);
+//
+//            // Parseo la linea
+//            t_lql_operacion parsed = parse(line);
+//
+//            if(parsed.valido){
+//                switch(parsed.keyword){
+//                    case SELECT:
+//                        api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
+//                        break;
+//                    case INSERT:
+//                        api_insert(SERVIDOR_MEMORIA,
+//                                parsed.argumentos.INSERT.tabla,
+//                                parsed.argumentos.INSERT.key,
+//                                parsed.argumentos.INSERT.value);
+//                        break;
+//                    case CREATE:
+//                        api_create(
+//                                SERVIDOR_MEMORIA,
+//                                parsed.argumentos.CREATE.tabla,
+//                                parsed.argumentos.CREATE.consistencia,
+//                                parsed.argumentos.CREATE.particiones,
+//                                parsed.argumentos.CREATE.compactacion);
+//                        break;
+//                    case DESCRIBE:
+//                        api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+//                        break;
+//                    case DROP:
+//                        api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
+//                        break;
+//                    default:
+//                        log_warning(log_Kernel, "No pude interpretar <%s>", line);
+//                        break;
+//                }
+//
+//                destruir_operacion(parsed);
+//            } else {
+//                log_warning(log_Kernel, "La linea <%s> no es valida", line);
+//                break;
+//            }
+//
+//            // todo Revisar donde va contador
+//            scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
+//        }
+//
+//        fclose(fp);
+//        if (line)
+//            free(line);
+//
+//        // Fin del programa
+//        queue_push(QUEUE_EXIT, scripToRun);
 
     }
 }
@@ -316,9 +350,51 @@ void watching_config(){
 
 void planificador(){
     while (KERNEL_READY) {
-        if (queue_size(QUEUE_READY) >= 1) {
-            // Ejecutar proceso
-            sem_post(&SEM_EXECUTE);
+        // Hay scripts para planificar
+        sem_wait(&SEM_PLANIFICADOR);
+
+        // Ejecutar proceso
+        sem_post(&SEM_EXECUTE);
+
+    }
+}
+
+void parser_line(char * line){
+    // Parseo la linea
+    t_lql_operacion parsed = parse(line);
+
+    if(parsed.valido){
+        switch(parsed.keyword){
+            case SELECT:
+                api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
+                break;
+            case INSERT:
+                api_insert(SERVIDOR_MEMORIA,
+                        parsed.argumentos.INSERT.tabla,
+                        parsed.argumentos.INSERT.key,
+                        parsed.argumentos.INSERT.value);
+                break;
+            case CREATE:
+                api_create(
+                        SERVIDOR_MEMORIA,
+                        parsed.argumentos.CREATE.tabla,
+                        parsed.argumentos.CREATE.consistencia,
+                        parsed.argumentos.CREATE.particiones,
+                        parsed.argumentos.CREATE.compactacion);
+                break;
+            case DESCRIBE:
+                api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+                break;
+            case DROP:
+                api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
+                break;
+            default:
+                log_warning(log_Kernel, "No pude interpretar <%s>", line);
+                break;
         }
+
+        destruir_operacion(parsed);
+    } else {
+        log_warning(log_Kernel, "La linea <%s> no es valida", line);
     }
 }

@@ -24,8 +24,9 @@
 
 // Semaforos
 pthread_mutex_t mutexMetricas;  // Bloqueo el hilo para mostrar las metricas y no se haga otra cosa
-pthread_mutex_t mutexConfig;  // Bloqueo el hilo para cambiar la config
+pthread_mutex_t mutexConfig;    // Bloqueo el hilo para cambiar la config
 sem_t SEM_EXECUTE;              //Hay procesos para ejecutar
+sem_t SEM_PLANIFICADOR;         //Hay procesos para planificar
 
 // Variables listas y queue
 t_queue * QUEUE_NEW;
@@ -71,5 +72,6 @@ void metricas();
 void execute();
 void watching_config();
 void planificador();
+void parser_line(char * line);
 
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

@@ -7,10 +7,13 @@
 
 #include <string.h>
 #include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct script_tad{
     uint32_t lineas_ejecutadas;
     char* path;
+    FILE* fp;
 }script_tad;
 
 script_tad* script_new(char* path);

@@ -226,7 +226,10 @@ void execute(){
             usleep(config->RETARDO * 100);
 
             if ((read = getline(&line, &len, scripToRun->fp)) != -1) {
-                parser_line(line);
+                if (!parser_line(line)){
+                    endOfScript = true;
+                    break;
+                }
                 scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
             } else {
                 endOfScript = true;
@@ -297,9 +300,11 @@ void planificador(){
     }
 }
 
-void parser_line(char * line){
+bool parser_line(char * line){
     // Parseo la linea
     t_lql_operacion parsed = parse(line);
+
+    bool linea_valida = true;
 
     if(parsed.valido){
         switch(parsed.keyword){
@@ -328,11 +333,15 @@ void parser_line(char * line){
                 break;
             default:
                 log_warning(log_Kernel, "No pude interpretar <%s>", line);
+                linea_valida = false;
                 break;
         }
 
         destruir_operacion(parsed);
     } else {
         log_warning(log_Kernel, "La linea <%s> no es valida", line);
+        linea_valida = false;
     }
+
+    return linea_valida;
 }

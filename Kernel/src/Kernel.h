@@ -72,6 +72,6 @@ void metricas();
 void execute();
 void watching_config();
 void planificador();
-void parser_line(char * line);
+bool parser_line(char * line);
 
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

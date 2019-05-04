@@ -34,14 +34,12 @@ int main(){
 //    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
     // Hilo de ejecucion
-    pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
+//    pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
 
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");
 
-    // El join estan comentados, para que funcione el comando exit.
-//    pthread_join(thread_metricas, (void**) NULL);
-//    pthread_join(thread_exec, (void**) NULL);
+    // Espero el comando exit para finalizar el proceso.
     pthread_join(thread_consola, (void**) NULL);
 
     return EXIT_SUCCESS;
@@ -180,7 +178,6 @@ void init_queue_and_sem(){
     pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
 
-    sem_init(&SEM_EXECUTE,0,0);	        // Hay procesos para ejecutar
     sem_init(&SEM_PLANIFICADOR,0,0);	// Hay procesos para Planificar
 }
 
@@ -209,50 +206,47 @@ void metricas(){
 }
 
 void execute(){
-    while(KERNEL_READY){
-        //Hay procesos para ejecutar
-        sem_wait(&SEM_EXECUTE);
-        script_tad* scripToRun = (script_tad*)queue_pop(QUEUE_READY);
-        log_info(log_Kernel, "EXECUTE - Path to run: %s", scripToRun->path);
+    script_tad* scripToRun = (script_tad*)queue_pop(QUEUE_READY);
+    log_info(log_Kernel, "EXECUTE - Path to run: %s", scripToRun->path);
 
-        char * line = NULL;
-        size_t len = 0;
-        ssize_t read;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
 
-        bool endOfScript = false;
+    bool endOfScript = false;
 
-        for (int k = 0; k < config->QUANTUM; ++k) {
-            // Retardo de operacion
-            usleep(config->RETARDO * 100);
+    for (int k = 0; k < config->QUANTUM; ++k) {
+        // Retardo de operacion
+        usleep(config->RETARDO * 100);
 
-            if ((read = getline(&line, &len, scripToRun->fp)) != -1) {
-                if (!parser_line(line)){
-                    endOfScript = true;
-                    break;
-                }
-                scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
-            } else {
+        if ((read = getline(&line, &len, scripToRun->fp)) != -1) {
+            if (!parser_line(line)){
                 endOfScript = true;
                 break;
             }
-        }
-
-        if (endOfScript) {
-            log_info(log_Kernel, "Se termino de ejecutar el scritp: %s", scripToRun->path);
-            fclose(scripToRun->fp);
-            if (line) {
-                free(line);
-            }
-            // Fin del programa
-            queue_push(QUEUE_EXIT, scripToRun);
+            scripToRun->lineas_ejecutadas = scripToRun->lineas_ejecutadas + 1;
         } else {
-            // Lo agrego a la cola de READY
-            queue_push(QUEUE_READY, scripToRun);
-            // Nuevo script para planificar
-            sem_post(&SEM_PLANIFICADOR);
+            endOfScript = true;
+            break;
         }
-
     }
+
+    if (endOfScript) {
+        log_info(log_Kernel, "Se termino de ejecutar el scritp: %s", scripToRun->path);
+        fclose(scripToRun->fp);
+        if (line) {
+            free(line);
+        }
+        // Fin del programa
+        queue_push(QUEUE_EXIT, scripToRun);
+    } else {
+        // Lo agrego a la cola de READY
+        queue_push(QUEUE_READY, scripToRun);
+        // Nuevo script para planificar
+        sem_post(&SEM_PLANIFICADOR);
+    }
+
+    pthread_exit(NULL);
 }
 
 void watching_config(){
@@ -295,8 +289,11 @@ void planificador(){
         // Hay scripts para planificar
         sem_wait(&SEM_PLANIFICADOR);
 
-        // Ejecutar proceso
-        sem_post(&SEM_EXECUTE);
+        // Ejecuto el Hilo de ejecucion
+        pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
+
+        // Espero que finalice el hilo de ejecucion
+        pthread_join(thread_exec, (void**) NULL);
     }
 }
 

@@ -20,7 +20,6 @@ int main(){
     connect_server_FileSystem();
 
     // Se crea el espacio para la memoria principal
-
     memoriaPrincipal = alocar_MemoriaPrincipal();
 
 
@@ -43,7 +42,7 @@ int main(){
 
     // Se elimina el espacio para la memoria principal
 
-    desalocar_MemoriaPrincipal();
+    //desalocar_MemoriaPrincipal(); TODO: Creo que no deberíamos desalocar la memoria en este punto, o en ningún punto
 
     return EXIT_SUCCESS;
 }
@@ -60,6 +59,27 @@ int main(){
  */
 
 // Obtiene el registro de Segmento. En caso de no encontrarlo, lo crea
+
+
+
+/*** --------------- PÁGINAS --------------- ***/
+
+// REGISTROS DE PÁGINAS
+
+void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registo_tad* punteroAPagina) {
+    tablaDePaginas* nuevoRegistroDePagina;
+    nuevoRegistroDePagina->registro.flagModificado = false;
+    nuevoRegistroDePagina->registro.numeroPagina = _tablaDePaginas->registro.numeroPagina + 1;
+    nuevoRegistroDePagina->registro.punteroAPagina = punteroAPagina;
+    nuevoRegistroDePagina->siguiente = NULL;
+
+    _tablaDePaginas->siguiente = nuevoRegistroDePagina;
+}
+
+//TODO creo que esto viene por lsa commons
+
+
+
 
 
 
@@ -94,32 +114,32 @@ reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){
     return agregarRegistroDeSegmento(nombreTabla, _ultimoRegistroDeSegmento);
 }
 
-registo_tad* buscarMarcoLibre(){
-    for (int numeroDeMarco = 0; numeroDeMarco < cantDeMarcos ; numeroDeMarco++) { //recorro hasta el final
-        if ( *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado == false ){ // si encuentro uno libre
-            *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado = true;
-            return (memoriaPrincipal + numeroDeMarco * sizeof(registo_tad) ); // retorno la direccion del marco en la memoria
-        }
-    }
+//registo_tad* buscarMarcoLibre(){
+//    for (int numeroDeMarco = 0; numeroDeMarco < cantDeMarcos ; numeroDeMarco++) { //recorro hasta el final
+//        if ( *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado == false ){ // si encuentro uno libre
+//            *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado = true;
+//            return (memoriaPrincipal + numeroDeMarco * sizeof(registo_tad) ); // retorno la direccion del marco en la memoria
+//        }
+//    }
 
-    return buscarPaginaParaLiberar();
+//    return buscarPaginaParaLiberar();
 
     // TODO aca iria un funcion que buscar una pagina que no tenga flag modificado, borrar esa pagina y devolver la dirrecion del marco que se libero
-}
+//}
 
-registro_tad* buscarPaginaParaLiberar(){
-    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
-    while ( _tablaDeSegmento != NULL ){
-        reg_pagina* pagina = _tablaDeSegmentos->primerRegistroPagina;
-        while ( pagina != NULL){
-            if ( pagina->flagModificado == false){
-                return (pagina->punteroAMarco);
-            }
-            pagina = pagina->siguienteRegistroPagina
-        }
-        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento
-    }
-}
+//registo_tad* buscarPaginaParaLiberar(){
+//    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
+//    while ( _tablaDeSegmentos != NULL ){
+//        reg_pagina* pagina = _tablaDeSegmentos->primerRegistroPagina;
+//        while ( pagina != NULL){
+//            if ( pagina->flagModificado == false){
+//                return (pagina->punteroAMarco);
+//           }
+//            pagina = pagina->siguienteRegistroPagina;
+//        }
+//        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento;
+//    }
+//}
 
 // Agrega un registro de Segmento. En caso de ser el primero, asigna al puntero tablaDeSegmentos el primer registro creado
 
@@ -169,15 +189,19 @@ void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
 reg_marco* crearTablaDeMarcos(){
     cantDeMarcos = config.TAM_MEM/sizeof(registo_tad);
     reg_marco* aux = calloc(cantDeMarcos, sizeof(reg_marco));
+    log_info(log_Memoria, "Se ha creado la tabla de marcos");
 }
 
 registo_tad* alocar_MemoriaPrincipal() {
     tablaDeMarcos = crearTablaDeMarcos();
     registo_tad* aux = malloc(config.TAM_MEM);
+    log_info(log_Memoria, "Se ha alocado la memoria principal");
+
     return aux;
 }
 
 void desalocar_MemoriaPrincipal() {
+    log_info(log_Memoria, "Se ha desalocado la memoria principal");
     free(memoriaPrincipal);
 }
 

@@ -44,34 +44,81 @@ typedef struct reg_gossiping{
 
 }reg_gossiping;
 
-// Estructura de los registros de la tabla de páginas
+// Estructura de los Registros de la Tabla de Páginas
 
-typedef struct reg_pagina{
-    uint32_t idPagina;
-    registo_tad* punteroAMarco;
+// ----------> registo_tad es la página <----------
+
+// la página tiene que ser del mismo tamaño que el marco, por lo tanto, tamaño marco = tamaño registro_tad;
+
+// --- contiene el número de página correspondiente; el cual, al ser paginado, es el mismo que la posición del registro dentro de la tabla
+// --- la página (registo_tad)
+// --- el flag por si se ha modificado el value de la página (registo_tad)
+
+typedef struct reg_tablaDePaginas {
+    uint32_t numeroPagina;
+    registo_tad* punteroAPagina;
     bool flagModificado;
-    reg_pagina* siguienteRegistroPagina;
-}reg_pagina;
+}reg_tablaDePaginas;
 
-//Estructura de los registro de la tabla de segmentacion
+// Estructura de la Tabla de Páginas dentro de un Segmento en una Sub-Memoria;
+// --- contiene un registro de la tabla de páginas, y el puntero al siguiente
+// --- cuando el puntero a siguiente sea null, se habrá recorrido toda la tabla de páginas;
+
+typedef struct tablaDePaginas {
+    reg_tablaDePaginas registro;
+    struct tablaDePaginas *siguiente;
+}tablaDePaginas;
+
+// Estructura del Registro de un Segmento;
+// --- contiene el número de segmento;
+// --- su desplazamiento;
+// --- y el siguiente segmento
 
 typedef struct reg_segmento{
     uint32_t idSegmento;
-    char* nombreTabla;
-    uint32_t cantPaginas;
-    char* consistency;
-    reg_pagina* primerRegistroPagina;
-    reg_segmento* siguienteRegistroSegmento;
+    struct reg_segmento_desplazamiento* desplazamiento;
+    struct reg_segmento* siguienteRegistroSegmento;
 }reg_segmento;
+
+// Estructura del Desplazamiento de un Segmento;
+// --- contiene el nombre de la tabla;
+// --- el tipo de consistencia;
+// --- y el puntero hacia la tabla de páginas;
+
+typedef struct reg_segmento_desplazamiento {
+    char* nombreTabla;
+    char* consistency;
+    struct tablaDePaginas* tablaDePaginas;
+};
+
+// Estructura de la Tabla de Segmentos;
+// --- contiene un registro de la tabla de segmentos, y el puntero al siguiente;
+// --- cuando el pnutero a siguiente sea null, se habran recorrido todos los segmentos de una submemoria;
+
+typedef struct tablaDeSegmentos {
+    reg_segmento registro;
+    struct tablaDeSegmentos *siguiente;
+};
+
+// Estructura de la Tabla de Marcos;
+// --- contiene el número de marco, el cual es el mismo que el número de página dentro de la tabla;
+// --- el flag de marco ocupado
+// --- el puntero al siguiente marco
+
+typedef struct tablaDeMarcos {
+    uint32_t numeroDeMarco;
+    bool ocupado;
+    struct tablaDeMarcos *siguiente;
+};
 
 uint32_t tamanoValue;
 uint32_t tiempoDump;
 uint32_t cantDeMarcos;
 
-typedef reg_marco{
+typedef struct reg_marco{
     uint32_t numeroMarco;
     bool marcoOcupado;
-};
+}reg_marco;
 
 // Direccion de la tabla de segmentos
 reg_segmento* tablaDeSegmentos;
@@ -96,6 +143,9 @@ typedef struct {
 } t_comandos;
 
 //TODO definir estructura de cada registro de la tabla de gossiping(readme)
+
+
+void agregarRegistroDePagina(registo_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
 
 
 bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);

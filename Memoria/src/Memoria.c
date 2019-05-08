@@ -48,17 +48,15 @@ int main(){
 }
 
 /*
- * TODO 25/04
+ * TODO 08/05
  *
  * Buscar en las páginas de los segmentos si se contiene el key
  * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
- * Solicitar una nueva página libre dentro del segmento
  * Comprobar si la memoria está llena
  * Insert Select Drop Describe
  * Journal, Gossiping
  */
 
-// Obtiene el registro de Segmento. En caso de no encontrarlo, lo crea
 
 
 
@@ -66,33 +64,117 @@ int main(){
 
 // REGISTROS DE PÁGINAS
 
+
+
+// Reserva un marco para una Página marcándolo como ocupado y devuelve su dirección de memoria
+// Si todos los marcos se encuentran ocupados, se buscará una Página para Liberar
+
+registo_tad* reservarMarco() {
+    struct tablaDeMarcos* _tablaDeMarcos = tablaDeMarcos;
+    while(_tablaDeMarcos != NULL){
+        if(_tablaDeMarcos->registro.marcoOcupado == false) {
+            _tablaDeMarcos->registro.marcoOcupado = true;
+            return (registo_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * sizeof(registo_tad));
+        }
+
+
+        _tablaDeMarcos = _tablaDeMarcos->siguiente;
+    }
+    // si no se encontró ningun marco libre, se procede a liberar una página
+    return liberarPagina();
+}
+
+
+// Agrega un registro de Página a la Tabla de Páginas
+// --- registo_tad es la página
 void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registo_tad* punteroAPagina) {
     tablaDePaginas* nuevoRegistroDePagina;
     nuevoRegistroDePagina->registro.flagModificado = false;
     nuevoRegistroDePagina->registro.numeroPagina = _tablaDePaginas->registro.numeroPagina + 1;
     nuevoRegistroDePagina->registro.punteroAPagina = punteroAPagina;
-    nuevoRegistroDePagina->siguiente = NULL;
-
-    _tablaDePaginas->siguiente = nuevoRegistroDePagina;
+    nuevoRegistroDePagina->siguienteRegistroPagina = NULL;
+    _tablaDePaginas->siguienteRegistroPagina = nuevoRegistroDePagina;
 }
 
-//TODO creo que esto viene por lsa commons
+// Ocupa el marco de página
+void ocuparPagina(registo_tad* punteroAPagina, uint32_t timestamp, uint32_t key, char* value ) {
+    punteroAPagina = new_registro_tad(timestamp, key, value);
+}
+
+// Obtiene el registro más viejo de todos los segmentos disponibles en la memoria. En caso de no encontrar ninguno, ejecuta journal. //TODO: Journal
+tablaDePaginas* obtenerRegistroMasViejo() {
+    struct tablaDeSegmentos* _tablaDeSegmentos = tablaDeSegmentos;
+    // el registro más viejo, es el primero que encuentro
+    tablaDePaginas* registroMasViejo = _tablaDeSegmentos->registro.tablaDePaginas;
+    // en tanto tenga segmentos para iterar
+    while( _tablaDeSegmentos != NULL ){
+        tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
+        // en tanto tenga páginas dentro de mi segmento
+        while ( pagina != NULL){
+            // compruebo si el último acceso es menor que el registroMasViejo, y de ser así, compruebo si la página contiene el flag de modificado en false
+            if (pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso & !pagina->registro.flagModificado){
+                registroMasViejo = pagina;
+            }
+            pagina = pagina->siguienteRegistroPagina;
+        }
+        _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
+    }
+
+    // en este punto no hay ninguna página en ningún segmento que tenga el flag de modificado activado; entonces compruebo el registro más viejo
+    if(registroMasViejo == _tablaDeSegmentos->registro.tablaDePaginas & registroMasViejo->registro.flagModificado) {
+        //ejecutar journal
+    }
+    return registroMasViejo;
+}
+
+// Reenlaza los registros de páginas
+registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
 
+    struct tablaDeSegmentos* _tablaDeSegmentos = tablaDeSegmentos;
 
+    // en tanto tenga segmentos disponibles
+    while(_tablaDeSegmentos != NULL){
+        tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
+        // si el registro más viejo es la página del segmento, enlazo en la lista
+        if(registroMasViejo == pagina){
+            *(_tablaDeSegmentos)->registro.tablaDePaginas = *(registroMasViejo)->siguienteRegistroPagina;
+            return registroMasViejo->registro.punteroAPagina;
+        }
+        // en tanto tenga páginas disponibles
+        while ( pagina != NULL){
+            // si el registro más viejo es la página siguiente, enlazo en la lista
+            if(registroMasViejo == pagina->siguienteRegistroPagina){
+                *(pagina)->siguienteRegistroPagina = *(registroMasViejo)->siguienteRegistroPagina;
+                return registroMasViejo->registro.punteroAPagina;
+            }
+            pagina = pagina->siguienteRegistroPagina;
+        }
 
-
-
-reg_pagina* ocuparUnMarcoConPagina(char* nombreTabla, uint32_t timestamp, uint32_t key, char* value){
-    reg_segmento* registroSegmento = obtenerRegistroDeSegmento(nombreTabla);
-
-    //agregar registro de pagina a la tabla de paginas que es apuntada por el segmento
-    //buscar un marco libre
-    //guardar la direccion del marco en el registro de la pagina
-    //ocupar el marco con la pagina
+        _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
+    }
 
 }
 
+// obtiene el registro más viejo y reenlaza la lista
+registo_tad* liberarPagina() {
+
+    tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
+    tablaDePaginas* aux = registroMasViejo;
+    free(registroMasViejo);
+
+    return reenlazarRegistros(aux);
+
+}
+
+/*** --------------- INSERT --------------- ***/
+
+
+
+
+
+
+/*
 reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){
     reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
     reg_segmento* _ultimoRegistroDeSegmento = NULL;
@@ -114,32 +196,6 @@ reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){
     return agregarRegistroDeSegmento(nombreTabla, _ultimoRegistroDeSegmento);
 }
 
-//registo_tad* buscarMarcoLibre(){
-//    for (int numeroDeMarco = 0; numeroDeMarco < cantDeMarcos ; numeroDeMarco++) { //recorro hasta el final
-//        if ( *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado == false ){ // si encuentro uno libre
-//            *(tablaDeMarcos + numeroDeMarco * sizeof(reg_marco)).marcoOcupado = true;
-//            return (memoriaPrincipal + numeroDeMarco * sizeof(registo_tad) ); // retorno la direccion del marco en la memoria
-//        }
-//    }
-
-//    return buscarPaginaParaLiberar();
-
-    // TODO aca iria un funcion que buscar una pagina que no tenga flag modificado, borrar esa pagina y devolver la dirrecion del marco que se libero
-//}
-
-//registo_tad* buscarPaginaParaLiberar(){
-//    reg_segmento* _tablaDeSegmentos = tablaDeSegmentos;
-//    while ( _tablaDeSegmentos != NULL ){
-//        reg_pagina* pagina = _tablaDeSegmentos->primerRegistroPagina;
-//        while ( pagina != NULL){
-//            if ( pagina->flagModificado == false){
-//                return (pagina->punteroAMarco);
-//           }
-//            pagina = pagina->siguienteRegistroPagina;
-//        }
-//        _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento;
-//    }
-//}
 
 // Agrega un registro de Segmento. En caso de ser el primero, asigna al puntero tablaDeSegmentos el primer registro creado
 
@@ -179,7 +235,7 @@ bool validarExistenciaDeSegmento(char* nombreTabla){
         _tablaDeSegmentos = _tablaDeSegmentos->siguienteRegistroSegmento;
     }
     return false;
-}
+}*/
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);

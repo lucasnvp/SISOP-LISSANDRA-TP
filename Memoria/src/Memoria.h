@@ -58,6 +58,7 @@ typedef struct reg_tablaDePaginas {
     uint32_t numeroPagina;
     registo_tad* punteroAPagina;
     bool flagModificado;
+    uint32_t ultimoAcceso;
 }reg_tablaDePaginas;
 
 // Estructura de la Tabla de Páginas dentro de un Segmento en una Sub-Memoria;
@@ -66,7 +67,7 @@ typedef struct reg_tablaDePaginas {
 
 typedef struct tablaDePaginas {
     reg_tablaDePaginas registro;
-    struct tablaDePaginas *siguiente;
+    struct tablaDePaginas* siguienteRegistroPagina;
 }tablaDePaginas;
 
 // Estructura del Registro de un Segmento;
@@ -76,20 +77,11 @@ typedef struct tablaDePaginas {
 
 typedef struct reg_segmento{
     uint32_t idSegmento;
-    struct reg_segmento_desplazamiento* desplazamiento;
-    struct reg_segmento* siguienteRegistroSegmento;
-}reg_segmento;
-
-// Estructura del Desplazamiento de un Segmento;
-// --- contiene el nombre de la tabla;
-// --- el tipo de consistencia;
-// --- y el puntero hacia la tabla de páginas;
-
-typedef struct reg_segmento_desplazamiento {
     char* nombreTabla;
     char* consistency;
     struct tablaDePaginas* tablaDePaginas;
-};
+    struct reg_segmento* siguienteRegistroSegmento;
+}reg_segmento;
 
 // Estructura de la Tabla de Segmentos;
 // --- contiene un registro de la tabla de segmentos, y el puntero al siguiente;
@@ -105,9 +97,13 @@ typedef struct tablaDeSegmentos {
 // --- el flag de marco ocupado
 // --- el puntero al siguiente marco
 
+typedef struct reg_marco{
+    uint32_t numeroMarco;
+    bool marcoOcupado;
+}reg_marco;
+
 typedef struct tablaDeMarcos {
-    uint32_t numeroDeMarco;
-    bool ocupado;
+    reg_marco registro;
     struct tablaDeMarcos *siguiente;
 };
 
@@ -115,16 +111,13 @@ uint32_t tamanoValue;
 uint32_t tiempoDump;
 uint32_t cantDeMarcos;
 
-typedef struct reg_marco{
-    uint32_t numeroMarco;
-    bool marcoOcupado;
-}reg_marco;
+
 
 // Direccion de la tabla de segmentos
-reg_segmento* tablaDeSegmentos;
+struct tablaDeSegmentos* tablaDeSegmentos;
 
 //Direccion de la tabla de marcos
-reg_marco* tablaDeMarcos;
+struct tablaDeMarcos* tablaDeMarcos;
 
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero
@@ -145,7 +138,8 @@ typedef struct {
 //TODO definir estructura de cada registro de la tabla de gossiping(readme)
 
 
-void agregarRegistroDePagina(registo_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
+void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registo_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
+registo_tad* reservarMarco(); // reserva un marco
 
 
 bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
@@ -153,6 +147,11 @@ bool validarExistenciaDeSegmento(char* nombreTabla);
 
 reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);
 reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoSegmento);
+void ocuparPagina(registo_tad* punteroAPagina, uint32_t timestamp, uint32_t key, char* value );
+tablaDePaginas* obtenerRegistroMasViejo();
+registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
+registo_tad* liberarPagina();
+
 
 registo_tad* alocar_MemoriaPrincipal();
 
@@ -164,5 +163,9 @@ void connect_server_FileSystem();
 void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void memory_console();
+
+
+
+void insert();
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

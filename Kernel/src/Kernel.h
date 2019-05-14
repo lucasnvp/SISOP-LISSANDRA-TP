@@ -21,6 +21,7 @@
 #include "config/Config_kernel.h"
 #include "comandos/comandos.h"
 #include "api/api.h"
+#include "memoria/memoria.h"
 
 // Semaforos
 pthread_mutex_t mutexMetricas;  // Bloqueo el hilo para mostrar las metricas y no se haga otra cosa
@@ -65,9 +66,9 @@ typedef struct {
 } t_comandos;
 
 void init_log(char* pathLog);
+void init_queue_and_sem();
 void connect_server_Memoria();
 void consola();
-void init_queue_and_sem();
 void metricas();
 void execute();
 void watching_config();

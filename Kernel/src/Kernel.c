@@ -10,19 +10,22 @@ int main(){
     puts("Proceso Kernel");
     KERNEL_READY = true;
 
-    //Inicializar Log
+    // Inicializar Log
     init_log(PATH_LOG);
 
-    //Inicializar Queue y Semaforos
-    init_queue_and_sem();
-
-    //Configuracion inicial
+    // Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
     configFilePathSize = string_length(PATH_CONFIG);
 
-    //Conexion al servidor FileSystem
+    // Inicializar Queue y Semaforos
+    init_queue_and_sem();
+
+    // Conexion al servidor FileSystem
     connect_server_Memoria();
+
+    // Init listado de memorias
+    init_memories(config);
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
@@ -30,11 +33,11 @@ int main(){
     // Hilo de config
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
-    //Hilo de metricas
+    // Hilo de metricas
 //    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
     // Hilo de ejecucion
-//    pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
+    pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
 
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");

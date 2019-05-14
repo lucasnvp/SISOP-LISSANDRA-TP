@@ -178,7 +178,8 @@ void init_queue_and_sem(){
     pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
 
-    sem_init(&SEM_PLANIFICADOR,0,0);	// Hay procesos para Planificar
+    sem_init(&SEM_PLANIFICADOR,0,0);	    // Hay procesos para Planificar
+    sem_init(&SEM_MULTIPROGRAMACION,0,config->MULTIPROCESAMIENTO);	// Controlo la multiprogramacion
 }
 
 void metricas(){
@@ -246,6 +247,9 @@ void execute(){
         sem_post(&SEM_PLANIFICADOR);
     }
 
+    // Multiprogramacion
+    sem_post(&SEM_MULTIPROGRAMACION);
+
     pthread_exit(NULL);
 }
 
@@ -288,6 +292,9 @@ void planificador(){
     while (KERNEL_READY) {
         // Hay scripts para planificar
         sem_wait(&SEM_PLANIFICADOR);
+
+        // Multiprogramacion
+        sem_wait(&SEM_MULTIPROGRAMACION);
 
         // Ejecuto el Hilo de ejecucion
         pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");

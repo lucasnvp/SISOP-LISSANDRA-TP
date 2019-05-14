@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/Memoria.dir/src/Memoria.c.o CMakeFiles/Memoria.dir/src/config/Config_memoria.c.o CMakeFiles/Memoria.dir/src/comandos/comandos.c.o  -o Memoria ../Librerias/libLibrerias.a -lpthread -lreadline 

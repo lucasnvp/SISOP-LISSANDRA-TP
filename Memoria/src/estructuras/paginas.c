@@ -32,18 +32,49 @@ registo_tad* reservarMarco() {
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registo_tad* punteroAPagina) {
-    tablaDePaginas* nuevoRegistroDePagina;
-    nuevoRegistroDePagina->registro.flagModificado = false;
-    nuevoRegistroDePagina->registro.numeroPagina = _tablaDePaginas->registro.numeroPagina + 1;
-    nuevoRegistroDePagina->registro.punteroAPagina = punteroAPagina;
-    nuevoRegistroDePagina->siguienteRegistroPagina = NULL;
-    _tablaDePaginas->siguienteRegistroPagina = nuevoRegistroDePagina;
+void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
+    struct tablaDeSegmentos *_TablaDeSegmento;
+    _TablaDeSegmento = buscarSegmento(nombreDeTabla);
+
+    if (_TablaDeSegmento == NULL) {
+        _TablaDeSegmento = agregarSegmento(nombreDeTabla);
+    }
+
+    __uint32_t timestampActual = time(NULL);
+
+    struct tablaDePaginas *_TablaDePaginas;
+    _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
+
+
+    while (_TablaDePaginas != NULL) {
+        //busco la pagina por la key
+        if (_TablaDePaginas->registro.punteroAPagina->key == key) {
+            //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
+            if (_TablaDePaginas->registro.punteroAPagina->timestamp > timestampActual) {
+                _TablaDePaginas->registro.flagModificado = true;
+                memcpy(_TablaDePaginas->registro.punteroAPagina,
+                        new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
+            }
+        }
+        _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
+    }
+    //si no la encuentro la agrego junto a su registro de pagina
+
 }
 
 // Ocupa el marco de página
 void ocuparPagina(registo_tad* punteroAPagina, uint32_t timestamp, uint32_t key, char* value ) {
     punteroAPagina = new_registro_tad(timestamp, key, value);
+}
+
+/*** ---------JOURNAL------- ***/
+
+// obtiene el registro más viejo y reenlaza la lista
+registo_tad* liberarPagina() {
+
+    tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
+    return reenlazarRegistros(registroMasViejo);
+
 }
 
 // Obtiene el registro más viejo de todos los segmentos disponibles en la memoria. En caso de no encontrar ninguno, ejecuta journal. //TODO: Journal
@@ -84,6 +115,8 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
         // si el registro más viejo es la página del segmento, enlazo en la lista
         if(registroMasViejo == pagina){
             *(_tablaDeSegmentos)->registro.tablaDePaginas = *(registroMasViejo)->siguienteRegistroPagina;
+            registo_tad* aux = registroMasViejo->registro.punteroAPagina;
+            free(registroMasViejo);
             return registroMasViejo->registro.punteroAPagina;
         }
         // en tanto tenga páginas disponibles
@@ -91,6 +124,8 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
             // si el registro más viejo es la página siguiente, enlazo en la lista
             if(registroMasViejo == pagina->siguienteRegistroPagina){
                 *(pagina)->siguienteRegistroPagina = *(registroMasViejo)->siguienteRegistroPagina;
+                registo_tad* aux = registroMasViejo->registro.punteroAPagina;
+                free(registroMasViejo);
                 return registroMasViejo->registro.punteroAPagina;
             }
             pagina = pagina->siguienteRegistroPagina;
@@ -101,13 +136,3 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
 }
 
-// obtiene el registro más viejo y reenlaza la lista
-registo_tad* liberarPagina() {
-
-    tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
-    tablaDePaginas* aux = registroMasViejo;
-    free(registroMasViejo);
-
-    return reenlazarRegistros(aux);
-
-}

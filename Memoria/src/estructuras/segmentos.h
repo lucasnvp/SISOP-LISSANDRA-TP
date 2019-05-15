@@ -50,6 +50,8 @@ uint32_t cantDeMarcos;
 // Direccion de la tabla de segmentos
 struct tablaDeSegmentos* tablaDeSegmentos;
 
+reg_segmento* buscarSegmento(char* nombreDeTabla);
 
+tablaDeSegmentos* agregarSegmento(char* nombreDeTabla);
 
 #endif //TP_2019_1C_GANK_MID_SEGMENTOS_H

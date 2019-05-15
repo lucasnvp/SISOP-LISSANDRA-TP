@@ -4,8 +4,48 @@
 
 #include "segmentos.h"
 
+//busca en los segmentos, si lo encuentra lo retorna,
+// si no lo encuentra lo crea
 
+tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
+    struct tablaDeSegmentos* _TablaDeSegmento;
+    _TablaDeSegmento = tablaDeSegmentos;
 
+    struct tablaDeSegmentos* ultimo = NULL;
+
+    while(_TablaDeSegmento != NULL){
+        if(_TablaDeSegmento->registro.nombreTabla == nombreDeTabla){
+            return _TablaDeSegmento;
+        }
+        _TablaDeSegmento = _TablaDeSegmento->siguiente
+    }
+
+    return NULL;
+}
+
+tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
+    struct tablaDeSegmentos* _TablaDeSegmento;
+    _TablaDeSegmento = tablaDeSegmentos;
+    struct tablaDeSegmentos* ultimo = NULL;
+
+    struct tablaDeSegmentos* nuevoRegistroSegmento = malloc(sizeof(tablaDeSegmentos));
+
+    while(_TablaDeSegmento != NULL){
+        ultimo = _TablaDeSegmento;
+        _TablaDeSegmento = _TablaDeSegmento->siguiente;
+    }
+
+    if(ultimo==NULL){ //por si aun no fue creado ningur registro de segmento
+        tablaDeSegmentos = nuevoRegistroSegmento;
+    } else {
+        ultimo->siguiente = nuevoRegistroSegmento;
+    }
+    nuevoRegistroSegmento->registro.idSegmento = ultimo->registro.idSegmento + 1;
+    nuevoRegistroSegmento->registro.nombreTabla = nombreDeTabla;
+    nuevoRegistroSegmento->registro.siguienteRegistroSegmento = NULL;
+
+    return nuevoRegistroSegmento;
+}
 
 /*
 reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla){

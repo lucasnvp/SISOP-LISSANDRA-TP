@@ -12,9 +12,9 @@
 #include "../utils/utils.h"
 #include "stdlib.h"
 #include "string.h"
+#include "../utils/memtableHanlder.h"
 
 t_log* log_FileSystem;
-t_dictionary * memtable;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 void comando_select(char* table, int key);

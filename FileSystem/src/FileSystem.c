@@ -229,7 +229,27 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else print_console((void*) log_error, "Comando incorrecto.");
+            else if (!strcmp(comandos->comando, "HELP")) {
+                if (comandos->cantArgs == 0) {
+                    printf("---------------------------------------------------------------------------------------------------------\n");
+                    printf("Comandos posibles\n");
+                    printf("Nombre del comando: parámetros -> Descripción del comando\n");
+                    printf("EXIT -> Termina el proceso\n");
+                    printf("CREATE: nombre de tabla, consistencia(SC, SHC, bla), particiones, compactacion(segs) -> Crea una tabla\n");
+                    printf("INSERT (simple): tabla, key, value -> Inserta un registro en la tabla\n");
+                    printf("INSERT: tabla, key, value, timestamp -> Inserta un registro en la tabla\n");
+                    printf("SELECT: tabla, key -> Lee un registro de la tabla\n");
+                    printf("DROP (no implementado aún): tabla -> Elimina una tabla\n");
+                    printf("DESCRIBE (simple) -> Muestra los config de todas las tablas\n");
+                    printf("DESCRIBE: tabla -> Muestra los config de una tabla\n");
+                    printf("HELP -> Lista los comandos existentes\n");
+                    printf("---------------------------------------------------------------------------------------------------------\n");
+                } else {
+                    print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+                }
+            }
+
+            else print_console((void*) log_error, "Comando incorrecto.\n");
 
             // Libero toda la memoria
             for (i = 0; i < comandos->cantArgs; i++)

@@ -12,6 +12,8 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
 void comando_select(char* table, int key){
     print_console((void*) log_info, "Comando select \n");
 
+    char* finalResult = string_new();
+
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
@@ -29,28 +31,14 @@ void comando_select(char* table, int key){
 
     int particion = key % particiones;
 
-    if(dictionary_has_key(memtable,table)) {
-        t_list * list = dictionary_get(memtable,table);
+    char* value = getValue(table, key);
 
-        bool _mismaKey(registro_tad* registro) {
-            return registro->key == key;
-        }
-
-        t_list * listaFiltrada = list_filter(list, (void*) _mismaKey);
-
-        bool _timestampMayor(registro_tad * primera, registro_tad * segunda) {
-            return primera->timestamp > segunda->timestamp;
-        }
-
-        list_sort(listaFiltrada, (void*) _timestampMayor);
-
-        registro_tad * resultado = list_get(listaFiltrada,0);
-
-        printf("VALUE: %s\n", resultado->value);
+    if(!string_equals_ignore_case(value, "error")) {
+        finalResult = string_duplicate(value);
+        printf("VALUE: %s\n", finalResult);
     }
 
     //TODO
-    // 1 - Recorrer la Memtable
     // 2 - Recorrer los TMP y TMPC
     // 3 - Recorrer los .bin
     // 4 - Devolver resultado por socket o consola
@@ -58,6 +46,7 @@ void comando_select(char* table, int key){
 
 void comando_insert(char* table, int key, char* value, int timestamp, int socket){
 
+    string_to_upper(table);
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
@@ -65,33 +54,26 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
 
     if( existe != true ) {
         log_info(log_FileSystem, "Se intento insertar en una tabla no existente %s", table);
-        printf("Se intento insertar en una tabla no existente %s", table);
+        printf("Se intento insertar en una tabla no existente %s \n", table);
         return;
     }
 
     registro_tad * registroTad = new_registro_tad(timestamp, key, value);
 
-    t_list * list;
-
-    if(!dictionary_has_key(memtable, table)) {
-        list = list_create();
+    if(insertValue(table, registroTad)) {
+        if(socket != -1){
+            //TODO Serializar mensaje al socket
+        } else {
+            print_console((void*) log_info, "Se realizo el Insert correctamente \n");
+        };
     } else {
-        list = dictionary_get(memtable, table);
+        print_console((void*) log_info, "Hubo un problema al realizar el instert \n");
     }
 
-    list_add(list, registroTad);
-    dictionary_put(memtable, table, list);
-
-    if(socket != -1){
-        //TODO Serializar mensaje al socket
-    }else{
-        print_console((void*) log_info, "Se realizo el Insert correctamente\n");
-
-    };
 }
 
 void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int socket) {
-    print_console((void*) log_info, "Se ejecuta el comando create\n");
+    print_console((void*) log_info, "Se ejecuta el comando create \n");
 
     int particiones = atoi(cantidad_particiones);
 

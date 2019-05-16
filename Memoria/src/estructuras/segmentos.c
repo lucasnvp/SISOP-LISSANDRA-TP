@@ -9,7 +9,7 @@
 
 tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento;
-    _TablaDeSegmento = tablaDeSegmentos;
+    _TablaDeSegmento = primerRegistroDeSegmentos;
 
     struct tablaDeSegmentos* ultimo = NULL;
 
@@ -17,7 +17,7 @@ tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
         if(_TablaDeSegmento->registro.nombreTabla == nombreDeTabla){
             return _TablaDeSegmento;
         }
-        _TablaDeSegmento = _TablaDeSegmento->siguiente
+        _TablaDeSegmento = _TablaDeSegmento->siguiente;
     }
 
     return NULL;
@@ -25,7 +25,7 @@ tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
 
 tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento;
-    _TablaDeSegmento = tablaDeSegmentos;
+    _TablaDeSegmento = primerRegistroDeSegmentos;
     struct tablaDeSegmentos* ultimo = NULL;
 
     struct tablaDeSegmentos* nuevoRegistroSegmento = malloc(sizeof(tablaDeSegmentos));
@@ -36,11 +36,14 @@ tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     }
 
     if(ultimo==NULL){ //por si aun no fue creado ningur registro de segmento
-        tablaDeSegmentos = nuevoRegistroSegmento;
+        primerRegistroDeSegmentos = nuevoRegistroSegmento;
+        nuevoRegistroSegmento->registro.idSegmento = 1;
+
     } else {
         ultimo->siguiente = nuevoRegistroSegmento;
+        nuevoRegistroSegmento->registro.idSegmento = ultimo->registro.idSegmento + 1;
+
     }
-    nuevoRegistroSegmento->registro.idSegmento = ultimo->registro.idSegmento + 1;
     nuevoRegistroSegmento->registro.nombreTabla = nombreDeTabla;
     nuevoRegistroSegmento->registro.siguienteRegistroSegmento = NULL;
 

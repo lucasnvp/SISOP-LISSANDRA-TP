@@ -15,7 +15,7 @@
 // Si todos los marcos se encuentran ocupados, se buscará una Página para Liberar
 
 registo_tad* reservarMarco() {
-    struct tablaDeMarcos* _tablaDeMarcos = tablaDeMarcos;
+    struct tablaDeMarcos* _tablaDeMarcos = primerMarco;
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
@@ -45,6 +45,7 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     struct tablaDePaginas *_TablaDePaginas;
     _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
 
+    struct tablaDePaginas* ultimaPagina = NULL;
 
     while (_TablaDePaginas != NULL) {
         //busco la pagina por la key
@@ -56,10 +57,28 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
                         new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
             }
         }
+        ultimaPagina = _TablaDePaginas;
         _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
     }
     //si no la encuentro la agrego junto a su registro de pagina
 
+    struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
+
+    if(ultimaPagina == NULL){//si es null no tenemos ninguna pagina en el registro
+        _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
+        nuevoRegistroPagina->registro.numeroPagina = 1;
+    } else {
+        ultimaPagina->siguienteRegistroPagina = nuevoRegistroPagina;
+        nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
+    }
+
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
+    nuevoRegistroPagina->registro.flagModificado = false;
+    nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
+
+    memcpy(nuevoRegistroPagina->registro.punteroAPagina,new_registro_tad(timestampActual,key,value),
+            sizeof(registo_tad));
+    return;
 }
 
 // Ocupa el marco de página
@@ -79,7 +98,7 @@ registo_tad* liberarPagina() {
 
 // Obtiene el registro más viejo de todos los segmentos disponibles en la memoria. En caso de no encontrar ninguno, ejecuta journal. //TODO: Journal
 tablaDePaginas* obtenerRegistroMasViejo() {
-    struct tablaDeSegmentos* _tablaDeSegmentos = tablaDeSegmentos;
+    struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
     // el registro más viejo, es el primero que encuentro
     tablaDePaginas* registroMasViejo = _tablaDeSegmentos->registro.tablaDePaginas;
     // en tanto tenga segmentos para iterar
@@ -107,7 +126,7 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
 
-    struct tablaDeSegmentos* _tablaDeSegmentos = tablaDeSegmentos;
+    struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
 
     // en tanto tenga segmentos disponibles
     while(_tablaDeSegmentos != NULL){

@@ -28,7 +28,6 @@
 typedef struct reg_segmento{
     uint32_t idSegmento;
     char* nombreTabla;
-    char* consistency;
     struct tablaDePaginas* tablaDePaginas;
     struct reg_segmento* siguienteRegistroSegmento;
 }reg_segmento;
@@ -40,7 +39,7 @@ typedef struct reg_segmento{
 typedef struct tablaDeSegmentos {
     reg_segmento registro;
     struct tablaDeSegmentos *siguiente;
-};
+}tablaDeSegmentos;
 
 uint32_t tamanoValue;
 uint32_t tiempoDump;
@@ -48,9 +47,9 @@ uint32_t cantDeMarcos;
 
 
 // Direccion de la tabla de segmentos
-struct tablaDeSegmentos* tablaDeSegmentos;
+struct tablaDeSegmentos* primerRegistroDeSegmentos;
 
-reg_segmento* buscarSegmento(char* nombreDeTabla);
+tablaDeSegmentos* buscarSegmento(char* nombreDeTabla);
 
 tablaDeSegmentos* agregarSegmento(char* nombreDeTabla);
 

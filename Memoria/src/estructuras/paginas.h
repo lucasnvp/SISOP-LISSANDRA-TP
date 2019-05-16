@@ -62,10 +62,10 @@ typedef struct reg_marco{
 typedef struct tablaDeMarcos {
     reg_marco registro;
     struct tablaDeMarcos *siguiente;
-};
+}tablaDeMarcos;
 
 //Direccion de la tabla de marcos
-struct tablaDeMarcos* tablaDeMarcos;
+struct tablaDeMarcos* primerMarco;
 
 
 // Dirección de la Memoria Principal

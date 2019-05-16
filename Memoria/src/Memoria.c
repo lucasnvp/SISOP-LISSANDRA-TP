@@ -25,7 +25,7 @@ int main(){
 
     // Inicializamos la tabla de segmentos
 
-    tablaDeSegmentos = NULL;
+    primerRegistroDeSegmentos = NULL;
 
 	//TODO Hilo de Gossiping
 

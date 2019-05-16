@@ -11,25 +11,6 @@
 
 
 
-// Reserva un marco para una Página marcándolo como ocupado y devuelve su dirección de memoria
-// Si todos los marcos se encuentran ocupados, se buscará una Página para Liberar
-
-registo_tad* reservarMarco() {
-    struct tablaDeMarcos* _tablaDeMarcos = primerMarco;
-    while(_tablaDeMarcos != NULL){
-        if(_tablaDeMarcos->registro.marcoOcupado == false) {
-            _tablaDeMarcos->registro.marcoOcupado = true;
-            return (registo_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * sizeof(registo_tad));
-        }
-
-
-        _tablaDeMarcos = _tablaDeMarcos->siguiente;
-    }
-    // si no se encontró ningun marco libre, se procede a liberar una página
-    return liberarPagina();
-}
-
-
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
@@ -81,10 +62,6 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     return;
 }
 
-// Ocupa el marco de página
-void ocuparPagina(registo_tad* punteroAPagina, uint32_t timestamp, uint32_t key, char* value ) {
-    punteroAPagina = new_registro_tad(timestamp, key, value);
-}
 
 /*** ---------JOURNAL------- ***/
 
@@ -125,7 +102,6 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 // Reenlaza los registros de páginas
 registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
-
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
 
     // en tanto tenga segmentos disponibles
@@ -135,8 +111,9 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
         if(registroMasViejo == pagina){
             *(_tablaDeSegmentos)->registro.tablaDePaginas = *(registroMasViejo)->siguienteRegistroPagina;
             registo_tad* aux = registroMasViejo->registro.punteroAPagina;
+            actualizarIdPaginas(registroMasViejo);
             free(registroMasViejo);
-            return registroMasViejo->registro.punteroAPagina;
+            return aux;
         }
         // en tanto tenga páginas disponibles
         while ( pagina != NULL){
@@ -144,8 +121,9 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
             if(registroMasViejo == pagina->siguienteRegistroPagina){
                 *(pagina)->siguienteRegistroPagina = *(registroMasViejo)->siguienteRegistroPagina;
                 registo_tad* aux = registroMasViejo->registro.punteroAPagina;
+                actualizarIdPaginas(registroMasViejo);
                 free(registroMasViejo);
-                return registroMasViejo->registro.punteroAPagina;
+                return aux;
             }
             pagina = pagina->siguienteRegistroPagina;
         }
@@ -153,5 +131,15 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
         _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
     }
 
+}
+
+void actualizarIdPaginas(tablaDePaginas* registroMasViejo){
+    tablaDePaginas* _TablaDePaginas = registroMasViejo;
+
+    while (_TablaDePaginas->siguienteRegistroPagina != NULL){
+        _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
+        _TablaDePaginas->registro.numeroPagina -= 1;
+    }
+    return;
 }
 

@@ -19,6 +19,7 @@
 #include "../config/Config_memoria.h"
 #include "../comandos/comandos.h"
 #include "segmentos.h"
+#include "marcos.h"
 
 
 
@@ -48,36 +49,15 @@ typedef struct tablaDePaginas {
     struct tablaDePaginas* siguienteRegistroPagina;
 }tablaDePaginas;
 
-
-// Estructura de la Tabla de Marcos;
-// --- contiene el número de marco, el cual es el mismo que el número de página dentro de la tabla;
-// --- el flag de marco ocupado
-// --- el puntero al siguiente marco
-
-typedef struct reg_marco{
-    uint32_t numeroMarco;
-    bool marcoOcupado;
-}reg_marco;
-
-typedef struct tablaDeMarcos {
-    reg_marco registro;
-    struct tablaDeMarcos *siguiente;
-}tablaDeMarcos;
-
-//Direccion de la tabla de marcos
-struct tablaDeMarcos* primerMarco;
-
-
 // Dirección de la Memoria Principal
 void* memoriaPrincipal;
 
 
-void ocuparPagina(registo_tad* punteroAPagina, uint32_t timestamp, uint32_t key, char* value );
 tablaDePaginas* obtenerRegistroMasViejo();
 registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
 registo_tad* liberarPagina();
+void actualizarIdPaginas(tablaDePaginas* registroEliminado);
 void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registo_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
-registo_tad* reservarMarco(); // reserva un marco
 
 
 #endif //TP_2019_1C_GANK_MID_PAGINAS_H

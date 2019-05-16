@@ -18,6 +18,7 @@
 #include "../config/Config_memoria.h"
 #include "../comandos/comandos.h"
 #include "paginas.h"
+#include "marcos.h"
 
 
 // Estructura del Registro de un Segmento;

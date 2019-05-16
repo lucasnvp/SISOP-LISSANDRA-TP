@@ -11,8 +11,6 @@ tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento;
     _TablaDeSegmento = primerRegistroDeSegmentos;
 
-    struct tablaDeSegmentos* ultimo = NULL;
-
     while(_TablaDeSegmento != NULL){
         if(_TablaDeSegmento->registro.nombreTabla == nombreDeTabla){
             return _TablaDeSegmento;

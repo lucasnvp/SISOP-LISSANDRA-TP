@@ -19,6 +19,7 @@
 #include "comandos/comandos.h"
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
+#include "estructuras/marcos.h"
 
 #define NUEVA_CONEXION  1
 #define COMAND_SELECT   100

@@ -5,7 +5,7 @@
 #include "segmentos.h"
 
 //busca en los segmentos, si lo encuentra lo retorna,
-// si no lo encuentra lo crea
+// si no lo encuentra, lo crea
 
 tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento;
@@ -21,23 +21,24 @@ tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
     return NULL;
 }
 
+// Agrega un segmento a la tabla de segmentos
 tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento;
     _TablaDeSegmento = primerRegistroDeSegmentos;
     struct tablaDeSegmentos* ultimo = NULL;
 
     struct tablaDeSegmentos* nuevoRegistroSegmento = malloc(sizeof(tablaDeSegmentos));
-
+    // en tanto la tabla de segmentos no sea nula, itero
     while(_TablaDeSegmento != NULL){
         ultimo = _TablaDeSegmento;
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
     }
 
-    if(ultimo==NULL){ //por si aun no fue creado ningur registro de segmento
+    if(ultimo==NULL){ //por si aun no fue creado ningún registro de segmento, lo asigno y le coloco su ID
         primerRegistroDeSegmentos = nuevoRegistroSegmento;
         nuevoRegistroSegmento->registro.idSegmento = 1;
 
-    } else {
+    } else { // en caso de que ya haya registros de segmento, lo asigno y le coloco su ID
         ultimo->siguiente = nuevoRegistroSegmento;
         nuevoRegistroSegmento->registro.idSegmento = ultimo->registro.idSegmento + 1;
 

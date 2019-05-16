@@ -16,7 +16,7 @@
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     struct tablaDeSegmentos *_TablaDeSegmento;
     _TablaDeSegmento = buscarSegmento(nombreDeTabla);
-
+    // si la tabla de segmentos es nula, lo agrego
     if (_TablaDeSegmento == NULL) {
         _TablaDeSegmento = agregarSegmento(nombreDeTabla);
     }
@@ -28,6 +28,7 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
 
     struct tablaDePaginas* ultimaPagina = NULL;
 
+    // en tanto mi tabla de páginas no sea nula
     while (_TablaDePaginas != NULL) {
         //busco la pagina por la key
         if (_TablaDePaginas->registro.punteroAPagina->key == key) {
@@ -62,12 +63,8 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     return;
 }
 
-
-/*** ---------JOURNAL------- ***/
-
-// obtiene el registro más viejo y reenlaza la lista
+// Obtiene el registro más viejo y reenlaza la lista (libera la página)
 registo_tad* liberarPagina() {
-
     tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
     return reenlazarRegistros(registroMasViejo);
 
@@ -133,9 +130,12 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
 }
 
+// Actualiza los ID de las páginas ante una liberación de un registro de página
+// --- a partir del registro más viejo encontrado, el cual será removido
 void actualizarIdPaginas(tablaDePaginas* registroMasViejo){
     tablaDePaginas* _TablaDePaginas = registroMasViejo;
-
+    // itero en tanto tenga un registro pŕoximo
+    // decremento el número de página en 1
     while (_TablaDePaginas->siguienteRegistroPagina != NULL){
         _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
         _TablaDePaginas->registro.numeroPagina -= 1;

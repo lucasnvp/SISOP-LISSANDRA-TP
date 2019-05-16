@@ -37,7 +37,10 @@ typedef struct tablaDeMarcos {
 
 //Direccion de la tabla de marcos
 struct tablaDeMarcos* primerMarco;
+__uint32_t cantidadDeMarcos;
+
 
 registo_tad* reservarMarco(); // reserva un marco
+void inicializarMarcos(__uint32_t tamanioMemoria);
 
 #endif //TP_2019_1C_GANK_MID_MARCOS_H

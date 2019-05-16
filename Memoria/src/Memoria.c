@@ -71,7 +71,8 @@ void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
 registo_tad* alocar_MemoriaPrincipal() {
     registo_tad* aux = malloc(config.TAM_MEM);
     log_info(log_Memoria, "Se ha alocado la memoria principal");
-
+    inicializarMarcos(config.TAM_MEM);
+    log_info(log_Memoria, "Se han inicializado los marcos");
     return aux;
 }
 
@@ -244,8 +245,12 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
-                if (comandos->cantArgs == 0) {
-                    comando_insert();
+                if (comandos->cantArgs == 3) {
+                    puts("Reconoci el comando");
+                    puts(comandos->arg[0]);
+                    puts(comandos->arg[1]);
+                    puts(comandos->arg[2]);
+                    comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

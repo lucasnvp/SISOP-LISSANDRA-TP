@@ -13,8 +13,11 @@ void comando_select(){
     print_console((void*) log_info, "Comando select");
 }
 
-void comando_insert(){
+void comando_insert(char* nombreDeTabla, char* key, char* value){
+    puts("Estoy en comando_insert\n");
     print_console((void*) log_info, "Comando insert");
+    funcionInsert(nombreDeTabla, key, value);
+
 }
 
 void comando_create(){

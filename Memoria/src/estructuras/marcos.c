@@ -21,3 +21,21 @@ registo_tad* reservarMarco() {
     // si no se encontró ningun marco libre, se procede a liberar una página
     return liberarPagina();
 }
+
+void inicializarMarcos(uint32_t tamanioMemoria){
+    cantidadDeMarcos = tamanioMemoria / sizeof(registo_tad);
+    struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
+    primerRegistroDeMarco->registro.numeroMarco = 0;
+    primerRegistroDeMarco->registro.marcoOcupado = false;
+    primerMarco = primerRegistroDeMarco;
+    struct tablaDeMarcos* aux = primerRegistroDeMarco;
+    for(int index = 1; index < cantidadDeMarcos; index++){
+        struct tablaDeMarcos* registroDeMarco = malloc(sizeof(tablaDePaginas));
+        registroDeMarco->registro.numeroMarco = index;
+        registroDeMarco->registro.marcoOcupado = false;
+        aux->siguiente = registroDeMarco;
+        aux = registroDeMarco;
+    }
+    aux->siguiente = NULL;
+    return;
+}

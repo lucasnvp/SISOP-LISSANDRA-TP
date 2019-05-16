@@ -14,28 +14,40 @@
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
+    puts("estoy en funcion insert");
+    printf("nombreTabla >> %s \n", nombreDeTabla);
+    puts(key);
+    printf("value       >> %s \n", value);
     struct tablaDeSegmentos *_TablaDeSegmento;
     _TablaDeSegmento = buscarSegmento(nombreDeTabla);
-
+    puts("buscarSegmento terminada");
     if (_TablaDeSegmento == NULL) {
         _TablaDeSegmento = agregarSegmento(nombreDeTabla);
+        puts("volvi de agregar segmento");
     }
 
-    __uint32_t timestampActual = time(NULL);
-
+    uint32_t timestampActual = time(NULL);
     struct tablaDePaginas *_TablaDePaginas;
     _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
-
     struct tablaDePaginas* ultimaPagina = NULL;
 
     while (_TablaDePaginas != NULL) {
+        puts("entre al while");
+        printf("key punteroAPagina \n \n \n");
+        puts(_TablaDePaginas->registro.punteroAPagina->key);
         //busco la pagina por la key
         if (_TablaDePaginas->registro.punteroAPagina->key == key) {
+            printf("encontre la key %d", key);
+            printf("ts almacenado // fuera if %d", _TablaDePaginas->registro.punteroAPagina->timestamp);
             //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
             if (_TablaDePaginas->registro.punteroAPagina->timestamp > timestampActual) {
+                printf("ts actual // dentro if %d", timestampActual);
+                printf("ts almacenado // dentro if %d", _TablaDePaginas->registro.punteroAPagina->timestamp);
+                printf("actualice la key %d", key);
                 _TablaDePaginas->registro.flagModificado = true;
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                         new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
+                return;
             }
         }
         ultimaPagina = _TablaDePaginas;
@@ -59,6 +71,9 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
 
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,new_registro_tad(timestampActual,key,value),
             sizeof(registo_tad));
+
+    printf("valores registro a insertar \n");
+    printf("la key es %i", nuevoRegistroPagina->registro.punteroAPagina->key);
     return;
 }
 

@@ -16,7 +16,7 @@ void comando_select(){
 void comando_insert(char* nombreDeTabla, char* key, char* value){
     puts("Estoy en comando_insert\n");
     print_console((void*) log_info, "Comando insert");
-    funcionInsert(nombreDeTabla, key, value);
+    funcionInsert(nombreDeTabla, atoi(key), value);
 
 }
 

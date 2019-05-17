@@ -14,7 +14,8 @@
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
-    puts("estoy en funcion insert");
+    printf("estoy en funcion insert");
+    puts(key);
     printf("nombreTabla >> %s \n", nombreDeTabla);
     puts(key);
     printf("value       >> %s \n", value);
@@ -23,7 +24,7 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     puts("buscarSegmento terminada");
     if (_TablaDeSegmento == NULL) {
         _TablaDeSegmento = agregarSegmento(nombreDeTabla);
-        puts("volvi de agregar segmento");
+        printf("\nvolvi de agregar segmento\n");
     }
 
     uint32_t timestampActual = time(NULL);
@@ -59,7 +60,7 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
 
     if(ultimaPagina == NULL){//si es null no tenemos ninguna pagina en el registro
         _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
-        nuevoRegistroPagina->registro.numeroPagina = 1;
+        nuevoRegistroPagina->registro.numeroPagina = (uint32_t) 1;
     } else {
         ultimaPagina->siguienteRegistroPagina = nuevoRegistroPagina;
         nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
@@ -72,8 +73,9 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,new_registro_tad(timestampActual,key,value),
             sizeof(registo_tad));
 
-    printf("valores registro a insertar \n");
-    printf("la key es %i", nuevoRegistroPagina->registro.punteroAPagina->key);
+    printf("valores registro de pagina insertado \n");
+    printf("la key es ");
+    puts( nuevoRegistroPagina->registro.punteroAPagina->key);
     return;
 }
 

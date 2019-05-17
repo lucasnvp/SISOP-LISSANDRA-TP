@@ -39,7 +39,7 @@ tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     }
 
     if(ultimo==NULL){ //por si aun no fue creado ningur registro de segmento
-        printf("no hay registro de segmento \n");
+        printf("no hay primer registro de segmento \n");
         primerRegistroDeSegmentos = nuevoRegistroSegmento;
         nuevoRegistroSegmento->registro.idSegmento = (uint32_t) 1;
         printf("agregue el registro \n");

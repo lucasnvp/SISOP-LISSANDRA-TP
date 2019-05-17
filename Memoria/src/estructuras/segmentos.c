@@ -5,7 +5,7 @@
 #include "segmentos.h"
 
 //busca en los segmentos, si lo encuentra lo retorna,
-// si no lo encuentra lo crea
+// si no lo encuentra, lo crea
 
 tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
     printf("estoy dentro de buscar segmento \n");
@@ -24,6 +24,7 @@ tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
     return NULL;
 }
 
+// Agrega un segmento a la tabla de segmentos
 tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     printf("estoy dentro de agregar segmento \n");
     struct tablaDeSegmentos* _TablaDeSegmento;
@@ -31,7 +32,7 @@ tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* ultimo = NULL;
 
     struct tablaDeSegmentos* nuevoRegistroSegmento = malloc(sizeof(tablaDeSegmentos));
-
+    // en tanto la tabla de segmentos no sea nula, itero
     while(_TablaDeSegmento != NULL){
         printf("busco el ultimo segmento \n");
         ultimo = _TablaDeSegmento;

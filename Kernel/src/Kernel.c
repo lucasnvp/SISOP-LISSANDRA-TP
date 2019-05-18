@@ -36,9 +36,6 @@ int main(){
     // Hilo de metricas
 //    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
-    // Hilo de ejecucion
-    pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
-
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");
 
@@ -303,7 +300,7 @@ void planificador(){
         pthread_create(&thread_exec, NULL, (void*) execute, "Ejecutar");
 
         // Espero que finalice el hilo de ejecucion
-        pthread_join(thread_exec, (void**) NULL);
+        pthread_detach(thread_exec);
     }
 }
 

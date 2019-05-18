@@ -13,6 +13,8 @@
 #include "stdlib.h"
 #include "string.h"
 #include "../utils/memtableHanlder.h"
+#include "commons/collections/dictionary.h"
+#include "commons/collections/list.h"
 
 t_log* log_FileSystem;
 
@@ -23,5 +25,6 @@ void comando_create(char* _table, char* consistencia, char* cantidad_particiones
 void comando_describe_all(int socket);
 void comando_describe(char* nombre_tabla,int socket);
 void comando_drop(char* nombre_tabla,int socket);
+void comando_dump();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

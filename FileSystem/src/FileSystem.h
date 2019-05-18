@@ -20,6 +20,7 @@
 #include "comandos/comandos.h"
 #include "commons/collections/dictionary.h"
 #include "utils/utils.h"
+#include "utils/memtableHanlder.h"
 
 #define NUEVA_CONEXION  1
 #define INSERT          2

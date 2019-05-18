@@ -4,6 +4,7 @@
 
 #include "FileSystem.h"
 #include "setup/setup.h"
+#include <commons/config.h>
 
 int main(){
     system("clear"); /* limpia la pantalla al empezar */
@@ -247,6 +248,13 @@ void consola() {
                 } else {
                     print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
+            }
+
+            else if (!strcmp(comandos->comando, "DUMP")) {
+                if (comandos->cantArgs == 0) {
+                    comando_dump();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else print_console((void*) log_error, "Comando incorrecto.\n");

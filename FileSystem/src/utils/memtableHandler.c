@@ -56,3 +56,18 @@ bool insertValue(char* table, registro_tad* registroTad) {
 
     return true;
 }
+
+t_list* getListOfReg(char* table){
+
+    if(containsTable(table)){
+
+        printf("Se encontro la tabla %s en la memtable\n", table);
+
+        t_list * registros = list_create();
+        registros = dictionary_get(memtable,table);
+
+        return registros;
+    }
+
+    return NULL;
+}

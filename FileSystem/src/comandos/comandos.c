@@ -169,7 +169,10 @@ void comando_drop(char* table, int socket){
 }
 
 void comando_dump(){
-    /*Busco las tablas que se encuentran creadas y las guardo en una estructura temporal*/
+    /*Tomo las tablas que se encuentran creadas y las busco en la memtable*/
+
+    t_list * listaDeRegistros = list_create();
+
     DIR *directorioMontaje = opendir(montajeTablas);
 
     if (directorioMontaje) {
@@ -183,24 +186,29 @@ void comando_dump(){
                 continue;
             }
 
-            t_list * tablas = list_create();
+            /*Me traigo la lista de registros de la tabla que esta en la memtable*/
+            listaDeRegistros = getListOfReg(p->d_name);
 
-            list_add(tablas,p->d_name);
+            if(listaDeRegistros != NULL){
+                registro_tad * reg = list_get(listaDeRegistros,0);
+                printf("%s\n",reg->value);
+                printf("%d\n",reg->key);
+            }
 
 
+            /*Buscando en la memtable con la tabla*/
+            /*TODO
+             * 1. Recorro la lista. Por cada posicion de la lista busco en la Memtable. Si lo encuentra, se trae la lista de instrucciones
+             * 2. Accedo a la tabla
+             * 3. Creo un .tmp
+             * 4. Escribo el .tpm con los registros obtenidos.
+             * 5. Elimino el registro de la memtable.
+                */
 
 
         }
 
         closedir(directorioMontaje);
     }
-
-    /*TODO
-     * 1. Obtener las tablas que existen en el FS - Ok
-     * 2. Buscar en Memtable si tiene registros.
-     * 3. Por cada registro crear un TMP en la tabla correspondiente
-     * 4. Insertar en el TMP creado los registros.
-     * 5. Limpiar la Memtable
-     * */
 
 }

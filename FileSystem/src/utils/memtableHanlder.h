@@ -20,6 +20,7 @@ t_dictionary * memtable;
 bool containsTable(char *nameKey);
 char* getValue(char* table, int key);
 bool insertValue(char* table, registro_tad* registroTad);
+t_list* getListOfReg(char* table);
 
 
 #endif //TP_2019_1C_GANK_MID_MEMTABLEHANLDER_H

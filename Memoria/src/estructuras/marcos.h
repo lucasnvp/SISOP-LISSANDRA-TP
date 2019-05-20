@@ -36,7 +36,7 @@ typedef struct tablaDeMarcos {
 }tablaDeMarcos;
 
 //Direccion de la tabla de marcos
-struct tablaDeMarcos* primerMarco;
+struct tablaDeMarcos* primerRegistroDeMarcos;
 __uint32_t cantidadDeMarcos;
 
 

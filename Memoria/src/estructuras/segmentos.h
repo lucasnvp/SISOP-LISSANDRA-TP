@@ -39,7 +39,7 @@ typedef struct reg_segmento{
 
 typedef struct tablaDeSegmentos {
     reg_segmento registro;
-    struct tablaDeSegmentos *siguiente;
+    struct tablaDeSegmentos* siguiente;
 }tablaDeSegmentos;
 
 uint32_t tamanoValue;

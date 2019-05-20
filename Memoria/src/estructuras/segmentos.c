@@ -8,25 +8,20 @@
 // si no lo encuentra, lo crea
 
 tablaDeSegmentos* buscarSegmento(char* nombreDeTabla){
-    printf("estoy dentro de buscar segmento \n");
     struct tablaDeSegmentos* _TablaDeSegmento;
     _TablaDeSegmento = primerRegistroDeSegmentos;
 
     while(_TablaDeSegmento != NULL){
-        printf("tabla de segmento NO es null \n");
         if(_TablaDeSegmento->registro.nombreTabla == nombreDeTabla){
-            printf("encontre la tabla \n");
             return _TablaDeSegmento;
         }
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
     }
-    printf("no encontre la tabla \n");
     return NULL;
 }
 
 // Agrega un segmento a la tabla de segmentos
 tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
-    printf("estoy dentro de agregar segmento \n");
     struct tablaDeSegmentos* _TablaDeSegmento;
     _TablaDeSegmento = primerRegistroDeSegmentos;
     struct tablaDeSegmentos* ultimo = NULL;
@@ -34,25 +29,19 @@ tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
     struct tablaDeSegmentos* nuevoRegistroSegmento = malloc(sizeof(tablaDeSegmentos));
     // en tanto la tabla de segmentos no sea nula, itero
     while(_TablaDeSegmento != NULL){
-        printf("busco el ultimo segmento \n");
         ultimo = _TablaDeSegmento;
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
     }
 
     if(ultimo==NULL){ //por si aun no fue creado ningur registro de segmento
-        printf("no hay primer registro de segmento \n");
         primerRegistroDeSegmentos = nuevoRegistroSegmento;
         nuevoRegistroSegmento->registro.idSegmento = (uint32_t) 1;
-        printf("agregue el registro \n");
-        printf("%d", nuevoRegistroSegmento->registro.idSegmento);
     } else {
-        printf("hay un ultimo registro de segmento \n");
         ultimo->siguiente = nuevoRegistroSegmento;
         nuevoRegistroSegmento->registro.idSegmento = ultimo->registro.idSegmento + 1;
-        printf("agregue el registro \n");
-        puts(nuevoRegistroSegmento->registro.idSegmento);
 
     }
+    nuevoRegistroSegmento->siguiente = NULL;
     nuevoRegistroSegmento->registro.nombreTabla = nombreDeTabla;
     nuevoRegistroSegmento->registro.tablaDePaginas = NULL;
     nuevoRegistroSegmento->registro.siguienteRegistroSegmento = NULL;

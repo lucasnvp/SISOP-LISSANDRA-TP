@@ -8,7 +8,7 @@
 // Si todos los marcos se encuentran ocupados, se buscará una Página para Liberar
 
 registo_tad* reservarMarco() {
-    struct tablaDeMarcos* _tablaDeMarcos = primerMarco;
+    struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
@@ -27,7 +27,7 @@ void inicializarMarcos(uint32_t tamanioMemoria){
     struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
     primerRegistroDeMarco->registro.numeroMarco = 0;
     primerRegistroDeMarco->registro.marcoOcupado = false;
-    primerMarco = primerRegistroDeMarco;
+    primerRegistroDeMarcos = primerRegistroDeMarco;
     struct tablaDeMarcos* aux = primerRegistroDeMarco;
     for(int index = 1; index < cantidadDeMarcos; index++){
         struct tablaDeMarcos* registroDeMarco = malloc(sizeof(tablaDePaginas));

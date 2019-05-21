@@ -9,7 +9,22 @@
 
 // REGISTROS DE PÁGINAS
 
-
+char* funcionSelect(char* nombreDeTabla, uint32_t key){
+    struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
+    struct tablaDePaginas* _TablaDePaginas = NULL;
+    if (_TablaDeSegmento != NULL){
+        _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
+        while(_TablaDePaginas != NULL){
+            if(_TablaDePaginas->registro.punteroAPagina->key == key){
+                puts(_TablaDePaginas->registro.punteroAPagina->value);
+                return _TablaDePaginas->registro.punteroAPagina->value;
+            }
+            _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
+        }
+        // En este punto se encuentra la tabla de segmentos pero no la key en sus paginas
+    }
+    //solicitar al file
+}
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página

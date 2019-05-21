@@ -238,8 +238,11 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "select")) {
-                if (comandos->cantArgs == 0) {
-                    comando_select();
+                if (comandos->cantArgs == 2) {
+                    puts("Reconoci el comando");
+                    puts(comandos->arg[0]);
+                    puts(comandos->arg[1]);
+                    comando_select(comandos->arg[0],comandos->arg[1]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

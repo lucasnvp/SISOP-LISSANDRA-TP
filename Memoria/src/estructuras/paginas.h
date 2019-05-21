@@ -51,7 +51,7 @@ typedef struct tablaDePaginas {
 
 // Dirección de la Memoria Principal
 void* memoriaPrincipal;
-
+char* funcionSelect(char* nombreDeTabla, uint32_t key);
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
 tablaDePaginas* obtenerRegistroMasViejo();
 registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);

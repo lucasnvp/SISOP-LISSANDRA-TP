@@ -30,7 +30,6 @@ typedef struct reg_segmento{
     uint32_t idSegmento;
     char* nombreTabla;
     struct tablaDePaginas* tablaDePaginas;
-    struct reg_segmento* siguienteRegistroSegmento;
 }reg_segmento;
 
 // Estructura de la Tabla de Segmentos;

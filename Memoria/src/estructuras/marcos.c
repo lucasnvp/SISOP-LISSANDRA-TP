@@ -30,7 +30,7 @@ void inicializarMarcos(uint32_t tamanioMemoria){
     primerRegistroDeMarcos = primerRegistroDeMarco;
     struct tablaDeMarcos* aux = primerRegistroDeMarco;
     for(int index = 1; index < cantidadDeMarcos; index++){
-        struct tablaDeMarcos* registroDeMarco = malloc(sizeof(tablaDePaginas));
+        struct tablaDeMarcos* registroDeMarco = malloc(sizeof(tablaDeMarcos));
         registroDeMarco->registro.numeroMarco = index;
         registroDeMarco->registro.marcoOcupado = false;
         aux->siguiente = registroDeMarco;

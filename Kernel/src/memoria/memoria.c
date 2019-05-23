@@ -7,8 +7,7 @@
 
 void init_memories (Type_Config* config) {
     LIST_MEMORIES = list_create();
-    memory_tad* memory = memory_new(1, config->IP_MEMORIA, config->PUERTO_MEMORIA);
-    list_add(LIST_MEMORIES, memory);
+    add_memory(1, config->IP_MEMORIA, config->PUERTO_MEMORIA);
 };
 
 memory_tad* memory_new (uint32_t number, char* ip, uint32_t port) {
@@ -18,6 +17,11 @@ memory_tad* memory_new (uint32_t number, char* ip, uint32_t port) {
     auxMemory->PUERTO_MEMORIA = port;
     auxMemory->ACTIVA = true;
     return auxMemory;
+}
+
+void add_memory (uint32_t number, char* ip, uint32_t port) {
+    memory_tad* auxMemory = memory_new(number, ip, port);
+    list_add(LIST_MEMORIES, auxMemory);
 }
 
 memory_tad* search_memory(uint32_t number){

@@ -25,6 +25,7 @@ t_list * LIST_MEMORIES;
 
 void init_memories(Type_Config* config);
 memory_tad* memory_new(uint32_t number, char* ip, uint32_t port);
+void add_memory(uint32_t number, char* ip, uint32_t port);
 memory_tad* search_memory(uint32_t number);
 bool exist_memory(uint32_t number);
 void disable_memory(memory_tad* auxMemory);

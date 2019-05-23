@@ -16,6 +16,9 @@ int inicializar();
 int limpiar();
 
 void test_memoria_existe_and_activa();
+void test_memoria_existe_and_desactivada ();
 void test_memoria_no_existe();
+void test_search_memory();
+void test_disable_memory();
 
 #endif //TP_2019_1C_GANK_MID_TEST_MEMORIA_H

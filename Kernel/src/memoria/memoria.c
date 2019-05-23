@@ -20,17 +20,26 @@ memory_tad* memory_new (uint32_t number, char* ip, uint32_t port) {
     return auxMemory;
 }
 
-bool exist_memory (uint32_t number) {
+memory_tad* search_memory(uint32_t number){
     int _is_the_memory(memory_tad* m){
         return m->MEMORY_NUMBER = number;
     }
 
     memory_tad* auxMemory = list_find(LIST_MEMORIES, (void*) _is_the_memory);
 
-    if (auxMemory == NULL) {
+    return auxMemory;
+}
+
+bool exist_memory (uint32_t number) {
+    memory_tad* auxMemory = search_memory(number);
+
+    if (auxMemory == NULL || auxMemory->ACTIVA == false) {
         return false;
     } else {
         return true;
     }
+}
 
+void disable_memory(memory_tad* auxMemory){
+    auxMemory->ACTIVA = false;
 }

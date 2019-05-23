@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <unistd.h>
 
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"

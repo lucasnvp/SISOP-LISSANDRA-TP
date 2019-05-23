@@ -41,7 +41,6 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     struct tablaDePaginas *_TablaDePaginas;
     _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
 
-    struct tablaDePaginas* ultimaPagina = NULL;
 
     // en tanto mi tabla de páginas no sea nula
     while (_TablaDePaginas != NULL) {
@@ -55,12 +54,22 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
                 return;
             }
         }
-        ultimaPagina = _TablaDePaginas;
         _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
     }
     //si no la encuentro la agrego junto a su registro de pagina
-
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
+
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
+    nuevoRegistroPagina->siguienteRegistroPagina = NULL;
+    nuevoRegistroPagina->registro.flagModificado = false;
+    nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
+
+    struct tablaDePaginas* ultimaPagina = NULL;
+    _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
+    while(_TablaDePaginas != NULL){
+        ultimaPagina = _TablaDePaginas;
+        _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
+    }
 
     if(ultimaPagina == NULL){//si es null no tenemos ninguna pagina en el registro
         _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
@@ -69,11 +78,6 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
         ultimaPagina->siguienteRegistroPagina = nuevoRegistroPagina;
         nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
     }
-
-    nuevoRegistroPagina->siguienteRegistroPagina = NULL;
-    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
-    nuevoRegistroPagina->registro.flagModificado = false;
-    nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
 
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,new_registro_tad(timestampActual,key,value),
             sizeof(registo_tad));
@@ -92,14 +96,31 @@ registo_tad* liberarPagina() {
 tablaDePaginas* obtenerRegistroMasViejo() {
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
     // el registro más viejo, es el primero que encuentro
-    tablaDePaginas* registroMasViejo = _tablaDeSegmentos->registro.tablaDePaginas;
+    tablaDePaginas* registroMasViejo = NULL;
+    bool flagJournal = true;
+    //busco el primer registro de pagina modificable
+
+    while(flagJournal && _tablaDeSegmentos != NULL){
+        tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
+        while(pagina != NULL){
+            if (!pagina->registro.flagModificado){
+                flagJournal = false;
+                registroMasViejo = pagina;
+            }
+            pagina = pagina->siguienteRegistroPagina;
+        }
+        _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
+    }
+
+    _tablaDeSegmentos = primerRegistroDeSegmentos;
+
     // en tanto tenga segmentos para iterar
     while( _tablaDeSegmentos != NULL ){
         tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
         // en tanto tenga páginas dentro de mi segmento
         while ( pagina != NULL){
             // compruebo si el último acceso es menor que el registroMasViejo, y de ser así, compruebo si la página contiene el flag de modificado en false
-            if (pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso & !pagina->registro.flagModificado){
+            if (pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso && !pagina->registro.flagModificado){
                 registroMasViejo = pagina;
             }
             pagina = pagina->siguienteRegistroPagina;
@@ -108,10 +129,13 @@ tablaDePaginas* obtenerRegistroMasViejo() {
     }
 
     // en este punto no hay ninguna página en ningún segmento que tenga el flag de modificado activado; entonces compruebo el registro más viejo
-    if(registroMasViejo == _tablaDeSegmentos->registro.tablaDePaginas & registroMasViejo->registro.flagModificado) {
+    if(flagJournal) {
         //ejecutar journal
+        puts("deberia haber un journal paisa");
     }
     return registroMasViejo;
+
+
 }
 
 // Reenlaza los registros de páginas
@@ -124,7 +148,7 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
         tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
         // si el registro más viejo es la página del segmento, enlazo en la lista
         if(registroMasViejo == pagina){
-            *(_tablaDeSegmentos)->registro.tablaDePaginas = *(registroMasViejo)->siguienteRegistroPagina;
+            _tablaDeSegmentos->registro.tablaDePaginas = registroMasViejo->siguienteRegistroPagina;
             registo_tad* aux = registroMasViejo->registro.punteroAPagina;
             actualizarIdPaginas(registroMasViejo);
             free(registroMasViejo);
@@ -134,7 +158,7 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
         while ( pagina != NULL){
             // si el registro más viejo es la página siguiente, enlazo en la lista
             if(registroMasViejo == pagina->siguienteRegistroPagina){
-                *(pagina)->siguienteRegistroPagina = *(registroMasViejo)->siguienteRegistroPagina;
+                pagina->siguienteRegistroPagina = registroMasViejo->siguienteRegistroPagina;
                 registo_tad* aux = registroMasViejo->registro.punteroAPagina;
                 actualizarIdPaginas(registroMasViejo);
                 free(registroMasViejo);

@@ -8,6 +8,7 @@ void agregar_tests_criterio() {
     CU_pSuite criterio = CU_add_suite("Criterio", inicializar_criterio, limpiar_criterio);
     CU_add_test(criterio, "test_criterio_sc", test_criterio_sc);
     CU_add_test(criterio, "test_criterio_invalido", test_criterio_invalido);
+    CU_add_test(criterio, "test_criterio_valido_and_memory_not_exists", test_criterio_valido_and_memory_not_exists);
 }
 
 int inicializar_criterio () {
@@ -30,5 +31,12 @@ void test_criterio_invalido () {
     inicializar_criterio();
 
     bool valido = criterio_add(1,"ASD");
+    CU_ASSERT_FALSE(valido);
+}
+
+void test_criterio_valido_and_memory_not_exists () {
+    inicializar_criterio();
+
+    bool valido = criterio_add(2,"SC");
     CU_ASSERT_FALSE(valido);
 }

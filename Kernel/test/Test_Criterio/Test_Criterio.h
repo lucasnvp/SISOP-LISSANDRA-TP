@@ -17,5 +17,6 @@ int limpiar_criterio();
 
 void test_criterio_sc();
 void test_criterio_invalido();
+void test_criterio_valido_and_memory_not_exists();
 
 #endif //TP_2019_1C_GANK_MID_TEST_CRITERIO_H

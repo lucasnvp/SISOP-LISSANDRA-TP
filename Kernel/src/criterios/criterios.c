@@ -20,11 +20,11 @@ bool criterio_add (uint32_t memoryNumber, char* criterio) {
     bool allow = false;
 
     if(string_equals_ignore_case(criterio, CRITERIO_SC)){
-        allow = true;
+        allow = exist_memory(memoryNumber);
     } else if(string_equals_ignore_case(criterio, CRITERIO_SHC)){
-        allow = true;
+        allow = exist_memory(memoryNumber);
     } else if(string_equals_ignore_case(criterio, CRITERIO_EC)){
-        allow = true;
+        allow = exist_memory(memoryNumber);
     } else {
         return allow;
     }

@@ -13,6 +13,8 @@
 #include <commons/collections/list.h>
 #include <commons/string.h>
 
+#include "../memoria/memoria.h"
+
 #define CRITERIO_SC "SC"
 #define CRITERIO_SHC "SHC"
 #define CRITERIO_EC "EC"

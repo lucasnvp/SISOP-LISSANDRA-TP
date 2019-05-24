@@ -58,10 +58,6 @@ int main(){
  */
 
 
-
-
-/*** --------------- INSERT --------------- ***/
-
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);
     tiempoDump = deserializar_int(servidorFileSystem);

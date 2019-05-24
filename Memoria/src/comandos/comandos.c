@@ -16,13 +16,16 @@ void comando_select(char* nombreDeTabla, char* key){
 }
 
 void comando_insert(char* nombreDeTabla, char* key, char* value){
-    print_console((void*) log_info, "Comando insert");
-    //funcionInsert(nombreDeTabla, atoi(key), value);
-    for(uint32_t index = 0; index < atoi(key); index++){ //este for es pa testeo
-        funcionInsert(nombreDeTabla, index , value);
-    sleep(1);
+    if(strlen(value) > tamanoValue) {
+        print_console((void*) log_error, "El value excede el tamaño máximo.");
+    } else {
+        print_console((void *) log_info, "Comando insert");
+        //funcionInsert(nombreDeTabla, atoi(key), value);
+        for (uint32_t index = 0; index < atoi(key); index++) { //este for es pa testeo
+            funcionInsert(nombreDeTabla, index, value);
+            sleep(1);
+        }
     }
-
 }
 
 void comando_create(){
@@ -36,3 +39,4 @@ void comando_describe(){
 void comando_drop(){
     print_console((void*) log_info, "Comando drop");
 }
+

@@ -12,7 +12,7 @@ registo_tad* reservarMarco() {
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
-            return (registo_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * sizeof(registo_tad));
+            return (registo_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue + 1));
         }
 
 
@@ -23,12 +23,15 @@ registo_tad* reservarMarco() {
 }
 
 void inicializarMarcos(uint32_t tamanioMemoria){
-    cantidadDeMarcos = tamanioMemoria / sizeof(registo_tad);
+    // la key del registro, el timestamp del registro, el tamaño value que nos pasan por parámetro + 1 porque es un string
+    cantidadDeMarcos = tamanioMemoria / (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue + 1);
+    // se aloca el primer registro de marco y se le asigna a la variable global donde arranca la tabla
     struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
     primerRegistroDeMarco->registro.numeroMarco = 0;
     primerRegistroDeMarco->registro.marcoOcupado = false;
     primerRegistroDeMarcos = primerRegistroDeMarco;
     struct tablaDeMarcos* aux = primerRegistroDeMarco;
+    // inicializo cada marco
     for(int index = 1; index < cantidadDeMarcos; index++){
         struct tablaDeMarcos* registroDeMarco = malloc(sizeof(tablaDeMarcos));
         registroDeMarco->registro.numeroMarco = index;

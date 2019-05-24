@@ -27,6 +27,9 @@ int main(){
     // Init listado de memorias
     init_memories(config);
 
+    // Init listado de criterios
+    init_criterios();
+
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
 
@@ -153,6 +156,20 @@ void consola() {
             else if (!strcmp(comandos->comando, "metrics")) {
                 if (comandos->cantArgs == 0) {
                     comando_metrics();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "ADD")) {
+                if (comandos->cantArgs == 4) {
+                    if (string_equals_ignore_case(comandos->arg[0], "MEMORY") &&
+                        string_equals_ignore_case(comandos->arg[2], "TO")) {
+                        if (criterio_add(atoi(comandos->arg[1]), comandos->arg[3])) {
+                            print_console((void*) log_info, "Criterio asignado a la memoria");
+                        } else {
+                            print_console((void*) log_info, "Error al asignar una memoria a un criterio");
+                        }
+                    } else print_console((void*) log_error, "No se encontró la orden - MEMORY or TO");
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

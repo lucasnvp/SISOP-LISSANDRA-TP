@@ -15,6 +15,7 @@
 #include <sys/inotify.h>
 
 #include <commons/collections/queue.h>
+#include <commons/string.h>
 #include <serializador/serializador.h>
 #include <parser/parser.h>
 
@@ -22,6 +23,7 @@
 #include "comandos/comandos.h"
 #include "api/api.h"
 #include "memoria/memoria.h"
+#include "criterios/criterios.h"
 
 // Semaforos
 pthread_mutex_t mutexMetricas;  // Bloqueo el hilo para mostrar las metricas y no se haga otra cosa

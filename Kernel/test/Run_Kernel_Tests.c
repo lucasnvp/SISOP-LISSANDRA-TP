@@ -8,6 +8,7 @@ int main () {
     CU_initialize_registry();
 
     agregar_tests_memoria();
+    agregar_tests_criterio();
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

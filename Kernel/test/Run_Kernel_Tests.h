@@ -10,5 +10,6 @@
 #include "CUnit/Basic.h"
 
 #include "Test_Memoria/Test_Memoria.h"
+#include "Test_Criterio/Test_Criterio.h"
 
 #endif //TP_2019_1C_GANK_MID_RUN_KERNEL_TESTS_H

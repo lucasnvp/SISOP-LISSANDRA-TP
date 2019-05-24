@@ -12,8 +12,8 @@
 #include "../../src/memoria/memoria.h"
 
 void agregar_tests_memoria();
-int inicializar();
-int limpiar();
+int inicializar_memoria();
+int limpiar_memoria();
 
 void test_memoria_existe_and_activa();
 void test_memoria_existe_and_desactivada ();

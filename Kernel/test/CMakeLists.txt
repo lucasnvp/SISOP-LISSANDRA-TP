@@ -4,7 +4,11 @@ add_executable(KernelTests
         Test_Memoria/Test_Memoria.c
         Test_Memoria/Test_Memoria.h
         ../src/memoria/memoria.c
-        ../src/memoria/memoria.h)
+        ../src/memoria/memoria.h
+        Test_Criterio/Test_Criterio.c
+        Test_Criterio/Test_Criterio.h
+        ../src/criterios/criterios.c
+        ../src/criterios/criterios.h)
 
 target_link_libraries (KernelTests PRIVATE cunit)
 target_link_libraries (KernelTests PRIVATE Librerias)

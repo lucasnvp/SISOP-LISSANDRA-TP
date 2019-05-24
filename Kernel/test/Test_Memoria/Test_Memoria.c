@@ -5,7 +5,7 @@
 #include "Test_Memoria.h"
 
 void agregar_tests_memoria() {
-    CU_pSuite memoria = CU_add_suite("Memoria", inicializar, limpiar);
+    CU_pSuite memoria = CU_add_suite("Memoria", inicializar_memoria, limpiar_memoria);
     CU_add_test(memoria, "test_memoria_existe_and_activa", test_memoria_existe_and_activa);
     CU_add_test(memoria, "test_memoria_existe_and_desactivada", test_memoria_existe_and_desactivada);
     CU_add_test(memoria, "test_memoria_no_existe", test_memoria_no_existe);
@@ -13,26 +13,26 @@ void agregar_tests_memoria() {
     CU_add_test(memoria, "test_disable_memory", test_disable_memory);
 }
 
-int inicializar () {
+int inicializar_memoria() {
     LIST_MEMORIES = list_create();
     memory_tad* memory = memory_new(1, "127.0.0.1", 8080);
     list_add(LIST_MEMORIES, memory);
     return 0;
 }
 
-int limpiar () {
+int limpiar_memoria () {
     return 0;
 }
 
 void test_memoria_existe_and_activa () {
-    inicializar();
+    inicializar_memoria();
 
     bool existe = exist_memory(1);
     CU_ASSERT_TRUE(existe);
 }
 
 void test_memoria_existe_and_desactivada () {
-    inicializar();
+    inicializar_memoria();
     memory_tad* m1 = search_memory(1);
     disable_memory(m1);
     bool existe = exist_memory(1);
@@ -40,14 +40,14 @@ void test_memoria_existe_and_desactivada () {
 }
 
 void test_memoria_no_existe () {
-    inicializar();
+    inicializar_memoria();
 
     bool existe = exist_memory(2);
     CU_ASSERT_FALSE(existe);
 }
 
 void test_search_memory () {
-    inicializar();
+    inicializar_memoria();
 
     memory_tad* m1 = memory_new(1, "127.0.0.1", 8080);
     memory_tad* m2 = search_memory(1);

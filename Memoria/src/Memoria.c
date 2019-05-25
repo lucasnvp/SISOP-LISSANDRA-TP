@@ -64,8 +64,8 @@ void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
 }
 
 
-registo_tad* alocar_MemoriaPrincipal() {
-    registo_tad* aux = malloc(config.TAM_MEM);
+registro_tad* alocar_MemoriaPrincipal() {
+    registro_tad* aux = malloc(config.TAM_MEM);
     log_info(log_Memoria, "Se ha alocado la memoria principal");
     inicializarMarcos(config.TAM_MEM);
     log_info(log_Memoria, "Se han inicializado los marcos");

@@ -76,7 +76,7 @@ reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoS
 
 
 
-registo_tad* alocar_MemoriaPrincipal();
+registro_tad* alocar_MemoriaPrincipal();
 
 void crearRegistroDeSegmento(char* nombreTabla);
 void recibir_valores_FileSystem(uint32_t servidorFileSystem);

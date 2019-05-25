@@ -7,12 +7,12 @@
 // Reserva un marco para una Página marcándolo como ocupado y devuelve su dirección de memoria
 // Si todos los marcos se encuentran ocupados, se buscará una Página para Liberar
 
-registo_tad* reservarMarco() {
+registro_tad* reservarMarco() {
     struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
-            return (registo_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * sizeof(registo_tad));
+            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * sizeof(registro_tad));
         }
 
 
@@ -24,7 +24,7 @@ registo_tad* reservarMarco() {
 
 void inicializarMarcos(uint32_t tamanioMemoria){
     //calculo la cantidad de marcos
-    cantidadDeMarcos = tamanioMemoria / sizeof(registo_tad);
+    cantidadDeMarcos = tamanioMemoria / sizeof(registro_tad);
     struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
     primerRegistroDeMarco->registro.numeroMarco = 0;
     primerRegistroDeMarco->registro.marcoOcupado = false;

@@ -35,7 +35,7 @@
 
 typedef struct reg_tablaDePaginas {
     uint32_t numeroPagina;
-    registo_tad* punteroAPagina;
+    registro_tad* punteroAPagina;
     bool flagModificado;
     uint32_t ultimoAcceso;
 }reg_tablaDePaginas;
@@ -54,10 +54,10 @@ void* memoriaPrincipal;
 char* funcionSelect(char* nombreDeTabla, uint32_t key);
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
 tablaDePaginas* obtenerRegistroMasViejo();
-registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
-registo_tad* liberarPagina();
+registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
+registro_tad* liberarPagina();
 void actualizarIdPaginas(tablaDePaginas* registroEliminado);
-void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registo_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
+void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registro_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
 
 
 #endif //TP_2019_1C_GANK_MID_PAGINAS_H

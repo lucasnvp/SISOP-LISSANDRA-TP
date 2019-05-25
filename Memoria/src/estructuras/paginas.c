@@ -50,7 +50,7 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
             if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestampActual) {
                 _TablaDePaginas->registro.flagModificado = true;
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
-                       new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
+                       new_registro_tad(timestampActual, key, value),sizeof(registro_tad));
                 return;
             }
         }
@@ -80,12 +80,12 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
     }
 
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,
-           new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
+           new_registro_tad(timestampActual, key, value),sizeof(registro_tad));
     return;
 }
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registo_tad* liberarPagina() {
+registro_tad* liberarPagina() {
     tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
     return reenlazarRegistros(registroMasViejo);
 
@@ -138,7 +138,7 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 }
 
 // Reenlaza los registros de páginas
-registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
+registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
 
@@ -148,7 +148,7 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
         // si el registro más viejo es la página del segmento, enlazo en la lista
         if(registroMasViejo == pagina){
             _tablaDeSegmentos->registro.tablaDePaginas = registroMasViejo->siguienteRegistroPagina;
-            registo_tad* aux = registroMasViejo->registro.punteroAPagina;
+            registro_tad* aux = registroMasViejo->registro.punteroAPagina;
             actualizarIdPaginas(registroMasViejo);
             free(registroMasViejo);
             return aux;
@@ -158,7 +158,7 @@ registo_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
             // si el registro más viejo es la página siguiente, enlazo en la lista
             if(registroMasViejo == pagina->siguienteRegistroPagina){
                 pagina->siguienteRegistroPagina = registroMasViejo->siguienteRegistroPagina;
-                registo_tad* aux = registroMasViejo->registro.punteroAPagina;
+                registro_tad* aux = registroMasViejo->registro.punteroAPagina;
                 actualizarIdPaginas(registroMasViejo);
                 free(registroMasViejo);
                 return aux;

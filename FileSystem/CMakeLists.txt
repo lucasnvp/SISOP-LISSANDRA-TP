@@ -8,7 +8,7 @@ add_executable(FILESYSTEM
         src/setup/setup.c
         src/setup/setup.h
         src/utils/utils.c
-        src/utils/utils.h src/utils/memtableHandler.c src/utils/memtableHanlder.h)
+        src/utils/utils.h src/utils/memtableHandler.c src/utils/memtableHanlder.h src/utils/tablesHandler.c src/utils/tablesHandler.h)
 
 target_link_libraries (FILESYSTEM PRIVATE Librerias)
 target_link_libraries (FILESYSTEM PRIVATE pthread)

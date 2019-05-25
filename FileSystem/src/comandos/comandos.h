@@ -15,6 +15,7 @@
 #include "../utils/memtableHanlder.h"
 #include "commons/collections/dictionary.h"
 #include "commons/collections/list.h"
+#include "../utils/tablesHandler.h"
 
 t_log* log_FileSystem;
 

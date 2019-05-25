@@ -1,4 +1,4 @@
-add_executable(FILESYSTEM
+add_executable(FileSystem
         src/FileSystem.c
         src/FileSystem.h
         src/config/Config_filesystem.c
@@ -10,6 +10,6 @@ add_executable(FILESYSTEM
         src/utils/utils.c
         src/utils/utils.h src/utils/memtableHandler.c src/utils/memtableHanlder.h src/utils/tablesHandler.c src/utils/tablesHandler.h)
 
-target_link_libraries (FILESYSTEM PRIVATE Librerias)
-target_link_libraries (FILESYSTEM PRIVATE pthread)
-target_link_libraries (FILESYSTEM PRIVATE readline)
+target_link_libraries (FileSystem PRIVATE Librerias)
+target_link_libraries (FileSystem PRIVATE pthread)
+target_link_libraries (FileSystem PRIVATE readline)

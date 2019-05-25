@@ -28,4 +28,10 @@ char* deserializar_string(int servidor);
 void serializar_registro(uint32_t socket, registro_tad* registro);
 registro_tad* deserializar_registro(uint32_t socket);
 
+void serializar_insert(uint32_t socket, insert_tad* insert);
+insert_tad* deserializar_insert(uint32_t socket);
+
+void serializar_select(uint32_t socket, select_tad* select);
+select_tad* deserializar_select(uint32_t socket);
+
 #endif /* SERIALIZADOR_H_ */

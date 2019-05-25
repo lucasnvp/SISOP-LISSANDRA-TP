@@ -4,17 +4,21 @@
 
 #include "comandos.h"
 
+
 void print_console(void (*log_function)(t_log*, const char*), char* message) {
     log_function(log_Memoria, message);
     printf("%s", message);
 }
 
-void comando_select(){
+void comando_select(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key){
     print_console((void*) log_info, "Comando select");
+    funcionSelect(SERVIDOR_FILESYSTEM, nombreDeTabla, key);
 }
 
-void comando_insert(){
+void comando_insert(char* nombreDeTabla, char* key, char* value){
     print_console((void*) log_info, "Comando insert");
+    funcionInsert(nombreDeTabla, atoi(key), value);
+
 }
 
 void comando_create(){

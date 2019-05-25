@@ -4,6 +4,8 @@
 - Lucas Visser
 - Guido Beltrame
 - Gabriel Graves
+- Facundo Dominguez
+- Nicolas Fonseca
 
 ## Path del proyecto
 `/home/utnso/Gank-mid`
@@ -12,8 +14,3 @@
 `sudo apt-get install cmake`
 
 `sudo apt-get install libreadline6 libreadline6-dev`
-
-## TODO
-
-1. Identificar porque el bitmap con su bitarray no funcionan correctamente.
-2. Poder recorrer todos los archivos (bin, tmp y tmpc de una tabla) para liberas los bloques que usan y luego eliminar el directorio.

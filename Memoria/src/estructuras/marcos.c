@@ -23,6 +23,7 @@ registo_tad* reservarMarco() {
 }
 
 void inicializarMarcos(uint32_t tamanioMemoria){
+    //calculo la cantidad de marcos
     cantidadDeMarcos = tamanioMemoria / sizeof(registo_tad);
     struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
     primerRegistroDeMarco->registro.numeroMarco = 0;

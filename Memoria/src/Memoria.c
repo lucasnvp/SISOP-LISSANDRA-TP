@@ -3,7 +3,7 @@
 //
 
 #include "Memoria.h"
-
+//main
 int main(){
     system("clear"); /* limpia la pantalla al empezar */
 

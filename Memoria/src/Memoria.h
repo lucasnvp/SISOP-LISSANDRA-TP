@@ -14,19 +14,13 @@
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
+#include "serializador/handshake.h"
 
 #include "config/Config_memoria.h"
 #include "comandos/comandos.h"
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
-
-#define NUEVA_CONEXION  1
-#define COMAND_SELECT   100
-#define COMAND_INSERT   101
-#define COMAND_CREATE   102
-#define COMAND_DESCRIBE 103
-#define COMAND_DROP     104
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
 Type_Config config;

@@ -166,12 +166,15 @@ void connection_handler(uint32_t socket, uint32_t command){
 
 		//TODO aca se reciben los comandos de lo que se conecte a la memoria
 
-        case NUEVA_CONEXION: {
-            log_info(log_Memoria, "Se realizo una nueva conexion");
+        case NUEVA_CONEXION_KERNEL_TO_MEMORIA: {
+            log_info(log_Memoria, "Se conecto el kernel");
+            serializar_int(socket, config.MEMORY_NUMBER);
             break;
         }
         case COMAND_INSERT: {
-            log_info(log_Memoria, "Insert");
+            insert_tad* insert = deserializar_insert(socket);
+            log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
+            funcionInsert(insert->nameTable, insert->key, insert->value);
             break;
         }
         case COMAND_SELECT: {

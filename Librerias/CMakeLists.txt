@@ -35,6 +35,6 @@ add_library (Librerias STATIC
         servidor/servidor.h
 
         parser/parser.c
-        parser/parser.h)
+        parser/parser.h serializador/handshake.h)
 
 TARGET_INCLUDE_DIRECTORIES(Librerias PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

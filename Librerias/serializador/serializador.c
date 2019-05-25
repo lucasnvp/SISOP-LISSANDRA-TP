@@ -55,3 +55,49 @@ void serializar_registro(uint32_t socket, registro_tad* registro){
 registro_tad* deserializar_registro(uint32_t socket){
 
 }
+
+void serializar_insert(uint32_t socket, insert_tad* insert) {
+    uint32_t datos_size = sizeof(insert_tad) + (strlen(insert->nameTable) + 1);
+    void* ENVIAR = malloc(datos_size);
+    uint32_t offset = 0;
+    uint32_t size_to_send;
+
+    size_to_send = strlen(insert->nameTable) + 1;
+    memcpy(ENVIAR + offset, insert->nameTable, size_to_send);
+    offset += size_to_send;
+
+    size_to_send = sizeof(insert->key);
+    memcpy(ENVIAR + offset, &(insert->key),size_to_send);
+    offset += size_to_send;
+
+    size_to_send = strlen(insert->value) + 1;
+    memcpy(ENVIAR + offset, insert->value, size_to_send);
+    offset += size_to_send;
+
+    serializar_int(socket, offset);
+    send_data(socket, ENVIAR, offset);
+    free(ENVIAR);
+}
+
+insert_tad* deserializar_insert(uint32_t socket) {
+    uint32_t buffer_size = deserializar_int(socket);
+    void* buffer = malloc(buffer_size);
+    insert_tad* insert = malloc(sizeof(insert_tad));
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
+
+    recive_data(socket, buffer, buffer_size);
+
+    insert->nameTable = strdup(buffer + offset);
+    offset += strlen(insert->nameTable) + 1;
+
+    size_to_recive = sizeof(insert->key);
+    memcpy(&insert->key, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    insert->value = strdup(buffer + offset);
+    offset += strlen(insert->value) + 1;
+
+    free(buffer);
+    return insert;
+}

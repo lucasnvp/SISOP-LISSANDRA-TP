@@ -14,6 +14,8 @@ void api_select(u_int32_t socket, char* tabla, u_int16_t key){
 void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
     serializar_int(socket, COMAND_INSERT);
     // todo Envio la info a la memoria
+    insert_tad* insert = new_insert_tad(tabla, key, value);
+    serializar_insert(socket, insert);
     // todo Recibo la confirmacion
     log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
 }

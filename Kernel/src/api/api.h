@@ -9,12 +9,10 @@
 
 #include <commons/log.h>
 #include <commons/collections/queue.h>
+#include <serializador/serializador.h>
+#include <serializador/estructuras.h>
+#include <serializador/handshake.h>
 
-#define COMAND_SELECT   100
-#define COMAND_INSERT   101
-#define COMAND_CREATE   102
-#define COMAND_DESCRIBE 103
-#define COMAND_DROP     104
 
 t_log* log_Kernel_api;
 

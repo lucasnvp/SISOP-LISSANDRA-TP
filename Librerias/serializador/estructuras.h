@@ -15,14 +15,13 @@ typedef struct registro_tad{
 registro_tad* new_registro_tad(uint32_t timestamp, uint32_t key, char* value);
 void free_registro_tad(registro_tad* registro);
 
-typedef struct ESIType{
-	char* nombre;
-	char* comando;
-	char* clave;
-	char* valor;
-}t_esi;
+typedef struct insert_tad{
+    char* nameTable;
+    uint32_t key;
+    char* value;
+}insert_tad;
 
-t_esi* new_esi(char* nombre, char* comando, char* clave, char* valor);
-void free_esi(t_esi* esi);
+insert_tad* new_insert_tad(char* nameTable, uint32_t key, char* value);
+void free_insert_tad(insert_tad* insert);
 
 #endif /* ESTRUCTURAS_H_ */

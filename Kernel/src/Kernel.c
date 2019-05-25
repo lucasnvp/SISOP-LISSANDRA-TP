@@ -62,6 +62,10 @@ void connect_server_Memoria(){
     //Si conecto, informo
     if(SERVIDOR_MEMORIA > 1){
         log_info(log_Console,"Connected successfully to the Memory");
+        serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
+        uint32_t memoryNumber = deserializar_int(SERVIDOR_MEMORIA);
+        printf("Memory Number: %d", memoryNumber);
+        // todo agregar la memoria a la lista, y guardar el socket
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de Memoria");
         exit(EXIT_SUCCESS);

@@ -3,6 +3,8 @@
 //
 
 #include "FileSystem.h"
+#include "setup/setup.h"
+#include <commons/config.h>
 
 int main(){
     system("clear"); /* limpia la pantalla al empezar */
@@ -16,13 +18,19 @@ int main(){
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
 
+    //Config. inicial de FS
+    punto_montaje_setup(config.PUNTO_MONTAJE);
+
+    //Inicializa Memtable
+    inicilizar_memtable();
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
 
-//    pthread_join(thread_server, (void**) NULL);
+    //pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
     return EXIT_SUCCESS;
@@ -36,7 +44,7 @@ void init_log(char* pathLog){
 
 void server(void* args) {
     fd_set read_fds; 	// conjunto temporal de descriptores de fichero para select()
-    uint32_t fdmax;			// número máximo de descriptores de fichero
+    uint32_t fdmax;		// número máximo de descriptores de fichero
     int i;				// variable para el for
     FD_ZERO(&master);	// borra los conjuntos maestro
     FD_ZERO(&read_fds);	// borra los conjuntos temporal
@@ -99,6 +107,13 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_FileSystem, "Insert");
             break;
         }
+        case CREATE: {
+            //TODO Hacer deserializador de comando create
+
+            //comando_create(table, consistencia, cantidad_particiones, compactacion,socket);
+            log_info(log_FileSystem, "Create");
+            break;
+        }
         default:
             log_info(log_FileSystem, "Error al recibir el comando");
     }
@@ -134,50 +149,115 @@ void consola() {
             }
             free(com);
 
-            if (!strcmp(comandos->comando, "exit")) {
+            string_to_upper(comandos->comando);
+
+            if (!strcmp(comandos->comando, "EXIT")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
                     break;
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
-            else if (!strcmp(comandos->comando, "select")) {
+            else if (!strcmp(comandos->comando, "SELECT")) {
+                if (comandos->cantArgs == 2) {
+                    char* table = comandos->arg[0];
+                    char* key_string = comandos->arg[1];
+                    int key = atoi(key_string);
+                    comando_select(table,key);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+            }
+
+            else if (!strcmp(comandos->comando, "INSERT")) {
+                if (comandos->cantArgs == 4) {
+                    char* table = comandos->arg[0];
+                    char* key_string = comandos->arg[1];
+                    char* value = comandos->arg[2];
+                    char* timestamp_string = comandos->arg[3];
+
+                    int key = atoi(key_string);
+                    int timestamp = atoi(timestamp_string);
+
+                    string_to_upper(table);
+                    comando_insert(table, key, value, timestamp,-1);
+                } else {
+
+                    if (comandos->cantArgs == 3) {
+                        char* table = comandos->arg[0];
+                        char* key_string = comandos->arg[1];
+                        char* value = comandos->arg[2];
+
+                        int key = atoi(key_string);
+                        int timestamp = (int) time(NULL);
+
+                        string_to_upper(table);
+                        comando_insert(table, key, value, timestamp,-1);
+                    }
+                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+                }
+            }
+
+            else if (!strcmp(comandos->comando, "CREATE")) {
+                if (comandos->cantArgs == 4) {
+                    char* table = comandos->arg[0];
+                    char* consistencia = comandos->arg[1];
+                    char* cantidad_particiones = comandos->arg[2];
+                    char* compactacion = comandos->arg[3];
+
+                    comando_create(table, consistencia, cantidad_particiones, compactacion,-1);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+            }
+
+            else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
-                    comando_select();
+                    comando_describe_all(-1);
+                } else {
+                    if (comandos->cantArgs == 1) {
+                        char* table = comandos->arg[0];
+                        comando_describe(table,-1);
+                    }
+                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+                }
+            }
+
+            else if (!strcmp(comandos->comando, "DROP")) {
+                if (comandos->cantArgs == 1) {
+                    char* table = comandos->arg[0];
+                    comando_drop(table,-1);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "insert")) {
+            else if (!strcmp(comandos->comando, "HELP")) {
                 if (comandos->cantArgs == 0) {
-                    comando_insert();
+                    printf("---------------------------------------------------------------------------------------------------------\n");
+                    printf("Comandos posibles\n");
+                    printf("Nombre del comando: parámetros -> Descripción del comando\n");
+                    printf("EXIT -> Termina el proceso\n");
+                    printf("CREATE: nombre de tabla, consistencia(SC, SHC, bla), particiones, compactacion(segs) -> Crea una tabla\n");
+                    printf("INSERT (simple): tabla, key, value -> Inserta un registro en la tabla\n");
+                    printf("INSERT: tabla, key, value, timestamp -> Inserta un registro en la tabla\n");
+                    printf("SELECT: tabla, key -> Lee un registro de la tabla\n");
+                    printf("DROP (no implementado aún): tabla -> Elimina una tabla\n");
+                    printf("DESCRIBE (simple) -> Muestra los config de todas las tablas\n");
+                    printf("DESCRIBE: tabla -> Muestra los config de una tabla\n");
+                    printf("HELP -> Lista los comandos existentes\n");
+                    printf("---------------------------------------------------------------------------------------------------------\n");
+                } else {
+                    print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "create")) {
+            else if (!strcmp(comandos->comando, "DUMP")) {
                 if (comandos->cantArgs == 0) {
-                    comando_create();
+                    comando_dump();
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
-            else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 0) {
-                    comando_describe();
-                }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
-            }
-
-            else if (!strcmp(comandos->comando, "drop")) {
-                if (comandos->cantArgs == 0) {
-                    comando_drop();
-                }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
-            }
-
-            else print_console((void*) log_error, "Comando incorrecto.");
+            else print_console((void*) log_error, "Comando incorrecto.\n");
 
             // Libero toda la memoria
             for (i = 0; i < comandos->cantArgs; i++)

@@ -10,10 +10,10 @@ typedef struct registro_tad{
     uint32_t timestamp;
     uint32_t key;
     char* value;
-}registo_tad;
+}registro_tad;
 
-registo_tad* new_registro_tad(uint32_t timestamp, uint32_t key, char* value);
-void free_registro_tad(registo_tad* registro);
+registro_tad* new_registro_tad(uint32_t timestamp, uint32_t key, char* value);
+void free_registro_tad(registro_tad* registro);
 
 typedef struct ESIType{
 	char* nombre;

@@ -48,10 +48,10 @@ char* deserializar_string(int servidor){
 	return stringToRecived;
 }
 
-void serializar_registro(uint32_t socket, registo_tad* registro){
+void serializar_registro(uint32_t socket, registro_tad* registro){
 
 }
 
-registo_tad* deserializar_registro(uint32_t socket){
+registro_tad* deserializar_registro(uint32_t socket){
 
 }

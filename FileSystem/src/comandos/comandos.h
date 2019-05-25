@@ -6,14 +6,25 @@
 #define TP_2019_1C_GANK_MID_COMANDOS_H
 
 #include "commons/log.h"
+#include "commonsfunctions/functions.h"
+#include "serializador/estructuras.h"
+#include "../setup/setup.h"
+#include "../utils/utils.h"
+#include "stdlib.h"
+#include "string.h"
+#include "../utils/memtableHanlder.h"
+#include "commons/collections/dictionary.h"
+#include "commons/collections/list.h"
 
 t_log* log_FileSystem;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
-void comando_select();
-void comando_insert();
-void comando_create();
-void comando_describe();
-void comando_drop();
+void comando_select(char* table, int key);
+void comando_insert(char* table, int key, char* value, int timestamp,int socket);
+void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion,int socket);
+void comando_describe_all(int socket);
+void comando_describe(char* nombre_tabla,int socket);
+void comando_drop(char* nombre_tabla,int socket);
+void comando_dump();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

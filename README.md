@@ -4,8 +4,8 @@
 - Lucas Visser
 - Guido Beltrame
 - Gabriel Graves
-- Nicolás Fonseca
-- Facundo Nicolás Domínguez
+- Facundo Dominguez
+- Nicolas Fonseca
 
 ## Path del proyecto
 `/home/utnso/Gank-mid`

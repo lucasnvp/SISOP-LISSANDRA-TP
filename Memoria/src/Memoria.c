@@ -3,7 +3,7 @@
 //
 
 #include "Memoria.h"
-
+//main
 int main(){
     system("clear"); /* limpia la pantalla al empezar */
 
@@ -19,6 +19,17 @@ int main(){
     //Conexion al servidor FileSystem
     connect_server_FileSystem();
 
+    // Se crea el espacio para la memoria principal
+    memoriaPrincipal = alocar_MemoriaPrincipal();
+
+
+    // Inicializamos la tabla de segmentos
+
+    primerRegistroDeSegmentos = NULL;
+
+	//TODO Hilo de Gossiping
+
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
@@ -28,7 +39,42 @@ int main(){
 //    pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
+
+    // Se elimina el espacio para la memoria principal
+
+    //desalocar_MemoriaPrincipal(); TODO: Creo que no deberíamos desalocar la memoria en este punto, o en ningún punto
+
     return EXIT_SUCCESS;
+}
+
+/*
+ * TODO 08/05
+ *
+ * Buscar en las páginas de los segmentos si se contiene el key
+ * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
+ * Comprobar si la memoria está llena
+ * Insert Select Drop Describe
+ * Journal, Gossiping
+ */
+
+
+void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
+    tamanoValue = deserializar_int(servidorFileSystem);
+    tiempoDump = deserializar_int(servidorFileSystem);
+}
+
+
+registro_tad* alocar_MemoriaPrincipal() {
+    registro_tad* aux = malloc(config.TAM_MEM);
+    log_info(log_Memoria, "Se ha alocado la memoria principal");
+    inicializarMarcos(config.TAM_MEM);
+    log_info(log_Memoria, "Se han inicializado los marcos");
+    return aux;
+}
+
+void desalocar_MemoriaPrincipal() {
+    log_info(log_Memoria, "Se ha desalocado la memoria principal");
+    free(memoriaPrincipal);
 }
 
 void init_log(char* pathLog){
@@ -44,6 +90,8 @@ void connect_server_FileSystem(){
     //Si conecto, informo
     if(SERVIDOR_FILESYSTEM > 1){
         log_info(log_Console,"Connected successfully to the File System");
+        serializar_int(SERVIDOR_FILESYSTEM, NUEVA_CONEXION_MEMORIA_TO_FS);
+        tamanoValue = deserializar_int(SERVIDOR_FILESYSTEM);
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de File System");
         exit(EXIT_SUCCESS);
@@ -107,12 +155,36 @@ void server(void* args) {
 
 void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
-        case NUEVA_CONEXION: {
-            log_info(log_Memoria, "Se realizo una nueva conexion");
+
+		//TODO aca se reciben los comandos de lo que se conecte a la memoria
+
+        case NUEVA_CONEXION_KERNEL_TO_MEMORIA: {
+            log_info(log_Memoria, "Se conecto el kernel");
+            serializar_int(socket, config.MEMORY_NUMBER);
             break;
         }
-        case INSERT: {
-            log_info(log_Memoria, "Insert");
+        case COMAND_INSERT: {
+            insert_tad* insert = deserializar_insert(socket);
+            log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
+            funcionInsert(insert->nameTable, insert->key, insert->value);
+            break;
+        }
+        case COMAND_SELECT: {
+            select_tad* select = deserializar_select(socket);
+            char* value = funcionSelect(SERVIDOR_FILESYSTEM, select->nameTable, select->key);
+            serializar_string(socket, value);
+            break;
+        }
+        case COMAND_CREATE: {
+            log_info(log_Memoria, "El kernel envio un create");
+            break;
+        }
+        case COMAND_DESCRIBE: {
+            log_info(log_Memoria, "El kernel envio un describe");
+            break;
+        }
+        case COMAND_DROP: {
+            log_info(log_Memoria, "El kernel envio un drop");
             break;
         }
         default:
@@ -149,7 +221,7 @@ void memory_console() {
                 i++;
             }
             free(com);
-
+			//TODO Case con cada uno de los comandos que acepta la consola de memoria
             if (!strcmp(comandos->comando, "exit")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
@@ -159,15 +231,22 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "select")) {
-                if (comandos->cantArgs == 0) {
-                    comando_select();
+                if (comandos->cantArgs == 2) {
+                    puts("Reconoci el comando");
+                    puts(comandos->arg[0]);
+                    puts(comandos->arg[1]);
+                    comando_select(SERVIDOR_FILESYSTEM, comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
-                if (comandos->cantArgs == 0) {
-                    comando_insert();
+                if (comandos->cantArgs == 3) {
+                    puts("Reconoci el comando");
+                    puts(comandos->arg[0]);
+                    puts(comandos->arg[1]);
+                    puts(comandos->arg[2]);
+                    comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

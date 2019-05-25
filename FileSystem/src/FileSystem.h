@@ -15,6 +15,7 @@
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
+#include "serializador/handshake.h"
 
 #include "config/Config_filesystem.h"
 #include "comandos/comandos.h"
@@ -22,9 +23,6 @@
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
 
-#define NUEVA_CONEXION  1
-#define INSERT          2
-#define CREATE          3
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/config.txt";
 Type_Config config;

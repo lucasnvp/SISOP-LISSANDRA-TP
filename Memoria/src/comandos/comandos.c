@@ -10,9 +10,9 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(char* nombreDeTabla, char* key){
+void comando_select(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key){
     print_console((void*) log_info, "Comando select");
-    funcionSelect(nombreDeTabla, atoi(key));
+    funcionSelect(SERVIDOR_FILESYSTEM, nombreDeTabla, key);
 }
 
 void comando_insert(char* nombreDeTabla, char* key, char* value){

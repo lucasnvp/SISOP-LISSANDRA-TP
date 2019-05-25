@@ -15,6 +15,7 @@
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
+#include "serializador/handshake.h"
 
 #include "../config/Config_memoria.h"
 #include "../comandos/comandos.h"
@@ -49,9 +50,10 @@ typedef struct tablaDePaginas {
     struct tablaDePaginas* siguienteRegistroPagina;
 }tablaDePaginas;
 
-// Dirección de la Memoria Principal
 void* memoriaPrincipal;
-char* funcionSelect(char* nombreDeTabla, uint32_t key);
+
+// Dirección de la Memoria Principal
+char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key);
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
 tablaDePaginas* obtenerRegistroMasViejo();
 registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);

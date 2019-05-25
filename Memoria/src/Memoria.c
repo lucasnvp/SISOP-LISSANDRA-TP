@@ -89,17 +89,9 @@ void connect_server_FileSystem(){
 
     //Si conecto, informo
     if(SERVIDOR_FILESYSTEM > 1){
-
-		//TODO Recibir tamano_value y tiempo_dump de File System
-
-		//lo necesitamos para crear el espacio de la memoria (tamano_value) y el tiempo de dump
-
-		// acá va la función recibir_valores_fileSystem, por ahora se hardcodean los valores
-
-        tamanoValue = 16;
-        tiempoDump = 4;
-
         log_info(log_Console,"Connected successfully to the File System");
+        serializar_int(SERVIDOR_FILESYSTEM, NUEVA_CONEXION_MEMORIA_TO_FS);
+        tamanoValue = deserializar_int(SERVIDOR_FILESYSTEM);
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de File System");
         exit(EXIT_SUCCESS);
@@ -179,7 +171,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_SELECT: {
             select_tad* select = deserializar_select(socket);
-            char* value = funcionSelect(select->nameTable, select->key);
+            char* value = funcionSelect(SERVIDOR_FILESYSTEM, select->nameTable, select->key);
             serializar_string(socket, value);
             break;
         }
@@ -243,7 +235,7 @@ void memory_console() {
                     puts("Reconoci el comando");
                     puts(comandos->arg[0]);
                     puts(comandos->arg[1]);
-                    comando_select(comandos->arg[0],comandos->arg[1]);
+                    comando_select(SERVIDOR_FILESYSTEM, comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

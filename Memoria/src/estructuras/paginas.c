@@ -9,7 +9,7 @@
 
 // REGISTROS DE PÁGINAS
 
-char* funcionSelect(char* nombreDeTabla, uint32_t key){
+char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     if (_TablaDeSegmento != NULL){
@@ -23,7 +23,14 @@ char* funcionSelect(char* nombreDeTabla, uint32_t key){
         }
         // En este punto se encuentra la tabla de segmentos pero no la key en sus paginas
     }
-    //solicitar al file
+
+    //solicitar al FS
+    // todo usar select_tad como parametro de funcion
+    select_tad* select = new_select_tad(nombreDeTabla, key);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
+    serializar_select(SERVIDOR_FILESYSTEM, select);
+    char* value = deserializar_string(SERVIDOR_FILESYSTEM);
+    funcionInsert(nombreDeTabla, key, value);
 }
 
 // Agrega un registro de Página a la Tabla de Páginas

@@ -99,15 +99,20 @@ void server(void* args) {
 
 void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
-        case NUEVA_CONEXION: {
-            log_info(log_FileSystem, "Se realizo una nueva conexion");
+        case NUEVA_CONEXION_MEMORIA_TO_FS: {
+            log_info(log_FileSystem, "Se conecto una nueva memoria");
+            serializar_int(socket, config.TAMANO_VALUE);
             break;
         }
-        case INSERT: {
+        case COMAND_INSERT: {
             log_info(log_FileSystem, "Insert");
+            select_tad* select = deserializar_select(socket);
+            //todo retornar el valor
+            char* valor = "DUMMYVALUE";
+            serializar_string(socket, valor);
             break;
         }
-        case CREATE: {
+        case COMAND_CREATE: {
             //TODO Hacer deserializador de comando create
 
             //comando_create(table, consistencia, cantidad_particiones, compactacion,socket);

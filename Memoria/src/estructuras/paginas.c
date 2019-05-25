@@ -49,7 +49,8 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
             //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
             if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestampActual) {
                 _TablaDePaginas->registro.flagModificado = true;
-                ocuparMarcoConPagina(_TablaDePaginas->registro.punteroAPagina, timestampActual, key, value);
+                memcpy(_TablaDePaginas->registro.punteroAPagina,
+                       new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
                 return;
             }
         }
@@ -78,18 +79,9 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
         nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
     }
 
-    ocuparMarcoConPagina(nuevoRegistroPagina->registro.punteroAPagina, timestampActual, key, value);
-
+    memcpy(nuevoRegistroPagina->registro.punteroAPagina,
+           new_registro_tad(timestampActual, key, value),sizeof(registo_tad));
     return;
-}
-
-void ocuparMarcoConPagina(registo_tad* punteroAPagina, uint32_t timestamp, uint32_t key, char* value){
-        registo_tad* registro = malloc(sizeof(key) + sizeof(timestamp) + tamanoValue + 1);
-        punteroAPagina->timestamp = timestamp;
-        punteroAPagina->key = key;
-        punteroAPagina->value = strdup(value);
-        //strcpy(punteroAPagina->value,value);
-        //memcpy(punteroAPagina->value,value,sizeof(value));
 }
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)

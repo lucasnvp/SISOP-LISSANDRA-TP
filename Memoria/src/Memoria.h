@@ -17,6 +17,9 @@
 
 #include "config/Config_memoria.h"
 #include "comandos/comandos.h"
+#include "estructuras/paginas.h"
+#include "estructuras/segmentos.h"
+#include "estructuras/marcos.h"
 
 #define NUEVA_CONEXION  1
 #define COMAND_SELECT   100
@@ -34,6 +37,18 @@ t_log* log_Memoria;
 
 uint32_t SERVIDOR_FILESYSTEM;
 
+
+// Estructura de los registros de la tabla de gossiping
+
+typedef struct reg_gossiping{
+    uint32_t idMemoria;
+    char** ipSeeds;
+    char** puertoSeeds;
+
+}reg_gossiping;
+
+
+
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero
 
@@ -41,16 +56,36 @@ fd_set master;   	// conjunto maestro de descriptores de fichero
 pthread_t thread_server;
 pthread_t thread_consola;
 
+// Dirección de la Memoria Principal
+void* memoriaPrincipal;
+
 typedef struct {
     uint32_t cantArgs;
     char * comando;
     char * arg[4];
 } t_comandos;
 
+//TODO definir estructura de cada registro de la tabla de gossiping(readme)
+
+
+bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
+bool validarExistenciaDeSegmento(char* nombreTabla);
+
+reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);
+reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoSegmento);
+
+
+
+registo_tad* alocar_MemoriaPrincipal();
+
+void crearRegistroDeSegmento(char* nombreTabla);
+void recibir_valores_FileSystem(uint32_t servidorFileSystem);
+void desalocar_MemoriaPrincipal();
 void init_log(char* pathLog);
 void connect_server_FileSystem();
 void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void memory_console();
+void validarTamanoValue(char* value);
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

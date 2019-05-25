@@ -19,6 +19,17 @@ int main(){
     //Conexion al servidor FileSystem
     connect_server_FileSystem();
 
+    // Se crea el espacio para la memoria principal
+    memoriaPrincipal = alocar_MemoriaPrincipal();
+
+
+    // Inicializamos la tabla de segmentos
+
+    primerRegistroDeSegmentos = NULL;
+
+	//TODO Hilo de Gossiping
+
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
@@ -28,7 +39,42 @@ int main(){
 //    pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
+
+    // Se elimina el espacio para la memoria principal
+
+    //desalocar_MemoriaPrincipal(); TODO: Creo que no deberíamos desalocar la memoria en este punto, o en ningún punto
+
     return EXIT_SUCCESS;
+}
+
+/*
+ * TODO 08/05
+ *
+ * Buscar en las páginas de los segmentos si se contiene el key
+ * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
+ * Comprobar si la memoria está llena
+ * Insert Select Drop Describe
+ * Journal, Gossiping
+ */
+
+
+void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
+    tamanoValue = deserializar_int(servidorFileSystem);
+    tiempoDump = deserializar_int(servidorFileSystem);
+}
+
+
+registo_tad* alocar_MemoriaPrincipal() {
+    registo_tad* aux = malloc(config.TAM_MEM);
+    log_info(log_Memoria, "Se ha alocado la memoria principal");
+    inicializarMarcos(config.TAM_MEM);
+    log_info(log_Memoria, "Se han inicializado los marcos");
+    return aux;
+}
+
+void desalocar_MemoriaPrincipal() {
+    log_info(log_Memoria, "Se ha desalocado la memoria principal");
+    free(memoriaPrincipal);
 }
 
 void init_log(char* pathLog){
@@ -43,6 +89,16 @@ void connect_server_FileSystem(){
 
     //Si conecto, informo
     if(SERVIDOR_FILESYSTEM > 1){
+
+		//TODO Recibir tamano_value y tiempo_dump de File System
+
+		//lo necesitamos para crear el espacio de la memoria (tamano_value) y el tiempo de dump
+
+		// acá va la función recibir_valores_fileSystem, por ahora se hardcodean los valores
+
+        tamanoValue = 16;
+        tiempoDump = 4;
+
         log_info(log_Console,"Connected successfully to the File System");
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de File System");
@@ -107,6 +163,9 @@ void server(void* args) {
 
 void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
+
+		//TODO aca se reciben los comandos de lo que se conecte a la memoria
+
         case NUEVA_CONEXION: {
             log_info(log_Memoria, "Se realizo una nueva conexion");
             break;
@@ -165,7 +224,7 @@ void memory_console() {
                 i++;
             }
             free(com);
-
+			//TODO Case con cada uno de los comandos que acepta la consola de memoria
             if (!strcmp(comandos->comando, "exit")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
@@ -175,15 +234,22 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "select")) {
-                if (comandos->cantArgs == 0) {
-                    comando_select();
+                if (comandos->cantArgs == 2) {
+                    puts("Reconoci el comando");
+                    puts(comandos->arg[0]);
+                    puts(comandos->arg[1]);
+                    comando_select(comandos->arg[0],comandos->arg[1]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
-                if (comandos->cantArgs == 0) {
-                    comando_insert();
+                if (comandos->cantArgs == 3) {
+                    puts("Reconoci el comando");
+                    puts(comandos->arg[0]);
+                    puts(comandos->arg[1]);
+                    puts(comandos->arg[2]);
+                    comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

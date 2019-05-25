@@ -178,7 +178,9 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case COMAND_SELECT: {
-            log_info(log_Memoria, "El kernel envio un select");
+            select_tad* select = deserializar_select(socket);
+            char* value = funcionSelect(select->nameTable, select->key);
+            serializar_string(socket, value);
             break;
         }
         case COMAND_CREATE: {

@@ -24,4 +24,12 @@ typedef struct insert_tad{
 insert_tad* new_insert_tad(char* nameTable, uint32_t key, char* value);
 void free_insert_tad(insert_tad* insert);
 
+typedef struct select_tad{
+    char* nameTable;
+    uint32_t key;
+}select_tad;
+
+select_tad* new_select_tad(char* nameTable, uint32_t key);
+void free_select_tad(select_tad* select);
+
 #endif /* ESTRUCTURAS_H_ */

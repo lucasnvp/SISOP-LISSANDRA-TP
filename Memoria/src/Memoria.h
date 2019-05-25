@@ -86,9 +86,6 @@ void connect_server_FileSystem();
 void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void memory_console();
-
-
-
-void insert();
+void validarTamanoValue(char* value);
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

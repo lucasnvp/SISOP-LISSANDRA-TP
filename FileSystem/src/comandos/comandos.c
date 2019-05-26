@@ -9,7 +9,7 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(char* table, int key){
+char* comando_select(char* table, int key, int requestOrigin){
     print_console((void*) log_info, "Comando select \n");
 
     char* finalResult = string_new();
@@ -22,7 +22,7 @@ void comando_select(char* table, int key){
     if( existe != true ) {
         log_info(log_FileSystem, "No existe la tabla %s", table);
         printf("Se intento buscar en una tabla no existente %s", table);
-        return;
+        return NULL;
     }
 
     string_append(&tabla_objetivo, "/Metadata.bin");
@@ -33,15 +33,17 @@ void comando_select(char* table, int key){
 
     char* value = getValue(table, key);
 
-    if(!string_equals_ignore_case(value, "error")) {
-        finalResult = string_duplicate(value);
-        printf("VALUE: %s\n", finalResult);
+    if(value == NULL) {
+        return NULL;
+    }else {
+        if(requestOrigin != SOCKET_REQUEST) {
+            printf("VALUE: %s\n", value);
+            return NULL;
+        } else {
+            return value;
+        }
     }
 
-    //TODO
-    // 2 - Recorrer los TMP y TMPC
-    // 3 - Recorrer los .bin
-    // 4 - Devolver resultado por socket o consola
 }
 
 void comando_insert(char* table, int key, char* value, int timestamp, int socket){

@@ -104,12 +104,16 @@ void connection_handler(uint32_t socket, uint32_t command){
             serializar_int(socket, config.TAMANO_VALUE);
             break;
         }
-        case COMAND_INSERT: {
-            log_info(log_FileSystem, "Insert");
+        case COMAND_SELECT: {
+            log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
-            //todo retornar el valor
-            char* valor = "DUMMYVALUE";
-            serializar_string(socket, valor);
+            char* valor = comando_select(select->nameTable, select->key, SOCKET_REQUEST);
+            if(valor != NULL) {
+                serializar_string(socket, valor);
+            }else {
+                serializar_string(socket, "No encontré nada bro\n");
+
+            }
             break;
         }
         case COMAND_CREATE: {
@@ -169,7 +173,7 @@ void consola() {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
                     int key = atoi(key_string);
-                    comando_select(table,key);
+                    comando_select(table,key, CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
@@ -239,16 +243,16 @@ void consola() {
                 if (comandos->cantArgs == 0) {
                     printf("---------------------------------------------------------------------------------------------------------\n");
                     printf("Comandos posibles\n");
-                    printf("Nombre del comando: parámetros -> Descripción del comando\n");
-                    printf("EXIT -> Termina el proceso\n");
-                    printf("CREATE: nombre de tabla, consistencia(SC, SHC, bla), particiones, compactacion(segs) -> Crea una tabla\n");
-                    printf("INSERT (simple): tabla, key, value -> Inserta un registro en la tabla\n");
-                    printf("INSERT: tabla, key, value, timestamp -> Inserta un registro en la tabla\n");
-                    printf("SELECT: tabla, key -> Lee un registro de la tabla\n");
-                    printf("DROP (no implementado aún): tabla -> Elimina una tabla\n");
-                    printf("DESCRIBE (simple) -> Muestra los config de todas las tablas\n");
-                    printf("DESCRIBE: tabla -> Muestra los config de una tabla\n");
-                    printf("HELP -> Lista los comandos existentes\n");
+                    printf("Comando:    parámetros                                          -> Descripción del comando\n");
+                    printf("EXIT                                                            -> Termina el proceso\n");
+                    printf("CREATE:     <TABLA> <CONSISTENCIA> <PARTICIONES> <COMPACTACION> -> Crea una tabla\n");
+                    printf("INSERT:     <TABLA> <KEY> <VALUE>                               -> Inserta un registro en la tabla\n");
+                    printf("INSERT:     <TABLA> <KEY> <VALUE> <TIMESTAMP>                   -> Inserta un registro en la tabla\n");
+                    printf("SELECT:     <TABLA> <KEY>                                       -> Lee un registro de la tabla\n");
+                    printf("DROP:       <TABLA>                                             -> Elimina una tabla\n");
+                    printf("DESCRIBE                                                        -> Muestra los config de todas las tablas\n");
+                    printf("DESCRIBE:   <TABLE>                                             -> Muestra los config de una tabla\n");
+                    printf("HELP:                                                           -> Lista los comandos existentes\n");
                     printf("---------------------------------------------------------------------------------------------------------\n");
                 } else {
                     print_console((void*) log_error, "Número de parámetros incorrecto. \n");

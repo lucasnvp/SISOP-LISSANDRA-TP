@@ -30,15 +30,15 @@ char* getValue(char* table, int key) {
 
             return resultado->value;
         } else {
-            log_info(log_FileSystem, "No existe la key en la tabla: %i", key);
+            log_info(log_FileSystem, "No existe la key en la tabla: %i \n", key);
             printf("Se intento buscar una key no existente en la tabla: %i \n", key);
-            return "error";
+            return NULL;
         }
 
     } else {
-        log_info(log_FileSystem, "No existe la tabla en la mematble %s");
+        log_info(log_FileSystem, "No existe la tabla en la mematble \n");
         printf("Se intento buscar en una tabla no existente en la memtable: %s \n", table);
-        return "error";
+        return NULL;
     }
 }
 

@@ -17,10 +17,14 @@
 #include "commons/collections/list.h"
 #include "../utils/tablesHandler.h"
 
+// Flags que indican quien ejecuta el comando
+#define CONSOLE_REQUEST	1
+#define SOCKET_REQUEST	0
+
 t_log* log_FileSystem;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
-void comando_select(char* table, int key);
+char* comando_select(char* table, int key, int requestOrigin);
 void comando_insert(char* table, int key, char* value, int timestamp,int socket);
 void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion,int socket);
 void comando_describe_all(int socket);

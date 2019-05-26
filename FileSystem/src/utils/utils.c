@@ -155,7 +155,7 @@ int bloque_libre() {
     return -1;
 }
 
-void cantidad_bloquesLibres(){
+int cantidad_bloquesLibres(){
 
     int bloques_libres = 0;
     int bloque_libre;
@@ -167,7 +167,8 @@ void cantidad_bloquesLibres(){
         if(bloque_libre == 0)bloques_libres ++;
         bit++;
     }
-    printf("La cantidad de bloques libres que tengo es: %i \n", bloques_libres);
+
+    return bloques_libres;
 }
 
 void borrar_particion(char* path) {

@@ -108,12 +108,13 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
             char* valor = comando_select(select->nameTable, select->key, SOCKET_REQUEST);
+
             if(valor != NULL) {
                 serializar_string(socket, valor);
-            }else {
-                serializar_string(socket, "No encontré nada bro\n");
-
+            } else {
+                serializar_string(socket, NULL);
             }
+
             break;
         }
         case COMAND_CREATE: {

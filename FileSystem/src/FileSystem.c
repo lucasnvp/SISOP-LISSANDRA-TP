@@ -190,19 +190,17 @@ void consola() {
                     int timestamp = atoi(timestamp_string);
 
                     string_to_upper(table);
-                    comando_insert(table, key, value, timestamp,-1);
+                    comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
                 } else {
 
                     if (comandos->cantArgs == 3) {
                         char* table = comandos->arg[0];
                         char* key_string = comandos->arg[1];
                         char* value = comandos->arg[2];
-
                         int key = atoi(key_string);
-                        int timestamp = (int) time(NULL);
-
                         string_to_upper(table);
-                        comando_insert(table, key, value, timestamp,-1);
+
+                        comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }

@@ -52,6 +52,13 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
+    int currentTime = timestamp;
+
+    // NOT_TIMESTAMP
+    if(timestamp < 0) {
+        currentTime = getCurrentTime();
+    }
+
     int existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
@@ -60,7 +67,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
         return;
     }
 
-    registro_tad * registroTad = new_registro_tad(timestamp, key, value);
+    registro_tad * registroTad = new_registro_tad(currentTime, key, value);
 
     if(insertValue(table, registroTad)) {
         if(socket != -1){

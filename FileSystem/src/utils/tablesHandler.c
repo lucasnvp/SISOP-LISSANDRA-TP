@@ -87,6 +87,8 @@ int getSizeRegistroTad(registro_tad* registro) {
 
 int getBloquesParaRegistro(registro_tad *registro) {
     int tamanioRegistro = getSizeRegistroTad(registro);
+
+    // Redondea hacia arriba
     return 1 + ((tamanioRegistro - 1) / TAMANIO_BLOQUES);
 }
 

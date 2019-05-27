@@ -21,14 +21,14 @@ int main(){
     // Inicializar Queue y Semaforos
     init_queue_and_sem();
 
-    // Conexion al servidor FileSystem
-    connect_server_Memoria();
-
     // Init listado de memorias
-    init_memories(config);
+    init_memories();
 
     // Init listado de criterios
     init_criterios();
+
+    // Conexion al servidor FileSystem
+    connect_server_Memoria();
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
@@ -64,8 +64,7 @@ void connect_server_Memoria(){
         log_info(log_Console,"Connected successfully to the Memory");
         serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
         uint32_t memoryNumber = deserializar_int(SERVIDOR_MEMORIA);
-        printf("Memory Number: %d", memoryNumber);
-        // todo agregar la memoria a la lista, y guardar el socket
+        add_memory(memoryNumber, config->IP_MEMORIA, config->PUERTO_MEMORIA, SERVIDOR_MEMORIA);
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de Memoria");
         exit(EXIT_SUCCESS);

@@ -5,22 +5,22 @@
 #include "memoria.h"
 #include "../config/Config_kernel.h"
 
-void init_memories (Type_Config* config) {
+void init_memories () {
     LIST_MEMORIES = list_create();
-    add_memory(1, config->IP_MEMORIA, config->PUERTO_MEMORIA);
 };
 
-memory_tad* memory_new (uint32_t number, char* ip, uint32_t port) {
+memory_tad* memory_new (uint32_t number, char* ip, uint32_t port, uint32_t socket) {
     memory_tad* auxMemory = malloc(sizeof(auxMemory));
     auxMemory->MEMORY_NUMBER = number;
     auxMemory->IP_MEMORIA = strdup(ip);
     auxMemory->PUERTO_MEMORIA = port;
+    auxMemory->SOCKET = socket;
     auxMemory->ACTIVA = true;
     return auxMemory;
 }
 
-void add_memory (uint32_t number, char* ip, uint32_t port) {
-    memory_tad* auxMemory = memory_new(number, ip, port);
+void add_memory (uint32_t number, char* ip, uint32_t port, uint32_t socket) {
+    memory_tad* auxMemory = memory_new(number, ip, port, socket);
     list_add(LIST_MEMORIES, auxMemory);
 }
 

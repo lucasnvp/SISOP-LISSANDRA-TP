@@ -26,7 +26,7 @@ void add_memory (uint32_t number, char* ip, uint32_t port, uint32_t socket) {
 
 memory_tad* search_memory(uint32_t number){
     int _is_the_memory(memory_tad* m){
-        return m->MEMORY_NUMBER = number;
+        return m->MEMORY_NUMBER == number;
     }
 
     memory_tad* auxMemory = list_find(LIST_MEMORIES, (void*) _is_the_memory);

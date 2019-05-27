@@ -14,9 +14,17 @@ void agregar_tests_memoria() {
 }
 
 int inicializar_memoria() {
-    LIST_MEMORIES = list_create();
-    memory_tad* memory = memory_new(1, "127.0.0.1", 8080, 1);
-    list_add(LIST_MEMORIES, memory);
+    init_memories();
+
+    add_memory(1, "127.0.0.1", 8080, 1);
+    add_memory(2, "127.0.0.1", 8080, 2);
+
+//    memory_tad* m3 = memory_new(3, "127.0.0.1", 8080, 3);
+//    list_add(LIST_MEMORIES, m3);
+//
+//    memory_tad* m4 = memory_new(4, "127.0.0.1", 8080, 4);
+//    list_add(LIST_MEMORIES, m4);
+
     return 0;
 }
 
@@ -28,6 +36,8 @@ void test_memoria_existe_and_activa () {
     inicializar_memoria();
 
     bool existe = exist_memory(1);
+    CU_ASSERT_TRUE(existe);
+    existe = exist_memory(2);
     CU_ASSERT_TRUE(existe);
 }
 
@@ -42,7 +52,7 @@ void test_memoria_existe_and_desactivada () {
 void test_memoria_no_existe () {
     inicializar_memoria();
 
-    bool existe = exist_memory(2);
+    bool existe = exist_memory(10);
     CU_ASSERT_FALSE(existe);
 }
 

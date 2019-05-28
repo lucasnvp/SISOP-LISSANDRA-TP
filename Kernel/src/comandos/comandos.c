@@ -45,7 +45,7 @@ void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR){
         sem_post(SEM_PLANIFICADOR);
     } else{
         print_console((void*) log_info, "No se encontro el archivo");
-        log_warning(log_Kernel, "No se encontro el archivo");
+        log_info(log_Kernel, "No se encontro el archivo");
     }
 }
 

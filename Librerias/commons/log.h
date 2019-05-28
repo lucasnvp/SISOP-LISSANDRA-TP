@@ -85,7 +85,7 @@
 	* [WARNING] hh:mm:ss:mmmm PROCESS_NAME/(PID:TID): MESSAGE
 	*
 	*/
-	void 		log_warning(t_log* logger, const char* message, ...);
+	void 		log_info(t_log *logger, const char *message, ...);
 
 	/**
 	* @NAME: log_error

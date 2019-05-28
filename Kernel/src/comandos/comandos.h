@@ -29,6 +29,5 @@ void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t
 void comando_describe(u_int32_t socket, char* tabla);
 void comando_drop(u_int32_t socket, char* tabla);
 void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR);
-void comando_metrics();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

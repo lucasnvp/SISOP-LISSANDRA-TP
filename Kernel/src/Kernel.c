@@ -65,6 +65,7 @@ void connect_server_Memoria(){
         serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
         uint32_t memoryNumber = deserializar_int(SERVIDOR_MEMORIA);
         add_memory(memoryNumber, config->IP_MEMORIA, config->PUERTO_MEMORIA, SERVIDOR_MEMORIA);
+        log_info(log_Kernel, "Connected Memory Number: %d", memoryNumber);
     } else{
         log_warning(log_Console, "No se puedo conectar al servidor de Memoria");
         exit(EXIT_SUCCESS);

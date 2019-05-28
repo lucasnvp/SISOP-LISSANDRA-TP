@@ -3,14 +3,13 @@
 //
 
 #include "memoria.h"
-#include "../config/Config_kernel.h"
 
 void init_memories () {
     LIST_MEMORIES = list_create();
 };
 
 memory_tad* memory_new (uint32_t number, char* ip, uint32_t port, uint32_t socket) {
-    memory_tad* auxMemory = malloc(sizeof(auxMemory));
+    memory_tad* auxMemory = malloc(sizeof(memory_tad));
     auxMemory->MEMORY_NUMBER = number;
     auxMemory->IP_MEMORIA = strdup(ip);
     auxMemory->PUERTO_MEMORIA = port;

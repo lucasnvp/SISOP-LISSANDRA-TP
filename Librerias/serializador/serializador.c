@@ -140,3 +140,57 @@ select_tad* deserializar_select(uint32_t socket) {
     free(buffer);
     return select;
 }
+
+void serializar_create(uint32_t socket, create_tad* create) {
+    uint32_t datos_size = sizeof(create_tad) + (strlen(create->nameTable) + 1) + (strlen(create->consistencia) + 1);
+    void* ENVIAR = malloc(datos_size);
+    uint32_t offset = 0;
+    uint32_t size_to_send;
+
+    size_to_send = strlen(create->nameTable) + 1;
+    memcpy(ENVIAR + offset, create->nameTable, size_to_send);
+    offset += size_to_send;
+
+    size_to_send = strlen(create->consistencia) + 1;
+    memcpy(ENVIAR + offset, create->consistencia, size_to_send);
+    offset += size_to_send;
+
+    size_to_send = sizeof(create->compactacion);
+    memcpy(ENVIAR + offset, &(create->compactacion),size_to_send);
+    offset += size_to_send;
+
+    size_to_send = sizeof(create->particiones);
+    memcpy(ENVIAR + offset, &(create->particiones),size_to_send);
+    offset += size_to_send;
+
+    serializar_int(socket, offset);
+    send_data(socket, ENVIAR, offset);
+    free(ENVIAR);
+}
+
+create_tad* deserializar_create(uint32_t socket) {
+    uint32_t buffer_size = deserializar_int(socket);
+    void* buffer = malloc(buffer_size);
+    create_tad* create = malloc(sizeof(create_tad));
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
+
+    recive_data(socket, buffer, buffer_size);
+
+    create->nameTable = strdup(buffer + offset);
+    offset += strlen(create->nameTable) + 1;
+
+    create->consistencia = strdup(buffer + offset);
+    offset += strlen(create->consistencia) + 1;
+
+    size_to_recive = sizeof(create->compactacion);
+    memcpy(&create->compactacion, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    size_to_recive = sizeof(create->particiones);
+    memcpy(&create->particiones, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    free(buffer);
+    return create;
+}

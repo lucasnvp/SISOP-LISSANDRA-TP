@@ -32,4 +32,14 @@ typedef struct select_tad{
 select_tad* new_select_tad(char* nameTable, uint32_t key);
 void free_select_tad(select_tad* select);
 
+typedef struct create_tad{
+    char* nameTable;
+    char* consistencia;
+    u_int32_t particiones;
+    u_int32_t compactacion;
+}create_tad;
+
+create_tad* new_create_tad(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
+void free_create_tad(create_tad* create);
+
 #endif /* ESTRUCTURAS_H_ */

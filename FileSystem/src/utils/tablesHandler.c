@@ -1,24 +1,124 @@
 
 #include "tablesHandler.h"
 
-void _crearTmp(char* nombreTabla, t_list * registros){
+void _dumpearTabla(char* nombreTabla, t_list* registros){
 
     t_list* bloquesParaAsignar = list_create();
-    int hayLugar = getBloquesNecesarios(registros, bloquesParaAsignar);
 
-    if(hayLugar) {
+    char* registroasADumpear = transformAllRegistersToUniqueString(registros);
+
+    int hayLugar = getBloquesNecesariosParaDumpearTabla(registroasADumpear, bloquesParaAsignar);
+
+    if(hayLugar == true) {
         crearArchivoTemporal(nombreTabla, bloquesParaAsignar);
         list_destroy(registros);
+    } else {
+        // TODO: que hacemos si no hay lugar?
     }
 
+    list_destroy(bloquesParaAsignar);
+
+}
+
+int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar) {
+
+    int bloquesNecesarios = cuantosBloquesOcupa(registros);
+
+    return asignarBloquesParaRegistros(bloquesAOcupar, bloquesNecesarios);
+}
+
+char* transformAllRegistersToUniqueString(t_list *registros) {
+
+    t_list* str_registros = list_map(registros, (void *) transformRegisterToString);
+
+    return (char*) list_fold(str_registros, string_new(), (void*) _concatenarRegistros);
+}
+
+char* transformRegisterToString(registro_tad *registro) {
+
+    char* str_registro = string_new();
+    string_append(&str_registro, string_itoa(registro->timestamp));
+    string_append(&str_registro, ";");
+    string_append(&str_registro, string_itoa(registro->key));
+    string_append(&str_registro, ";");
+    string_append(&str_registro, registro->value);
+    string_append(&str_registro, "\n");
+
+    return str_registro;
+}
+
+char* _concatenarRegistros(char* seed, char* registro) {
+
+    string_append(&seed, registro);
+
+    return seed;
+}
+
+int cuantosBloquesOcupa(char* value) {
+
+    int tamanio = string_length(value);
+
+    return calcualarBloques(tamanio);
+}
+
+int calcualarBloques(int tamanio) {
+    // Redondea hacia arriba
+    return 1 + ((tamanio - 1) / TAMANIO_BLOQUES);
+}
+
+// Deprecated
+int getBloquesParaRegistro(registro_tad *registro) {
+    int tamanioRegistro = getSizeRegistroTad(registro);
+
+    return calcualarBloques(tamanioRegistro);
+}
+
+// Deprecated
+int getSizeRegistroTad(registro_tad* registro) {
+    char* regKey = string_itoa(registro->key);
+    char* regTime = string_itoa(registro->timestamp);
+    char* regValue = registro->value;
+
+    int totalSize = string_length(regKey)
+                    + string_length(regTime)
+                    + string_length(regValue)
+                    + (string_length(";") * 2)
+                    + 1; // \n
+
+    return totalSize;
+}
+
+int asignarBloquesParaRegistros(t_list *bloquesNecesarios, int cantidad) {
+
+    if(cantidad_bloquesLibres() >= cantidad) {
+
+        for(int i = 0; i < cantidad; i++) {
+
+            int bloqueLibre = bloque_libre();
+
+            if(bloqueLibre != -1) {
+                bitarray_set_bit(bitarray, bloqueLibre);
+                list_add(bloquesNecesarios, (void*) bloqueLibre);
+            } else {
+                //TODO: liberar los bloques asignados hasta el momento
+                return false;
+            }
+
+        }
+
+    } else {
+        return false;
+    }
+
+    return true;
 }
 
 void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
 
-    int flag = 1;
+    int seguirHastaEncontrarElTmpCorrespondiente = true;
     int dump = 1;
 
-    while( flag == 1) {
+    while( seguirHastaEncontrarElTmpCorrespondiente == true) {
 
         char* tmp = crear_path_tmp(nombreTabla, dump);
 
@@ -48,7 +148,7 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
             free(bloquesDelArchivo);
             fclose(newFD);
 
-            flag = 0;
+            seguirHastaEncontrarElTmpCorrespondiente = false;
 
         } else {
 
@@ -69,57 +169,6 @@ char* crear_path_tmp(char* tabla, int dump) {
     string_append(&tmp, ".tmp");
 
     return tmp;
-}
-
-int getSizeRegistroTad(registro_tad* registro) {
-    char* regKey = string_itoa(registro->key);
-    char* regTime = string_itoa(registro->timestamp);
-    char* regValue = registro->value;
-
-    int totalSize = string_length(regKey)
-            + string_length(regTime)
-            + string_length(regValue)
-            + (string_length(";") * 2)
-            + 1; // \n
-
-    return totalSize;
-}
-
-int getBloquesParaRegistro(registro_tad *registro) {
-    int tamanioRegistro = getSizeRegistroTad(registro);
-
-    // Redondea hacia arriba
-    return 1 + ((tamanioRegistro - 1) / TAMANIO_BLOQUES);
-}
-
-int getBloquesNecesarios(t_list* registros, t_list* bloquesAOcupar) {
-
-    for(int j = 0; j < list_size(registros); j++) {
-
-        int bloquesNecesarios = getBloquesParaRegistro((list_get(registros, j)));
-
-        if(cantidad_bloquesLibres() >= bloquesNecesarios) {
-
-            for(int i = 0; i < bloquesNecesarios; i++) {
-
-                int bloqueLibre = bloque_libre();
-
-                if(bloqueLibre != -1) {
-                    bitarray_set_bit(bitarray, bloqueLibre);
-                    list_add(bloquesAOcupar, (void*)bloqueLibre);
-                } else {
-                    //TODO: liberar los bloques asignados hasta el momento
-                    return false;
-                }
-
-            }
-
-        } else {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 

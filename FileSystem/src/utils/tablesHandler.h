@@ -10,10 +10,16 @@
 #include "../utils/utils.h"
 #include <commonsfunctions/functions.h>
 
-void _crearTmp(char* nombreTabla, t_list * registros);
+void _dumpearTabla(char *nombreTabla, t_list *registros);
 int getSizeRegistroTad(registro_tad* registro);
 int getBloquesParaRegistro(registro_tad *registro);
 void crearArchivoTemporal(char* nombreTabla, t_list* bloques);
 char* crear_path_tmp(char* tabla, int dump);
-int getBloquesNecesarios(t_list* registros, t_list* bloquesAOcupar);
+int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar);
+char* transformRegisterToString(registro_tad *registro);
+char* transformAllRegistersToUniqueString(t_list *registros);
+int cuantosBloquesOcupa(char* value);
+int calcualarBloques(int tamanio);
+char* _concatenarRegistros(char* seed, char* registro);
+int asignarBloquesParaRegistros(t_list *bloquesNecesarios, int cantidad);
 #endif //TP_2019_1C_GANK_MID_TABLESHANDLER_H

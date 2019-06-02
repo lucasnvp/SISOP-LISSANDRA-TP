@@ -178,6 +178,6 @@ void comando_drop(char* table, int socket){
 }
 
 void comando_dump(){
-    dictionary_iterator(memtable,(void *) _crearTmp);
+    dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
 }

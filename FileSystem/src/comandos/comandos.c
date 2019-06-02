@@ -31,16 +31,24 @@ char* comando_select(char* table, int key, int requestOrigin){
 
     int particion = key % particiones;
 
-    char* value = getValue(table, key);
+    registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
 
-    if(value == NULL) {
+    registro_tad* registerFromTemporal = getValueFromTemporal(table, key);
+
+    /*
+     * char* valueFromTemporalC = getValueFromTemporalInCompression(table, key);
+     *
+     * char* valueFromBlock = getValueFromBlock(table, key)
+     */
+
+    if(registerFromMemtable == NULL) {
         return NULL;
     }else {
         if(requestOrigin != SOCKET_REQUEST) {
-            printf("VALUE: %s\n", value);
+            printf("VALUE: %s\n", registerFromMemtable->value);
             return NULL;
         } else {
-            return value;
+            return registerFromMemtable->value;
         }
     }
 

@@ -5,20 +5,20 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
 
     t_list* bloquesParaAsignar = list_create();
 
-    char* registroasADumpear = transformAllRegistersToUniqueString(registros);
+    char* registrosADumpear = transformAllRegistersToUniqueString(registros);
 
-    int hayLugar = getBloquesNecesariosParaDumpearTabla(registroasADumpear, bloquesParaAsignar);
+    int hayLugar = getBloquesNecesariosParaDumpearTabla(registrosADumpear, bloquesParaAsignar);
 
     if(hayLugar == true) {
         crearArchivoTemporal(nombreTabla, bloquesParaAsignar);
-        guardarEnBloques(registroasADumpear, bloquesParaAsignar);
+        guardarEnBloques(registrosADumpear, bloquesParaAsignar);
         list_destroy(registros);
     } else {
         // TODO: que hacemos si no hay lugar?
     }
 
     list_destroy(bloquesParaAsignar);
-    free(registroasADumpear);
+    free(registrosADumpear);
 }
 
 int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar) {
@@ -65,28 +65,6 @@ int cuantosBloquesOcupa(char* value) {
 int calcualarBloques(int tamanio) {
     // Redondea hacia arriba
     return 1 + ((tamanio - 1) / TAMANIO_BLOQUES);
-}
-
-// Deprecated
-int getBloquesParaRegistro(registro_tad *registro) {
-    int tamanioRegistro = getSizeRegistroTad(registro);
-
-    return calcualarBloques(tamanioRegistro);
-}
-
-// Deprecated
-int getSizeRegistroTad(registro_tad* registro) {
-    char* regKey = string_itoa(registro->key);
-    char* regTime = string_itoa(registro->timestamp);
-    char* regValue = registro->value;
-
-    int totalSize = string_length(regKey)
-                    + string_length(regTime)
-                    + string_length(regValue)
-                    + (string_length(";") * 2)
-                    + 1; // \n
-
-    return totalSize;
 }
 
 int asignarBloquesParaRegistros(t_list *bloquesNecesarios, int cantidad) {
@@ -140,7 +118,11 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
             FILE * newFD;
             newFD = fopen(tmp, "w+");
 
-            fwrite(TAMANIO_BLOQUE,1,strlen(TAMANIO_BLOQUE),newFD);
+            char* tamanioDeBloques = string_new();
+            string_append(&tamanioDeBloques, "TAMANIO_BLOQUES=");
+            string_append(&tamanioDeBloques, string_itoa(TAMANIO_BLOQUES));
+            string_append(&tamanioDeBloques, "\n");
+            fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
 
             char* bloquesDelArchivo = string_new();
             string_append(&bloquesDelArchivo, "BLOQUES=[");
@@ -205,8 +187,9 @@ void guardarEnBloques(char* value, t_list* bloques) {
         free(pathBloque);
         free(take);
     }
-}
 
+    free(valorAGuardar);
+}
 
 char* crear_path_bloque(int bloque) {
     char* nroBloque = string_duplicate(montajeBloques);
@@ -216,5 +199,3 @@ char* crear_path_bloque(int bloque) {
 
     return nroBloque;
 }
-
-

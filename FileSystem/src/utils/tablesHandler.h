@@ -22,4 +22,6 @@ int cuantosBloquesOcupa(char* value);
 int calcualarBloques(int tamanio);
 char* _concatenarRegistros(char* seed, char* registro);
 int asignarBloquesParaRegistros(t_list *bloquesNecesarios, int cantidad);
+char* crear_path_bloque(int bloque);
+void guardarEnBloques(char* value, t_list* bloques);
 #endif //TP_2019_1C_GANK_MID_TABLESHANDLER_H

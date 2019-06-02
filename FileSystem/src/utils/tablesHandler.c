@@ -11,13 +11,14 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
 
     if(hayLugar == true) {
         crearArchivoTemporal(nombreTabla, bloquesParaAsignar);
+        guardarEnBloques(registroasADumpear, bloquesParaAsignar);
         list_destroy(registros);
     } else {
         // TODO: que hacemos si no hay lugar?
     }
 
     list_destroy(bloquesParaAsignar);
-
+    free(registroasADumpear);
 }
 
 int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar) {
@@ -113,6 +114,18 @@ int asignarBloquesParaRegistros(t_list *bloquesNecesarios, int cantidad) {
     return true;
 }
 
+char* crear_path_tmp(char* tabla, int dump) {
+    char* tmp = string_duplicate(montajeTablas);
+    string_append(&tmp, "/");
+    string_append(&tmp, tabla);
+    string_append(&tmp, "/");
+    char* str_dump = string_itoa(dump);
+    string_append(&tmp, str_dump);
+    string_append(&tmp, ".tmp");
+
+    return tmp;
+}
+
 void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
 
     int seguirHastaEncontrarElTmpCorrespondiente = true;
@@ -159,17 +172,49 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
     }
 }
 
-char* crear_path_tmp(char* tabla, int dump) {
-    char* tmp = string_duplicate(montajeTablas);
-    string_append(&tmp, "/");
-    string_append(&tmp, tabla);
-    string_append(&tmp, "/");
-    char* str_dump = string_itoa(dump);
-    string_append(&tmp, str_dump);
-    string_append(&tmp, ".tmp");
+void guardarEnBloques(char* value, t_list* bloques) {
 
-    return tmp;
+    int limite = string_length(value);
+    char* valorAGuardar = string_duplicate(value);
+
+    for(int i = 0; i < list_size(bloques); i++) {
+
+        char* pathBloque = crear_path_bloque((int) list_get(bloques, i));
+
+        FILE * bloque = fopen(pathBloque, "w+");
+
+        int limiteSuperior;
+
+        if(limite >= TAMANIO_BLOQUES) {
+            limiteSuperior = TAMANIO_BLOQUES;
+        } else {
+            limiteSuperior = limite;
+        }
+
+        char* take = string_substring(valorAGuardar, 0, limiteSuperior);
+
+        fwrite(take,1,limite,bloque);
+
+        limite -= string_length(take);
+
+        if(limite > 0) {
+            valorAGuardar = string_substring_from(valorAGuardar, limiteSuperior);
+        }
+
+        fclose(bloque);
+        free(pathBloque);
+        free(take);
+    }
 }
 
+
+char* crear_path_bloque(int bloque) {
+    char* nroBloque = string_duplicate(montajeBloques);
+    char* str_nroBloque = string_itoa(bloque);
+    string_append(&nroBloque, str_nroBloque);
+    string_append(&nroBloque, ".bin");
+
+    return nroBloque;
+}
 
 

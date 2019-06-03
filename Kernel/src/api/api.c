@@ -5,6 +5,7 @@
 #include "api.h"
 
 void api_select(u_int32_t socket, char* tabla, u_int16_t key){
+    // todo Falla si no figura en la tabla en la metadata
     serializar_int(socket, COMAND_SELECT);
     select_tad* select = new_select_tad(tabla, key);
     serializar_select(socket, select);
@@ -14,6 +15,7 @@ void api_select(u_int32_t socket, char* tabla, u_int16_t key){
 }
 
 void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
+    // todo Falla si no figura en la tabla en la metadata
     serializar_int(socket, COMAND_INSERT);
     insert_tad* insert = new_insert_tad(tabla, key, value);
     serializar_insert(socket, insert);
@@ -37,6 +39,7 @@ void api_describe(u_int32_t socket, char* tabla){
 }
 
 void api_drop(u_int32_t socket, char* tabla){
+    // todo Falla si no figura en la tabla en la metadata
     serializar_int(socket, COMAND_DROP);
     // todo Envio la info a la memoria
     // todo Confirmacion de la operacion

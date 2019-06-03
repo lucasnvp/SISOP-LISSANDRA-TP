@@ -93,7 +93,7 @@ void connect_server_FileSystem(){
         serializar_int(SERVIDOR_FILESYSTEM, NUEVA_CONEXION_MEMORIA_TO_FS);
         tamanoValue = deserializar_int(SERVIDOR_FILESYSTEM);
     } else{
-        log_warning(log_Console, "No se puedo conectar al servidor de File System");
+        log_info(log_Console, "No se puedo conectar al servidor de File System");
         exit(EXIT_SUCCESS);
     }
 }

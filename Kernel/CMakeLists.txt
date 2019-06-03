@@ -10,7 +10,7 @@ add_executable(Kernel
         src/api/api.c
         src/api/api.h
         src/tads/script.c
-        src/tads/script.h src/criterios/criterios.c src/criterios/criterios.h)
+        src/tads/script.h src/criterios/criterios.c src/criterios/criterios.h src/metadata/metadata.c src/metadata/metadata.h src/metricas/metricas.c src/metricas/metricas.h)
 
 target_link_libraries (Kernel PRIVATE Librerias)
 target_link_libraries (Kernel PRIVATE pthread)

@@ -36,3 +36,18 @@ void free_select_tad(select_tad* select) {
     free(select->nameTable);
     free(select);
 }
+
+create_tad* new_create_tad(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {
+    create_tad* create = malloc(sizeof(create_tad));
+    create->nameTable = strdup(nameTable);
+    create->consistencia = strdup(consistencia);
+    create->particiones = particiones;
+    create->compactacion = compactacion;
+    return create;
+}
+
+void free_create_tad(create_tad* create) {
+    free(create->nameTable);
+    free(create->consistencia);
+    free(create);
+}

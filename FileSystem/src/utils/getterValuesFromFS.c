@@ -8,7 +8,7 @@ registro_tad* getValueFromTemporal(char* table, int key) {
 
     int mientrasExistanTemporales = true;
     int tmp = 1;
-    registro_tad* registroMax;
+    registro_tad* registroMax = NULL;
 
     while(mientrasExistanTemporales == true) {
 
@@ -19,13 +19,13 @@ registro_tad* getValueFromTemporal(char* table, int key) {
         if(ValidarArchivo(pathBase) == true) {
 
             // TODO: leer valores y transformarlo en una lista de registros
-            
+
         } else {
 
             mientrasExistanTemporales = false;
-            registroMax = NULL;
         }
 
+        tmp++;
         free(pathBase);
 
     }

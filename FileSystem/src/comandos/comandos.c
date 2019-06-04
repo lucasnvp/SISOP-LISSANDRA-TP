@@ -43,11 +43,16 @@ char* comando_select(char* table, int key, int requestOrigin){
 
     if(registerFromMemtable == NULL) {
         return NULL;
+
     }else {
+
         if(requestOrigin != SOCKET_REQUEST) {
+
             printf("VALUE: %s\n", registerFromMemtable->value);
             return NULL;
+
         } else {
+
             return registerFromMemtable->value;
         }
     }
@@ -78,7 +83,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
     registro_tad * registroTad = new_registro_tad(currentTime, key, value);
 
     if(insertValue(table, registroTad)) {
-        if(socket != -1){
+        if(socket != CONSOLE_REQUEST){
             //TODO Serializar mensaje al socket
         } else {
             print_console((void*) log_info, "Se realizo el Insert correctamente \n");
@@ -103,33 +108,36 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
     int existe = ValidarArchivo(nueva_tabla);
 
     if( existe == true ) {
+
         log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre %s", table);
-        printf("Se intentó crear una carpeta ya existente con el nombre %s", table);
         // TODO: retornar error, validar con los demás
     } else {
+
         crear_carpeta(nueva_tabla);
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
-        printf("Se creo una carpeta a través del comando CREATE: %s \n", table);
         if(socket != -1){
             //TODO Enviar alta de tabla a Memoria
         }
 
-        cantidad_bloquesLibres();
         CANTIDAD_TABLAS++;
         log_info(log_FileSystem, "La cantidad total de tablas actual es: ", CANTIDAD_TABLAS);
-        printf("La cantidad total de tablas actual es: %i \n", CANTIDAD_TABLAS);
     }
 }
 
 void comando_describe_all(int socket){
+
     print_console((void*) log_info, "Comando describe \n");
-    if(socket != -1){
+
+    if(socket != CONSOLE_REQUEST){
+
         //TODO Serializar info al socket
     }else{
+
         mostrar_metadatas();
     }
+
     log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para todas las tablas");
 }
 
@@ -146,18 +154,22 @@ void comando_describe(char* nombre_tabla,int socket){
 
     if( existe == true) {
         t_config * metadata = obtener_metadata_table(tabla_objetivo);
-        if(socket != -1){
+
+        if(socket != CONSOLE_REQUEST){
+
             //TODO Serializar metadata a enviar a socket
         }else{
+
             mostrar_metadata_tabla(metadata, nombre_tabla);
         }
+
         config_destroy(metadata);
 
         log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: ", nombre_tabla);
 
     } else {
+
         log_info(log_FileSystem, "No existe una tabla con el nombre ", nombre_tabla);
-        printf("NO EXISTE UNA TABLA CON EL NOMBRE: %s \n", nombre_tabla);
     }
 }
 
@@ -175,10 +187,14 @@ void comando_drop(char* table, int socket){
     // TODO: recorrer directorio de la tabla para liberar los bloques usados
     // TODO: usar la funcion para elmiminar un directorio entero de las commonsFunctions
     if( existe == true ) {
+
         borrar_particion(tabla_objetivo);
-        if(socket != -1){
+
+        if(socket != CONSOLE_REQUEST){
+
             //TODO Serializar msj por socket
         }else{
+
             printf("La tabla se elimino");
         }
 

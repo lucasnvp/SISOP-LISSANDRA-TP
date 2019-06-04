@@ -42,4 +42,14 @@ typedef struct create_tad{
 create_tad* new_create_tad(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void free_create_tad(create_tad* create);
 
+typedef struct describe_tad{
+    char* nameTable;
+    char* consistencia;
+    u_int32_t particiones;
+    u_int32_t compactacion;
+}describe_tad;
+
+describe_tad* new_describe_tad(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
+void free_create_tad(describe_tad* create);
+
 #endif /* ESTRUCTURAS_H_ */

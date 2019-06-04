@@ -6,6 +6,8 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include <commons/collections/list.h>
+
 #include "../servidor/servidor.h"
 #include "estructuras.h"
 
@@ -36,5 +38,11 @@ select_tad* deserializar_select(uint32_t socket);
 
 void serializar_create(uint32_t socket, create_tad* create);
 create_tad* deserializar_create(uint32_t socket);
+
+void serializar_describe(uint32_t socket, describe_tad* describe);
+describe_tad* deserializar_describe(uint32_t socket);
+
+void serializar_describe_all(uint32_t socket, t_list* describe_all);
+describe_tad* deserializar_describe_all(uint32_t socket);
 
 #endif /* SERIALIZADOR_H_ */

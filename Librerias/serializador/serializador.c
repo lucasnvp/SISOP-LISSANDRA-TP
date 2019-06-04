@@ -194,3 +194,19 @@ create_tad* deserializar_create(uint32_t socket) {
     free(buffer);
     return create;
 }
+
+void serializar_describe(uint32_t socket, describe_tad* describe) {
+
+}
+
+describe_tad* deserializar_describe(uint32_t socket) {
+
+}
+
+void serializar_describe_all(uint32_t socket, t_list* describe_all) {
+
+}
+
+describe_tad* deserializar_describe_all(uint32_t socket) {
+    
+}

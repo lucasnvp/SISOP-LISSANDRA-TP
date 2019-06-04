@@ -9,10 +9,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include <semaphore.h>
 #include <sys/inotify.h>
+#include <sys/select.h>
 
 #include <commons/collections/queue.h>
 #include <commons/string.h>

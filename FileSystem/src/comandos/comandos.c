@@ -83,6 +83,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
     registro_tad * registroTad = new_registro_tad(currentTime, key, value);
 
     if(insertValue(table, registroTad)) {
+
         if(socket != CONSOLE_REQUEST){
             //TODO Serializar mensaje al socket
         } else {
@@ -109,16 +110,25 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 
     if( existe == true ) {
 
-        log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre %s", table);
-        // TODO: retornar error, validar con los demás
+        log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre", table);
+
+        if(socket != CONSOLE_REQUEST) {
+            serializar_int(socket, false);
+        } else {
+            printf("Se intentó crear una carpeta ya existente con el nombre %s", table);
+        }
+
     } else {
 
         crear_carpeta(nueva_tabla);
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
-        if(socket != -1){
-            //TODO Enviar alta de tabla a Memoria
+
+        if(socket != CONSOLE_REQUEST) {
+            serializar_int(socket, true);
+        } else {
+            printf("Se creo una carpeta a través del comando CREATE: %s", table);
         }
 
         CANTIDAD_TABLAS++;
@@ -130,18 +140,12 @@ void comando_describe_all(int socket){
 
     print_console((void*) log_info, "Comando describe \n");
 
-    if(socket != CONSOLE_REQUEST){
-
-        //TODO Serializar info al socket
-    }else{
-
-        mostrar_metadatas();
-    }
+    mostrar_metadatas(socket);
 
     log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para todas las tablas");
 }
 
-void comando_describe(char* nombre_tabla,int socket){
+void comando_describe(char* nombre_tabla, int socket){
     print_console((void*) log_info, "Comando describe \n");
 
     string_to_upper(nombre_tabla);
@@ -157,7 +161,13 @@ void comando_describe(char* nombre_tabla,int socket){
 
         if(socket != CONSOLE_REQUEST){
 
-            //TODO Serializar metadata a enviar a socket
+            describe_tad* describeTad = crearDescribe(nombre_tabla, metadata);
+
+            serializar_int(socket, true);
+            serializar_describe(socket, describeTad);
+
+            free_describe_tad(describeTad);
+
         }else{
 
             mostrar_metadata_tabla(metadata, nombre_tabla);
@@ -169,6 +179,7 @@ void comando_describe(char* nombre_tabla,int socket){
 
     } else {
 
+        serializar_int(socket, false);
         log_info(log_FileSystem, "No existe una tabla con el nombre ", nombre_tabla);
     }
 }

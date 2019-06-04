@@ -110,9 +110,10 @@ void connection_handler(uint32_t socket, uint32_t command){
             char* valor = comando_select(select->nameTable, select->key, SOCKET_REQUEST);
 
             if(valor != NULL) {
+                serializar_int(socket, true);
                 serializar_string(socket, valor);
             } else {
-                serializar_string(socket, NULL);
+                serializar_int(socket, false);
             }
 
             break;

@@ -30,5 +30,6 @@ char* crear_path_particion(char* path, int numero_particion);
 void borrar_particion(char* path);
 char** get_bloques_array(char* path);
 double getCurrentTime();
+describe_tad* crearDescribe(t_config* metadata, char* nombreTabla);
 
 #endif //TP_2019_1C_GANK_MID_UTILS_H

@@ -155,7 +155,7 @@ int bloque_libre() {
     return -1;
 }
 
-void cantidad_bloquesLibres(){
+int cantidad_bloquesLibres(){
 
     int bloques_libres = 0;
     int bloque_libre;
@@ -167,7 +167,8 @@ void cantidad_bloquesLibres(){
         if(bloque_libre == 0)bloques_libres ++;
         bit++;
     }
-    printf("La cantidad de bloques libres que tengo es: %i \n", bloques_libres);
+
+    return bloques_libres;
 }
 
 void borrar_particion(char* path) {
@@ -191,4 +192,10 @@ char** get_bloques_array(char* path) {
     char** bloquesarray = config_get_array_value(filetogetbloques, "BLOQUES");
     config_destroy(filetogetbloques);
     return bloquesarray;
+}
+
+double getCurrentTime() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 }

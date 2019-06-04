@@ -10,6 +10,7 @@
 #include <commons/string.h>
 #include <commons/collections/dictionary.h>
 #include <commons/collections/list.h>
+#include <sys/time.h>
 
 static int CANTIDAD_TABLAS = 0;
 
@@ -23,10 +24,11 @@ void mostrar_metadatas();
 void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion);
 void asignar_bloques(char* path);
 int bloque_libre();
-void cantidad_bloquesLibres();
+int cantidad_bloquesLibres();
 void crear_particiones(char* path, int cantidad_particiones);
 char* crear_path_particion(char* path, int numero_particion);
 void borrar_particion(char* path);
 char** get_bloques_array(char* path);
+double getCurrentTime();
 
 #endif //TP_2019_1C_GANK_MID_UTILS_H

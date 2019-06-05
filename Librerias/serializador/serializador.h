@@ -36,6 +36,9 @@ insert_tad* deserializar_insert(uint32_t socket);
 void serializar_select(uint32_t socket, select_tad* select);
 select_tad* deserializar_select(uint32_t socket);
 
+t_stream* serializar_table(struct table_tad* table);
+struct table_tad* deserializar_table(t_stream* stream);
+
 void serializar_create(uint32_t socket, create_tad* create);
 create_tad* deserializar_create(uint32_t socket);
 

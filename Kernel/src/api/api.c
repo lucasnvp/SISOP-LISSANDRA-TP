@@ -30,6 +30,12 @@ void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t par
     create_tad* create = new_create_tad(tabla, consistencia, particiones, compactacion);
     serializar_create(socket, create);
     free_create_tad(create);
+    uint32_t confirm = deserializar_int(socket);
+    if (confirm) {
+        log_info(log_Kernel_api, "Se creo la tabla: %s, con exito", tabla);
+    } else {
+        log_info(log_Kernel_api, "Error al crear la tabla: %s", tabla);
+    }
 }
 
 void api_describe(u_int32_t socket, char* tabla){

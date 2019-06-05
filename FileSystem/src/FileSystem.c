@@ -119,10 +119,14 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case COMAND_CREATE: {
-            //TODO Hacer deserializador de comando create
-
             //comando_create(table, consistencia, cantidad_particiones, compactacion,socket);
             log_info(log_FileSystem, "Create");
+            create_tad* create = deserializar_create(socket);
+            log_info(log_FileSystem,
+                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
+            free_create_tad(create);
+            serializar_int(socket, true);
             break;
         }
         default:

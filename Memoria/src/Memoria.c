@@ -181,7 +181,11 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria,
                      "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
                      create->nameTable, create->consistencia, create->particiones, create->compactacion);
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
+            serializar_create(SERVIDOR_FILESYSTEM, create);
             free_create_tad(create);
+            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+            serializar_int(socket, confirm);
             break;
         }
         case COMAND_DESCRIBE: {

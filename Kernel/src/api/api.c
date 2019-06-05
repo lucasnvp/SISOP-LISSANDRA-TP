@@ -24,16 +24,18 @@ void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
 
 void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
     serializar_int(socket, COMAND_CREATE);
-    // todo Envio la info a la memoria
-    // todo Recibo la confirmacion
     log_info(log_Kernel_api,
              "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
              tabla, consistencia, particiones, compactacion);
+    create_tad* create = new_create_tad(tabla, consistencia, particiones, compactacion);
+    serializar_create(socket, create);
+    free_create_tad(create);
 }
 
 void api_describe(u_int32_t socket, char* tabla){
     serializar_int(socket, COMAND_DESCRIBE);
     // todo Envio la info a la memoria
+    serializar_string(socket, tabla);
     // todo Confirmacion de la operacion
     log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
 }

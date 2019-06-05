@@ -148,11 +148,11 @@ t_stream* serializar_table(struct table_tad* table) {
     uint32_t size_to_send;
 
     size_to_send = strlen(table->nameTable) + 1;
-    memcpy(ENVIAR + offset, table->nameTable, size_to_send);
+    memcpy(ENVIAR->data + offset, table->nameTable, size_to_send);
     offset += size_to_send;
 
     size_to_send = strlen(table->consistencia) + 1;
-    memcpy(ENVIAR + offset, table->consistencia, size_to_send);
+    memcpy(ENVIAR->data + offset, table->consistencia, size_to_send);
     offset += size_to_send;
 
     size_to_send = sizeof(table->compactacion);
@@ -189,30 +189,10 @@ struct table_tad* deserializar_table(t_stream* stream) {
 }
 
 void serializar_create(uint32_t socket, create_tad* create) {
-    uint32_t datos_size = sizeof(create_tad) + (strlen(create->nameTable) + 1) + (strlen(create->consistencia) + 1);
-    void* ENVIAR = malloc(datos_size);
-    uint32_t offset = 0;
-    uint32_t size_to_send;
-
-    size_to_send = strlen(create->nameTable) + 1;
-    memcpy(ENVIAR + offset, create->nameTable, size_to_send);
-    offset += size_to_send;
-
-    size_to_send = strlen(create->consistencia) + 1;
-    memcpy(ENVIAR + offset, create->consistencia, size_to_send);
-    offset += size_to_send;
-
-    size_to_send = sizeof(create->compactacion);
-    memcpy(ENVIAR + offset, &(create->compactacion),size_to_send);
-    offset += size_to_send;
-
-    size_to_send = sizeof(create->particiones);
-    memcpy(ENVIAR + offset, &(create->particiones),size_to_send);
-    offset += size_to_send;
-
-    serializar_int(socket, offset);
-    send_data(socket, ENVIAR, offset);
-    free(ENVIAR);
+    t_stream* stream = serializar_table(create);
+    serializar_int(socket, stream->size);
+    send_data(socket, stream->data, stream->size);
+    stream_destroy(stream);
 }
 
 create_tad* deserializar_create(uint32_t socket) {
@@ -243,30 +223,10 @@ create_tad* deserializar_create(uint32_t socket) {
 }
 
 void serializar_describe(uint32_t socket, describe_tad* describe) {
-    uint32_t datos_size = sizeof(describe_tad) + (strlen(describe->nameTable) + 1) + (strlen(describe->consistencia) + 1);
-    void* ENVIAR = malloc(datos_size);
-    uint32_t offset = 0;
-    uint32_t size_to_send;
-
-    size_to_send = strlen(describe->nameTable) + 1;
-    memcpy(ENVIAR + offset, describe->nameTable, size_to_send);
-    offset += size_to_send;
-
-    size_to_send = strlen(describe->consistencia) + 1;
-    memcpy(ENVIAR + offset, describe->consistencia, size_to_send);
-    offset += size_to_send;
-
-    size_to_send = sizeof(describe->compactacion);
-    memcpy(ENVIAR + offset, &(describe->compactacion),size_to_send);
-    offset += size_to_send;
-
-    size_to_send = sizeof(describe->particiones);
-    memcpy(ENVIAR + offset, &(describe->particiones),size_to_send);
-    offset += size_to_send;
-
-    serializar_int(socket, offset);
-    send_data(socket, ENVIAR, offset);
-    free(ENVIAR);
+    t_stream* stream = serializar_table(describe);
+    serializar_int(socket, stream->size);
+    send_data(socket, stream->data, stream->size);
+    stream_destroy(stream);
 }
 
 describe_tad* deserializar_describe(uint32_t socket) {

@@ -177,10 +177,18 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
+            create_tad* create = deserializar_create(socket);
+            log_info(log_Memoria,
+                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
+            free_create_tad(create);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
+            char* tabla = deserializar_string(socket);
+            log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
+            free(tabla);
             break;
         }
         case COMAND_DROP: {

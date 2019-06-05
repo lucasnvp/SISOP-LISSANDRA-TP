@@ -129,6 +129,19 @@ void connection_handler(uint32_t socket, uint32_t command){
             serializar_int(socket, true);
             break;
         }
+        case COMAND_DESCRIBE: {
+            log_info(log_FileSystem, "La memoria envio un describe");
+            char* tabla = deserializar_string(socket);
+            log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
+            // dummy value
+            describe_tad* describe = new_describe_tad("tablaDummy", "SC", 2, 4);
+            //todo hacer un if -> Envio la confirmacion si existe
+            serializar_int(socket, true);
+            serializar_describe(socket, describe);
+            // Si la tabla enviada no existe
+            // serializar_int(socket, false);
+            break;
+        }
         default:
             log_info(log_FileSystem, "Error al recibir el comando");
     }

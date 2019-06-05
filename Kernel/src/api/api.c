@@ -42,8 +42,18 @@ void api_describe(u_int32_t socket, char* tabla){
     serializar_int(socket, COMAND_DESCRIBE);
     // todo Envio la info a la memoria
     serializar_string(socket, tabla);
-    // todo Confirmacion de la operacion
     log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
+    bool confirm = deserializar_int(socket);
+    if (confirm) {
+        describe_tad* describe = deserializar_describe(socket);
+        log_info(log_Kernel_api,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+        free_describe_tad(describe);
+    } else {
+        log_info(log_Kernel_api, "La tabla: %s, no existe", tabla);
+    }
+    // todo confirmar si aca iria un free de la tabla
 }
 
 void api_drop(u_int32_t socket, char* tabla){

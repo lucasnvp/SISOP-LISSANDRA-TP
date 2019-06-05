@@ -11,13 +11,13 @@
 #include <string.h>
 
 #include <commons/collections/list.h>
+#include <serializador/estructuras.h>
 
 #include "../criterios/criterios.h"
 
 typedef struct {
-    char* TABLA;
-    char* CRITERIO;
-    uint32_t KEY;
+    describe_tad* DESCRIBE;
+    uint32_t MEMORY_NUMBER;
 } metadata_tad;
 
 t_list * LIST_METADATA;

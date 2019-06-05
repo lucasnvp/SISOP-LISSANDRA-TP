@@ -66,9 +66,19 @@ void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
     puts("--------------------------------------");
 }
 
+describe_tad* crearDescribe(t_config* metadata, char* nombreTabla) {
+
+    return new_describe_tad(nombreTabla,
+            config_get_string_value(metadata, "CONSISTENCY"),
+            config_get_int_value(metadata, "PARTITIONS"),
+            config_get_int_value(metadata, "COMPACTATION_TIME"));
+}
+
 void mostrar_metadatas() {
 
     DIR *d = opendir(montajeTablas);
+
+    t_list* describes = list_create();
 
     if (d) {
         struct dirent *p;
@@ -86,7 +96,15 @@ void mostrar_metadatas() {
             string_append(&path, "/Metadata.bin");
 
             t_config * metadata = obtener_metadata_table(path);
-            mostrar_metadata_tabla(metadata, p->d_name);
+
+//            if(socket != CONSOLE_REQUEST) {
+//
+//                list_add(crearDescribe(metadata, p->d_name))
+//
+//            } else {
+//
+//                mostrar_metadata_tabla(metadata, p->d_name);
+//            }
 
             free(path);
             config_destroy(metadata);
@@ -94,6 +112,13 @@ void mostrar_metadatas() {
 
         closedir(d);
     }
+
+//    if(socket != CONSOLE_REQUEST) {
+//        serializar_int(socket, true);
+//        serializar_describe_all(socket, describes);
+//    }
+
+    list_destroy(describes);
 
 }
 

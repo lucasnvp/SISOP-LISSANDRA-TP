@@ -177,10 +177,36 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
+            create_tad* create = deserializar_create(socket);
+            log_info(log_Memoria,
+                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
+            serializar_create(SERVIDOR_FILESYSTEM, create);
+            free_create_tad(create);
+            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+            serializar_int(socket, confirm);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
+            char* tabla = deserializar_string(socket);
+            log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
+            serializar_string(SERVIDOR_FILESYSTEM, tabla);
+            free(tabla);
+            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+            if (confirm) {
+                describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
+                log_info(log_Memoria,
+                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+                serializar_int(socket, true);
+                serializar_describe(socket, describe);
+                free_describe_tad(describe);
+            } else {
+                serializar_int(socket, false);
+            }
             break;
         }
         case COMAND_DROP: {

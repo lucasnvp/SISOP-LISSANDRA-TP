@@ -110,18 +110,36 @@ void connection_handler(uint32_t socket, uint32_t command){
             char* valor = comando_select(select->nameTable, select->key, SOCKET_REQUEST);
 
             if(valor != NULL) {
+                serializar_int(socket, true);
                 serializar_string(socket, valor);
             } else {
-                serializar_string(socket, NULL);
+                serializar_int(socket, false);
             }
 
             break;
         }
         case COMAND_CREATE: {
-            //TODO Hacer deserializador de comando create
-
             //comando_create(table, consistencia, cantidad_particiones, compactacion,socket);
             log_info(log_FileSystem, "Create");
+            create_tad* create = deserializar_create(socket);
+            log_info(log_FileSystem,
+                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
+            free_create_tad(create);
+            serializar_int(socket, true);
+            break;
+        }
+        case COMAND_DESCRIBE: {
+            log_info(log_FileSystem, "La memoria envio un describe");
+            char* tabla = deserializar_string(socket);
+            log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
+            // dummy value
+            describe_tad* describe = new_describe_tad("tablaDummy", "SC", 2, 4);
+            //todo hacer un if -> Envio la confirmacion si existe
+            serializar_int(socket, true);
+            serializar_describe(socket, describe);
+            // Si la tabla enviada no existe
+            // serializar_int(socket, false);
             break;
         }
         default:

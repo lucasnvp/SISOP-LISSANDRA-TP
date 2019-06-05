@@ -24,18 +24,36 @@ void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
 
 void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
     serializar_int(socket, COMAND_CREATE);
-    // todo Envio la info a la memoria
-    // todo Recibo la confirmacion
     log_info(log_Kernel_api,
              "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
              tabla, consistencia, particiones, compactacion);
+    create_tad* create = new_create_tad(tabla, consistencia, particiones, compactacion);
+    serializar_create(socket, create);
+    free_create_tad(create);
+    uint32_t confirm = deserializar_int(socket);
+    if (confirm) {
+        log_info(log_Kernel_api, "Se creo la tabla: %s, con exito", tabla);
+    } else {
+        log_info(log_Kernel_api, "Error al crear la tabla: %s", tabla);
+    }
 }
 
 void api_describe(u_int32_t socket, char* tabla){
     serializar_int(socket, COMAND_DESCRIBE);
     // todo Envio la info a la memoria
-    // todo Confirmacion de la operacion
+    serializar_string(socket, tabla);
     log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
+    bool confirm = deserializar_int(socket);
+    if (confirm) {
+        describe_tad* describe = deserializar_describe(socket);
+        log_info(log_Kernel_api,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+        free_describe_tad(describe);
+    } else {
+        log_info(log_Kernel_api, "La tabla: %s, no existe", tabla);
+    }
+    // todo confirmar si aca iria un free de la tabla
 }
 
 void api_drop(u_int32_t socket, char* tabla){

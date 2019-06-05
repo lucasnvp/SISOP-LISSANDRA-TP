@@ -29,6 +29,10 @@ void comando_describe(u_int32_t socket, char* tabla){
     api_describe(socket, tabla);
 }
 
+void comando_describe_all(u_int32_t socket){
+    print_console((void*) log_info, "Comando describe all");
+}
+
 void comando_drop(u_int32_t socket, char* tabla){
     print_console((void*) log_info, "Comando drop");
     api_drop(socket, tabla);

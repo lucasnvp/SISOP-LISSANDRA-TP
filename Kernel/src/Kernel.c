@@ -137,10 +137,14 @@ void consola() {
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 1) {
-                    comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
+                if (comandos->cantArgs == 0) {
+                    comando_describe_all(SERVIDOR_MEMORIA);
+                } else {
+                    if (comandos->cantArgs == 1) {
+                        comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
+                    }
+                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "drop")) {

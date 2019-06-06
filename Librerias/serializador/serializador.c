@@ -49,11 +49,50 @@ char* deserializar_string(int servidor){
 }
 
 void serializar_registro(uint32_t socket, registro_tad* registro){
+    uint32_t datos_size = sizeof(registro_tad) + (strlen(registro->value) + 1);
+    void* ENVIAR = malloc(datos_size);
+    uint32_t offset = 0;
+    uint32_t size_to_send;
 
+    size_to_send = strlen(registro->timestamp) + 1;
+    memcpy(ENVIAR + offset, registro->timestamp, size_to_send);
+    offset += size_to_send;
+
+    size_to_send = strlen(registro->key) + 1;
+    memcpy(ENVIAR + offset, registro->key, size_to_send);
+    offset += size_to_send;
+
+    size_to_send = strlen(registro->value) + 1;
+    memcpy(ENVIAR + offset, registro->value, size_to_send);
+    offset += size_to_send;
+
+    serializar_int(socket, offset);
+    send_data(socket, ENVIAR, offset);
+    free(ENVIAR);
 }
 
 registro_tad* deserializar_registro(uint32_t socket){
+    uint32_t buffer_size = deserializar_int(socket);
+    void* buffer = malloc(buffer_size);
+    registro_tad* registro = malloc(sizeof(registro_tad));
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
 
+    recive_data(socket, buffer, buffer_size);
+
+    size_to_recive = sizeof(registro->timestamp);
+    memcpy(&registro->timestamp, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    size_to_recive = sizeof(registro->key);
+    memcpy(&registro->key, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    registro->value = strdup(buffer + offset);
+    offset += strlen(registro->value) + 1;
+
+    free(buffer);
+    return registro;
 }
 
 void serializar_insert(uint32_t socket, insert_tad* insert) {

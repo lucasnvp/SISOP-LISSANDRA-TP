@@ -142,6 +142,29 @@ void connection_handler(uint32_t socket, uint32_t command){
             // serializar_int(socket, false);
             break;
         }
+        case COMAND_DESCRIBE_ALL: {
+            log_info(log_FileSystem, "La memoria envio un describe all");
+
+            t_list* listDummy = list_create();
+            describe_tad* d1 = new_describe_tad("tabla1", "dummy1", 1, 5);
+            describe_tad* d2 = new_describe_tad("tabla2", "dummy2", 2, 6);
+            describe_tad* d3 = new_describe_tad("tabla3", "dummy3", 3, 7);
+            list_add(listDummy, d1);
+            list_add(listDummy, d2);
+            list_add(listDummy, d3);
+
+            void print_element_stack(void* element){
+                describe_tad* describe = element;
+                log_info(log_FileSystem,
+                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+            }
+
+            list_iterate(listDummy, print_element_stack);
+
+            serializar_describe_all(socket, listDummy);
+            break;
+        }
         default:
             log_info(log_FileSystem, "Error al recibir el comando");
     }

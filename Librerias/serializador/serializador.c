@@ -166,24 +166,26 @@ t_stream* serializar_table(struct table_tad* table) {
     return ENVIAR;
 }
 
-struct table_tad* deserializar_table(t_stream* stream) {
-    struct table_tad* table = malloc(stream->size);
+struct table_tad* deserializar_table(char* stream, int* size) {
+    struct table_tad* table = malloc(sizeof(struct table_tad));
     uint32_t offset = 0;
     uint32_t size_to_recive;
 
-    table->nameTable = strdup(stream->data + offset);
+    table->nameTable = strdup(stream + offset);
     offset += strlen(table->nameTable) + 1;
 
-    table->consistencia = strdup(stream->data + offset);
+    table->consistencia = strdup(stream + offset);
     offset += strlen(table->consistencia) + 1;
 
     size_to_recive = sizeof(table->compactacion);
-    memcpy(&table->compactacion, stream->data + offset, size_to_recive);
+    memcpy(&table->compactacion, stream + offset, size_to_recive);
     offset += size_to_recive;
 
     size_to_recive = sizeof(table->particiones);
-    memcpy(&table->particiones, stream->data + offset, size_to_recive);
+    memcpy(&table->particiones, stream + offset, size_to_recive);
     offset += size_to_recive;
+
+    *size = sizeof(struct table_tad) + (strlen(table->nameTable) + 1) + (strlen(table->consistencia) + 1);
 
     return table;
 }
@@ -257,44 +259,55 @@ describe_tad* deserializar_describe(uint32_t socket) {
 }
 
 void serializar_describe_all(uint32_t socket, t_list* describe_all) {
-    uint32_t datos_size = sizeof(describe_all);
-    void* ENVIAR = malloc(datos_size);
+    uint32_t datos_size = sizeof(uint32_t);
+    t_stream* ENVIAR = stream_create(datos_size);
     uint32_t offset = 0;
     uint32_t size_to_send;
 
     void serialize_element_stack(void* element){
         describe_tad* lineStack = element;
-//        t_stream* stream_lineStack = stackpointer_serialize(lineStack);
-//        ENVIAR->data = realloc(ENVIAR->data, ENVIAR->size + stream_lineStack->size);
-//        memcpy(ENVIAR->data + offset, stream_lineStack->data, stream_lineStack->size);
-//        ENVIAR->size += stream_lineStack->size;
-//        offset += stream_lineStack->size;
-//        stream_destroy(stream_lineStack);
+        t_stream* stream_lineStack = serializar_table(lineStack);
+        ENVIAR->data = realloc(ENVIAR->data, ENVIAR->size + stream_lineStack->size);
+        memcpy(ENVIAR->data + offset, stream_lineStack->data, stream_lineStack->size);
+        ENVIAR->size += stream_lineStack->size;
+        offset += stream_lineStack->size;
+        stream_destroy(stream_lineStack);
     }
 
     uint32_t count_line_stack = list_size(describe_all);
     size_to_send = sizeof(count_line_stack);
-    memcpy(ENVIAR + offset, &(count_line_stack),size_to_send);
+    memcpy(ENVIAR->data + offset, &(count_line_stack),size_to_send);
     offset += size_to_send;
 
     list_iterate(describe_all, serialize_element_stack);
 
-    serializar_int(socket, offset);
-    send_data(socket, ENVIAR, offset);
+    serializar_int(socket, ENVIAR->size);
+    send_data(socket, ENVIAR->data, ENVIAR->size);
     free(ENVIAR);
 
 }
 
-describe_tad* deserializar_describe_all(uint32_t socket) {
-//    //StackPointer
-//    uint32_t count_line_stack = 0;
-//    size_to_recive = sizeof(count_line_stack);
-//    memcpy(&count_line_stack, buffer + offset, size_to_recive);
-//    offset += size_to_recive;
-//
-//    for(i = 0; i < count_line_stack; ++i){
-//        STACKPOINTER_T* lineStack = stackpointer_deserialize(buffer + offset, &tmp_size);
-//        offset += tmp_size;
-//        list_add(PCB->StackPointer, lineStack);
-//    }
+t_list* deserializar_describe_all(uint32_t socket) {
+    uint32_t buffer_size = deserializar_int(socket);
+    void* buffer = malloc(buffer_size);
+    t_list* describe_list = list_create();
+    uint32_t tmp_size = 0;
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
+
+    recive_data(socket, buffer, buffer_size);
+
+    uint32_t count_line_stack = 0;
+    size_to_recive = sizeof(count_line_stack);
+    memcpy(&count_line_stack, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    for(i = 0; i < count_line_stack; ++i){
+        describe_tad* lineStack = deserializar_table(buffer + offset, &tmp_size);
+        offset += tmp_size;
+        list_add(describe_list, lineStack);
+    }
+
+    free(buffer);
+    return describe_list;
 }

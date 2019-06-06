@@ -11,6 +11,7 @@
 #define COMAND_INSERT                       101
 #define COMAND_CREATE                       102
 #define COMAND_DESCRIBE                     103
-#define COMAND_DROP                         104
+#define COMAND_DESCRIBE_ALL                 104
+#define COMAND_DROP                         105
 
 #endif //TP_2019_1C_GANK_MID_HANDSHAKE_H

@@ -56,6 +56,21 @@ void api_describe(u_int32_t socket, char* tabla){
     // todo confirmar si aca iria un free de la tabla
 }
 
+void api_describe_all (u_int32_t socket) {
+    serializar_int(socket, COMAND_DESCRIBE_ALL);
+    t_list* listDummy = deserializar_describe_all(socket);
+
+    void print_element_stack(void* element){
+        describe_tad* describe = element;
+        log_info(log_Kernel_api,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+    }
+
+    list_iterate(listDummy, print_element_stack);
+    list_destroy(listDummy);
+}
+
 void api_drop(u_int32_t socket, char* tabla){
     // todo Falla si no figura en la tabla en la metadata
     serializar_int(socket, COMAND_DROP);

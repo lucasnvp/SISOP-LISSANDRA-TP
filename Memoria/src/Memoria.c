@@ -209,6 +209,26 @@ void connection_handler(uint32_t socket, uint32_t command){
             }
             break;
         }
+        case COMAND_DESCRIBE_ALL: {
+            log_info(log_Memoria, "El kernel envio un describe all");
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
+
+            t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
+            log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
+
+            void print_element_stack(void* element){
+                describe_tad* describe = element;
+                log_info(log_Memoria,
+                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+            }
+
+            list_iterate(listDummy, print_element_stack);
+
+            serializar_describe_all(socket, listDummy);
+            list_destroy(listDummy);
+            break;
+        }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
             break;

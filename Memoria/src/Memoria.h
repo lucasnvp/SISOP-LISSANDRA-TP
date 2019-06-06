@@ -11,6 +11,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+#include <commons/collections/list.h>
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"

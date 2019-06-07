@@ -64,13 +64,6 @@ typedef struct {
 //TODO definir estructura de cada registro de la tabla de gossiping(readme)
 
 
-bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
-bool validarExistenciaDeSegmento(char* nombreTabla);
-
-reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);
-reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoSegmento);
-
-
 
 registro_tad* alocar_MemoriaPrincipal();
 

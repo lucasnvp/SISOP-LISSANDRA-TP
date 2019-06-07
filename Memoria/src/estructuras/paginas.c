@@ -58,7 +58,7 @@ tablaDePaginas* obtenerRegistroMasViejo() {
     if(flagJournal) {
         //ejecutar journal -- recordar llamar a reservarMarco dentro del journal
         log_info(log_Memoria, "La memoria esta FULL. Se procede a realizar un JOURNAL");
-        funcionJournal();
+        funcionJournal(SERVIDOR_FILESYSTEM);
     }
     return registroMasViejo;
 

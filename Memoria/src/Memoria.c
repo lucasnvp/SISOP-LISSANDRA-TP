@@ -314,7 +314,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "journal")) {
                 if (comandos->cantArgs == 0) {
-                    comando_journal();
+                    comando_journal(SERVIDOR_FILESYSTEM);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

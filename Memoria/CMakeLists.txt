@@ -10,7 +10,7 @@ add_executable(Memoria
         src/estructuras/segmentos.c
         src/estructuras/segmentos.h
         src/estructuras/marcos.c
-        src/estructuras/marcos.h)
+        src/estructuras/marcos.h src/comandosMemoria.c src/comandosMemoria.h)
 
 target_link_libraries (Memoria PRIVATE Librerias)
 target_link_libraries (Memoria PRIVATE pthread)

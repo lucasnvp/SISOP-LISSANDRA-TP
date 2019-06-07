@@ -57,6 +57,7 @@ void api_describe(u_int32_t socket, char* tabla){
 
 void api_describe_all (u_int32_t socket) {
     serializar_int(socket, COMAND_DESCRIBE_ALL);
+  
     t_list* listDescribe = deserializar_describe_all(socket);
     load_METADATA(listDescribe);
     print_metadata(log_Kernel_api);

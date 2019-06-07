@@ -29,6 +29,13 @@ void comando_describe(){
     print_console((void*) log_info, "Comando describe");
 }
 
-void comando_drop(){
+void comando_drop(char* nombreTabla){
     print_console((void*) log_info, "Comando drop");
+    funcionDrop(nombreTabla);
+    // avisar al FS que haga el drop
+}
+
+void comando_journal(){
+    print_console((void*) log_info, "Comando journal");
+    funcionJournal();
 }

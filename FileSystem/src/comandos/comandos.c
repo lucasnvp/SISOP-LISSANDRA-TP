@@ -17,7 +17,7 @@ char* comando_select(char* table, int key, int requestOrigin){
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    int existe = ValidarArchivo(tabla_objetivo);
+    uint32_t existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
         log_info(log_FileSystem, "No existe la tabla %s", table);
@@ -27,9 +27,9 @@ char* comando_select(char* table, int key, int requestOrigin){
 
     string_append(&tabla_objetivo, "/Metadata.bin");
     t_config * metadata = obtener_metadata_table(tabla_objetivo);
-    int particiones = config_get_int_value(metadata, "PARTITIONS");
+    uint32_t particiones = config_get_int_value(metadata, "PARTITIONS");
 
-    int particion = key % particiones;
+    uint32_t particion = key % particiones;
 
     registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
 

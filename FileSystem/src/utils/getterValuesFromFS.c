@@ -6,52 +6,57 @@
 
 registro_tad* getValueFromTemporal(char* table, int key) {
 
-    int mientrasExistanTemporales = true;
-    int tmp = 1;
+    uint32_t mientrasExistanTemporales = true;
+    uint32_t bin = 0;
+    uint32_t tmp = 1;
     registro_tad* registroMax = NULL;
+    char* registrosConcatenados =  string_new();
+
+    char* pathTabla = string_duplicate(montajeTablas);
+    string_append(&pathTabla,table);
+    string_append(&pathTabla,"/");
+
+    char* pathTmp = string_duplicate(pathTabla);
 
     while(mientrasExistanTemporales == true) {
 
-        char* pathBase = string_duplicate(montajeTablas);
-        string_append(&pathBase,table);
-        string_append(&pathBase,"/");
-        string_append(&pathBase, string_itoa(tmp));
-        string_append(&pathBase, ".tmp");
+        string_append(&pathTmp, string_itoa(tmp));
+        string_append(&pathTmp, ".tmp");
 
-        if(ValidarArchivo(pathBase) == true) {
+        if(ValidarArchivo(pathTmp) == true) {
 
-            /*
-             * TODO: leer valores y transformarlo en una lista de registros
-             * 1. Leer el archivo
-             * 2. Tomar la lista de bloques en donde se encuentran los registros
-             * 3.
-             * */
+            char* registrosConcatenadosDeUnTmp = string_new();
 
-            /*Tomo los bloques del TMP*/
-            t_config * auxtmp;
-            auxtmp = config_create(pathBase);
-            char* bloques = config_get_string_value(auxtmp,"BLOQUES");
+//            registrosConcatenadosDeUnTmp =  getRegistrosConcatenadosDeUnTmp(pathTabla);
 
-            /*Lo convierto a vector*/
-            char** bloquesSrt = string_get_string_as_array(bloques);
+//             string_append(&registrosConcatenados,registrosConcatenadosDeUnTmp);
 
-
-
-
-
-
+            tmp++;
 
         } else {
 
             mientrasExistanTemporales = false;
         }
 
-        tmp++;
-        free(pathBase);
+        free(pathTabla);
 
     }
 
+    return NULL;
 
-    return registroMax;
+}
+
+char* getRegistrosConcatenadosDeUnTmp(char* pathTabla){
+    /*Tomo los bloques del TMP*/
+    t_config * auxtmp;
+    auxtmp = config_create(pathTabla);
+    char* bloques = config_get_string_value(auxtmp,"BLOQUES");
+
+    /*Lo convierto a vector*/
+    char** bloquesStr = string_get_string_as_array(bloques);
+
+    char* str = string_new();
+
+    return str;
 
 }

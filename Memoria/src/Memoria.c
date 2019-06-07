@@ -231,6 +231,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
+
             break;
         }
         default:

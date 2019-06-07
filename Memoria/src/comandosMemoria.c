@@ -4,14 +4,14 @@
 
 #include "comandosMemoria.h"
 
-void funcionJournal() {
+void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
     struct tablaDeSegmentos* _TablaDeSegmento = primerRegistroDeSegmentos;
     while(_TablaDeSegmento != NULL){
         struct tablaDePaginas* _tablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         bool dropearSegmento = false;
         while(_tablaDePaginas != NULL){
             if(_tablaDePaginas->registro.flagModificado){
-                //insert al file system
+                //todo insert al file system
                 dropearSegmento = true;
             }
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
@@ -52,7 +52,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_TablaDePaginas != NULL){
             if(_TablaDePaginas->registro.punteroAPagina->key == key){
-                puts(_TablaDePaginas->registro.punteroAPagina->value);
+                //puts(_TablaDePaginas->registro.punteroAPagina->value);
                 return _TablaDePaginas->registro.punteroAPagina->value;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
@@ -63,7 +63,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
     //solicitar al FS
     // todo usar select_tad como parametro de funcion
     select_tad* select = new_select_tad(nombreDeTabla, key);
-    serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select);
     char* value = deserializar_string(SERVIDOR_FILESYSTEM);
     funcionInsert(nombreDeTabla, key, value);

@@ -25,6 +25,7 @@
 #include "api/api.h"
 #include "memoria/memoria.h"
 #include "criterios/criterios.h"
+#include "metadata/metadata.h"
 
 // Semaforos
 pthread_mutex_t mutexMetricas;  // Bloqueo el hilo para mostrar las metricas y no se haga otra cosa

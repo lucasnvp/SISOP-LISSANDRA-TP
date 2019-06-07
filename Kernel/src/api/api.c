@@ -57,17 +57,9 @@ void api_describe(u_int32_t socket, char* tabla){
 
 void api_describe_all (u_int32_t socket) {
     serializar_int(socket, COMAND_DESCRIBE_ALL);
-    t_list* listDummy = deserializar_describe_all(socket);
-
-    void print_element_stack(void* element){
-        describe_tad* describe = element;
-        log_info(log_Kernel_api,
-                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-    }
-
-    list_iterate(listDummy, print_element_stack);
-    list_destroy(listDummy);
+    t_list* listDescribe = deserializar_describe_all(socket);
+    load_METADATA(listDescribe);
+    print_metadata(log_Kernel_api);
 }
 
 void api_drop(u_int32_t socket, char* tabla){

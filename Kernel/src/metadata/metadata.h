@@ -12,6 +12,7 @@
 
 #include <commons/collections/list.h>
 #include <commons/string.h>
+#include <commons/log.h>
 #include <serializador/estructuras.h>
 
 #include "../criterios/criterios.h"
@@ -32,7 +33,7 @@ metadata_tad* new_metadata_tad(describe_tad* describe);
 void free_metadata(metadata_tad* metadata);
 void update_metadata_memory_number(metadata_tad* metadata, uint32_t number);
 void load_METADATA(t_list* listDescribes);
-void print_metadata();
+void print_metadata(t_log* log);
 metadata_tad* search_table(char* table);
 bool exist_table(char* table);
 

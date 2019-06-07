@@ -30,5 +30,5 @@ void test_load_metadata () {
     list_add(listDummy, d3);
 
     load_METADATA(listDummy);
-    print_metadata();
+    CU_ASSERT_EQUAL(list_size(LIST_METADATA), 3);
 }

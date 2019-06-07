@@ -38,21 +38,20 @@ void load_METADATA(t_list* listDescribes) {
         }
 
         list_iterate(listDescribes, load_element);
-        list_destroy(listDescribes);
+        // todo free
+//        list_destroy(listDescribes);
     } else {
       // todo
     }
 }
 
-void print_metadata () {
+void print_metadata (t_log* log) {
     void print_element_stack(void* element){
         metadata_tad* metadata = element;
         describe_tad* describe = metadata->DESCRIBE;
-//        log_info(log_Memoria,
-//                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-//                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-        printf("DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>\tMEMORIA: <%d>\n",
-                describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion, metadata->MEMORY_NUMBER);
+        log_info(log,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>\tMEMORIA: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion, metadata->MEMORY_NUMBER);
     }
 
     list_iterate(LIST_METADATA, print_element_stack);

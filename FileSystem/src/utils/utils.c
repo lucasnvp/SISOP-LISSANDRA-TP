@@ -74,7 +74,7 @@ describe_tad* crearDescribe(t_config* metadata, char* nombreTabla) {
             config_get_int_value(metadata, "COMPACTATION_TIME"));
 }
 
-void mostrar_metadatas() {
+void mostrar_metadatas(int requestOrigin) {
 
     DIR *d = opendir(montajeTablas);
 
@@ -97,14 +97,14 @@ void mostrar_metadatas() {
 
             t_config * metadata = obtener_metadata_table(path);
 
-//            if(socket != CONSOLE_REQUEST) {
-//
-//                list_add(crearDescribe(metadata, p->d_name))
-//
-//            } else {
-//
-//                mostrar_metadata_tabla(metadata, p->d_name);
-//            }
+           if(requestOrigin != CONSOLE_REQUEST) {
+
+                list_add(describes, crearDescribe(metadata, p->d_name));
+
+            } else {
+
+                mostrar_metadata_tabla(metadata, p->d_name);
+            }
 
             free(path);
             config_destroy(metadata);
@@ -113,10 +113,10 @@ void mostrar_metadatas() {
         closedir(d);
     }
 
-//    if(socket != CONSOLE_REQUEST) {
-//        serializar_int(socket, true);
-//        serializar_describe_all(socket, describes);
-//    }
+    if(requestOrigin != CONSOLE_REQUEST) {
+        serializar_int(requestOrigin, true);
+        serializar_describe_all(requestOrigin, describes);
+    }
 
     list_destroy(describes);
 

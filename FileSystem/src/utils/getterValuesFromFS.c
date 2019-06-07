@@ -27,9 +27,9 @@ registro_tad* getValueFromTemporal(char* table, int key) {
 
             char* registrosConcatenadosDeUnTmp = string_new();
 
-//            registrosConcatenadosDeUnTmp =  getRegistrosConcatenadosDeUnTmp(pathTabla);
+            registrosConcatenadosDeUnTmp =  getRegistrosConcatenadosDeUnTmp(pathTabla);
 
-//             string_append(&registrosConcatenados,registrosConcatenadosDeUnTmp);
+             string_append(&registrosConcatenados,registrosConcatenadosDeUnTmp);
 
             tmp++;
 
@@ -42,11 +42,13 @@ registro_tad* getValueFromTemporal(char* table, int key) {
 
     }
 
+    // TODO: hacer funcion para leer un bloque: leerBloque(nroBloque) -> char* lo que haya adentro
+
     return NULL;
 
 }
 
-char* getRegistrosConcatenadosDeUnTmp(char* pathTabla){
+char* getRegistrosConcatenadosDeUnTmp(char* pathTabla) {
     /*Tomo los bloques del TMP*/
     t_config * auxtmp;
     auxtmp = config_create(pathTabla);

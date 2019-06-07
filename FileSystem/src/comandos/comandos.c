@@ -33,7 +33,7 @@ char* comando_select(char* table, int key, int requestOrigin){
 
     registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
 
-    registro_tad* registerFromTemporal = getValueFromTemporal(table, key);
+    // registro_tad* registerFromTemporal = getValueFromTemporal(table, key);
 
     /*
      * char* valueFromTemporalC = getValueFromTemporalInCompression(table, key);

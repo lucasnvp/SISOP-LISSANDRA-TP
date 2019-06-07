@@ -40,7 +40,6 @@ void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t par
 
 void api_describe(u_int32_t socket, char* tabla){
     serializar_int(socket, COMAND_DESCRIBE);
-    // todo Envio la info a la memoria
     serializar_string(socket, tabla);
     log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
     bool confirm = deserializar_int(socket);

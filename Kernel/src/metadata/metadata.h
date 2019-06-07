@@ -29,8 +29,11 @@ t_list * LIST_METADATA;
 
 void init_METADATA();
 metadata_tad* new_metadata_tad(describe_tad* describe);
+void free_metadata(metadata_tad* metadata);
 void update_metadata_memory_number(metadata_tad* metadata, uint32_t number);
 void load_METADATA(t_list* listDescribes);
 void print_metadata();
+metadata_tad* search_table(char* table);
+bool exist_table(char* table);
 
 #endif //TP_2019_1C_GANK_MID_METADATA_H

@@ -15,6 +15,13 @@ metadata_tad* new_metadata_tad(describe_tad* describe) {
     return auxMetadata;
 }
 
+void free_metadata(metadata_tad* metadata) {
+    free(metadata->DESCRIBE->nameTable);
+    free(metadata->DESCRIBE->consistencia);
+    free(metadata->DESCRIBE);
+    free(metadata);
+}
+
 void update_metadata_memory_number (metadata_tad* metadata, uint32_t number) {
     metadata->MEMORY_NUMBER = number;
 }
@@ -49,4 +56,24 @@ void print_metadata () {
     }
 
     list_iterate(LIST_METADATA, print_element_stack);
+}
+
+metadata_tad* search_table (char* table) {
+    int _is_the_table(metadata_tad* m){
+        return string_equals_ignore_case(m->DESCRIBE->nameTable, table);
+    }
+
+    metadata_tad* auxMetadata = list_find(LIST_METADATA, (void*) _is_the_table);
+
+    return auxMetadata;
+}
+
+bool exist_table (char* table) {
+    metadata_tad* auxMetadata = search_table(table);
+
+    if (auxMetadata == NULL) {
+        return false;
+    } else {
+        return true;
+    }
 }

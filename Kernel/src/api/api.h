@@ -14,6 +14,7 @@
 #include <serializador/estructuras.h>
 #include <serializador/handshake.h>
 
+#include "../metadata/metadata.h"
 
 t_log* log_Kernel_api;
 

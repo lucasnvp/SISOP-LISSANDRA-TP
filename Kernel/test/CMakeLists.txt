@@ -8,7 +8,11 @@ add_executable(KernelTests
         Test_Criterio/Test_Criterio.c
         Test_Criterio/Test_Criterio.h
         ../src/criterios/criterios.c
-        ../src/criterios/criterios.h)
+        ../src/criterios/criterios.h
+        Test_Metadata/Test_Metadata.c
+        Test_Metadata/Test_Metadata.h
+        ../src/metadata/metadata.c
+        ../src/metadata/metadata.h)
 
 target_link_libraries (KernelTests PRIVATE cunit)
 target_link_libraries (KernelTests PRIVATE Librerias)

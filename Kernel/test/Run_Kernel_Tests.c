@@ -9,6 +9,7 @@ int main () {
 
     agregar_tests_memoria();
     agregar_tests_criterio();
+    agregar_tests_metadata();
 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();

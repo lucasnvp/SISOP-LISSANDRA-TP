@@ -27,6 +27,9 @@ int main(){
     // Init listado de criterios
     init_criterios();
 
+    // Init listado de criterios
+    init_METADATA();
+
     // Conexion al servidor FileSystem
     connect_server_Memoria();
 

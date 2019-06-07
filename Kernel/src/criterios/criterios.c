@@ -52,7 +52,7 @@ uint32_t criterio_ramdom_memory (char* criterio) {
     t_list* filtered = criterio_search(criterio);
     uint32_t listSize = list_size(filtered);
     if (listSize == 0) {
-        return 0;
+        return -1;
     } else {
         uint32_t index = rand() % listSize;
         criterio_tad* c = list_get(filtered, index);

@@ -11,9 +11,14 @@
 #include <string.h>
 
 #include <commons/collections/list.h>
+#include <commons/string.h>
 #include <serializador/estructuras.h>
 
 #include "../criterios/criterios.h"
+
+#define CRITERIO_SC "SC"
+#define CRITERIO_SHC "SHC"
+#define CRITERIO_EC "EC"
 
 typedef struct {
     describe_tad* DESCRIBE;
@@ -23,5 +28,9 @@ typedef struct {
 t_list * LIST_METADATA;
 
 void init_METADATA();
+metadata_tad* new_metadata_tad(describe_tad* describe);
+void update_metadata_memory_number(metadata_tad* metadata, uint32_t number);
+void load_METADATA(t_list* listDescribes);
+void print_metadata();
 
 #endif //TP_2019_1C_GANK_MID_METADATA_H

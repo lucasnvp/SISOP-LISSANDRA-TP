@@ -30,5 +30,6 @@ void comando_insert(char* nombreDeTabla, char* key, char* value);
 void comando_create();
 void comando_describe();
 void comando_drop();
+void comando_journal();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

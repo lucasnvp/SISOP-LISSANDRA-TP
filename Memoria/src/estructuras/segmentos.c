@@ -52,3 +52,35 @@ tablaDeSegmentos* agregarSegmento(char* nombreDeTabla){
 
     return nuevoRegistroSegmento;
 }
+
+
+void reenlazarSegmentos(tablaDeSegmentos* tablaDeSegmentos) {
+// tablaDeSegmentos es el segmento a liberar
+    if( primerRegistroDeSegmentos == tablaDeSegmentos) {
+        // si es el primer registro de segmentos, le asino al inicio de la lista el siguiente
+       primerRegistroDeSegmentos = tablaDeSegmentos->siguiente;
+    } else {
+        // si no lo es, asigno el siguiente del primer registro de segmento
+        struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
+        while(_tablaDeSegmentos != NULL) {
+            // si encuentro la tabla que estoy buscando para liberar
+            if(tablaDeSegmentos == _tablaDeSegmentos->siguiente) {
+                //reenlazo (en actualizarIdSegmentos libero porque necesito la referencia)
+                _tablaDeSegmentos->siguiente = tablaDeSegmentos->siguiente;
+                return;
+            }
+            _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
+        }
+    }
+
+}
+void actualizarIdSegmentos(tablaDeSegmentos* tablaDeSegmentos){
+
+    struct tablaDeSegmentos* _tablaDeSegmentos = tablaDeSegmentos->siguiente;
+
+    while(_tablaDeSegmentos != NULL) {
+        _tablaDeSegmentos->registro.idSegmento -= 1 ;
+        _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
+    }
+
+}

@@ -50,7 +50,8 @@ uint32_t cantDeMarcos;
 struct tablaDeSegmentos* primerRegistroDeSegmentos;
 
 tablaDeSegmentos* buscarSegmento(char* nombreDeTabla);
-
+void reenlazarSegmentos(tablaDeSegmentos* tablaDeSegmentos);
+void actualizarIdSegmentos(tablaDeSegmentos* tablaDeSegmentos);
 tablaDeSegmentos* agregarSegmento(char* nombreDeTabla);
 
 #endif //TP_2019_1C_GANK_MID_SEGMENTOS_H

@@ -21,6 +21,7 @@
 #include "../comandos/comandos.h"
 #include "segmentos.h"
 #include "marcos.h"
+#include "../comandosMemoria.h"
 
 
 
@@ -53,8 +54,6 @@ typedef struct tablaDePaginas {
 void* memoriaPrincipal;
 
 // Dirección de la Memoria Principal
-char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key);
-void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
 tablaDePaginas* obtenerRegistroMasViejo();
 registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
 registro_tad* liberarPagina();

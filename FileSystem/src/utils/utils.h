@@ -20,7 +20,7 @@ char* settear_path_tabla(char* nombre_tabla);
 void new_metadata_table(char* metadatabin, char* consistencia, char* particiones, char* compactacion);
 t_config * obtener_metadata_table(char* metadatabin);
 void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla);
-void mostrar_metadatas();
+void mostrar_metadatas(int requestOrigin);
 void crear_metadata_table(char* nueva_tabla, char* consistencia, char* particiones, char* compactacion);
 void asignar_bloques(char* path);
 int bloque_libre();

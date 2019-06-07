@@ -59,7 +59,7 @@ char* comando_select(char* table, int key, int requestOrigin){
 
 }
 
-void comando_insert(char* table, int key, char* value, int timestamp, int socket){
+void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin){
 
     string_to_upper(table);
     char* tabla_objetivo = string_duplicate(montajeTablas);
@@ -84,8 +84,8 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
 
     if(insertValue(table, registroTad)) {
 
-        if(socket != CONSOLE_REQUEST){
-            //TODO Serializar mensaje al socket
+        if(requestOrigin != CONSOLE_REQUEST){
+            //TODO Serializar mensaje al requestOrigin
         } else {
             print_console((void*) log_info, "Se realizo el Insert correctamente \n");
         };
@@ -95,7 +95,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int socket
 
 }
 
-void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int socket) {
+void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin) {
     print_console((void*) log_info, "Se ejecuta el comando create \n");
 
     int particiones = atoi(cantidad_particiones);
@@ -112,8 +112,8 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 
         log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre", table);
 
-        if(socket != CONSOLE_REQUEST) {
-            serializar_int(socket, false);
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, false);
         } else {
             printf("Se intentó crear una carpeta ya existente con el nombre %s", table);
         }
@@ -125,8 +125,8 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
 
-        if(socket != CONSOLE_REQUEST) {
-            serializar_int(socket, true);
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, true);
         } else {
             printf("Se creo una carpeta a través del comando CREATE: %s", table);
         }
@@ -136,16 +136,16 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
     }
 }
 
-void comando_describe_all(int socket){
+void comando_describe_all(int requestOrigin){
 
     print_console((void*) log_info, "Comando describe \n");
 
-    mostrar_metadatas(socket);
+    mostrar_metadatas(requestOrigin);
 
     log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para todas las tablas");
 }
 
-void comando_describe(char* nombre_tabla, int socket){
+void comando_describe(char* nombre_tabla, int requestOrigin){
     print_console((void*) log_info, "Comando describe \n");
 
     string_to_upper(nombre_tabla);
@@ -159,12 +159,12 @@ void comando_describe(char* nombre_tabla, int socket){
     if( existe == true) {
         t_config * metadata = obtener_metadata_table(tabla_objetivo);
 
-        if(socket != CONSOLE_REQUEST){
+        if(requestOrigin != CONSOLE_REQUEST){
 
-            describe_tad* describeTad = crearDescribe(nombre_tabla, metadata);
+            describe_tad* describeTad = crearDescribe(metadata, nombre_tabla);
 
-            serializar_int(socket, true);
-            serializar_describe(socket, describeTad);
+            serializar_int(requestOrigin, true);
+            serializar_describe(requestOrigin, describeTad);
 
             free_describe_tad(describeTad);
 
@@ -179,12 +179,12 @@ void comando_describe(char* nombre_tabla, int socket){
 
     } else {
 
-        serializar_int(socket, false);
+        serializar_int(requestOrigin, false);
         log_info(log_FileSystem, "No existe una tabla con el nombre ", nombre_tabla);
     }
 }
 
-void comando_drop(char* table, int socket){
+void comando_drop(char* table, int requestOrigin){
     print_console((void*) log_info, "Comando drop \n");
 
     string_to_upper(table);
@@ -201,7 +201,7 @@ void comando_drop(char* table, int socket){
 
         borrar_particion(tabla_objetivo);
 
-        if(socket != CONSOLE_REQUEST){
+        if(requestOrigin != CONSOLE_REQUEST){
 
             //TODO Serializar msj por socket
         }else{

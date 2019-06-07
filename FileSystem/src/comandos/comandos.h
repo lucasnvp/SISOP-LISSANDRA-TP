@@ -6,6 +6,7 @@
 #define TP_2019_1C_GANK_MID_COMANDOS_H
 
 #include "serializador/estructuras.h"
+#include "serializador/serializador.h"
 #include "stdlib.h"
 #include "string.h"
 #include "commons/log.h"
@@ -19,7 +20,7 @@
 #include "../utils/getterValuesFromFS.h"
 
 // Flags que indican quien ejecuta el comando
-#define CONSOLE_REQUEST	1
+#define CONSOLE_REQUEST	-1
 #define SOCKET_REQUEST	0
 #define NOT_TIMESTAMP -1
 
@@ -27,11 +28,11 @@ t_log* log_FileSystem;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 char* comando_select(char* table, int key, int requestOrigin);
-void comando_insert(char* table, int key, char* value, int timestamp,int socket);
-void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion,int socket);
-void comando_describe_all(int socket);
-void comando_describe(char* nombre_tabla,int socket);
-void comando_drop(char* nombre_tabla,int socket);
+void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin);
+void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin);
+void comando_describe_all(int requestOrigin);
+void comando_describe(char* nombre_tabla, int requestOrigin);
+void comando_drop(char* nombre_tabla, int requestOrigin);
 void comando_dump();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

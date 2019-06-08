@@ -36,6 +36,8 @@ int i;
 int CANT_BLOQUES;
 int TAMANIO_BLOQUES;
 
+int TAMANIO_VALUE;
+
 void punto_montaje_setup(char* pdm);
 void setup();
 void carpetas_setup();

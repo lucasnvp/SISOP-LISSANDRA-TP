@@ -20,8 +20,14 @@ char* comando_select(char* table, int key, int requestOrigin){
     uint32_t existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
+
+        if(requestOrigin != SOCKET_REQUEST) {
+            printf("Se intento buscar en una tabla no existente %s", table);
+        } else {
+            serializar_int(requestOrigin, false);
+        }
+
         log_info(log_FileSystem, "No existe la tabla %s", table);
-        printf("Se intento buscar en una tabla no existente %s", table);
         return NULL;
     }
 
@@ -75,8 +81,15 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
     int existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
-        log_info(log_FileSystem, "Se intento insertar en una tabla no existente %s", table);
-        printf("Se intento insertar en una tabla no existente %s \n", table);
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, false);
+        } else {
+            printf("Se intento insertar en una tabla no existente. \n");
+        }
+
+        log_info(log_FileSystem, "Se intento insertar en una tabla no existente \n");
+
         return;
     }
 
@@ -85,12 +98,18 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
     if(insertValue(table, registroTad)) {
 
         if(requestOrigin != CONSOLE_REQUEST){
-            //TODO Serializar mensaje al requestOrigin
+            serializar_int(requestOrigin, true);
         } else {
             print_console((void*) log_info, "Se realizo el Insert correctamente \n");
         };
+
     } else {
-        print_console((void*) log_info, "Hubo un problema al realizar el instert \n");
+
+        if(requestOrigin != CONSOLE_REQUEST){
+            serializar_int(requestOrigin, false);
+        } else {
+            print_console((void*) log_info, "Hubo un problema al realizar el instert \n");
+        };
     }
 
 }
@@ -175,12 +194,17 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
         config_destroy(metadata);
 
-        log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: ", nombre_tabla);
+        log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: %s \n", nombre_tabla);
 
     } else {
 
-        serializar_int(requestOrigin, false);
-        log_info(log_FileSystem, "No existe una tabla con el nombre ", nombre_tabla);
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, false);
+        } else {
+            printf("No existe una tabla con el nombre %s \n", nombre_tabla);
+        }
+
+        log_info(log_FileSystem, "No existe una tabla con el nombre %s \n", nombre_tabla);
     }
 }
 

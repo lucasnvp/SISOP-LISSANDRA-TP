@@ -104,6 +104,19 @@ void connection_handler(uint32_t socket, uint32_t command){
             serializar_int(socket, config.TAMANO_VALUE);
             break;
         }
+        case COMAND_INSERT: {
+            log_info(log_FileSystem, "Insert");
+
+            insert_tad* insert = deserializar_insert(socket);
+
+            if(string_length(insert->value) > config.TAMANO_VALUE) {
+                serializar_int(socket, false);
+            }
+
+            comando_insert(insert->nameTable, insert->key, insert->value, NOT_TIMESTAMP, socket);
+
+            break;
+        }
         case COMAND_SELECT: {
             log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
@@ -209,26 +222,41 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "INSERT")) {
                 if (comandos->cantArgs == 4) {
-                    char* table = comandos->arg[0];
-                    char* key_string = comandos->arg[1];
                     char* value = comandos->arg[2];
-                    char* timestamp_string = comandos->arg[3];
 
-                    int key = atoi(key_string);
-                    int timestamp = atoi(timestamp_string);
+                    if(string_length(value) > config.TAMANO_VALUE) {
+                        print_console((void*) log_error, "El tamaño del value es mayor al permitido. \n");
 
-                    string_to_upper(table);
-                    comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                    } else {
+
+                        char* table = comandos->arg[0];
+                        char* key_string = comandos->arg[1];
+                        char* timestamp_string = comandos->arg[3];
+
+                        int key = atoi(key_string);
+                        int timestamp = atoi(timestamp_string);
+
+                        string_to_upper(table);
+                        comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                    }
+
                 } else {
 
                     if (comandos->cantArgs == 3) {
-                        char* table = comandos->arg[0];
-                        char* key_string = comandos->arg[1];
                         char* value = comandos->arg[2];
-                        int key = atoi(key_string);
-                        string_to_upper(table);
 
-                        comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                        if(string_length(value) > config.TAMANO_VALUE) {
+                            print_console((void *) log_error, "El tamaño del value es mayor al permitido. \n");
+
+                        } else {
+
+                            char* table = comandos->arg[0];
+                            char* key_string = comandos->arg[1];
+                            int key = atoi(key_string);
+                            string_to_upper(table);
+
+                            comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                        }
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }

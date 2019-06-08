@@ -29,7 +29,7 @@ registro_tad* getValueFromMemtable(char *table, int key) {
             return list_get(listaFiltrada,0);
 
         } else {
-            log_info(log_FileSystem, "No existe la key en la tabla de la memtable: %i \n", key);
+            log_info(log_FileSystem, "No existe en la memtable la key %i \n", key);
             return NULL;
         }
 

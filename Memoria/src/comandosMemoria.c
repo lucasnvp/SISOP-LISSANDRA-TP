@@ -11,7 +11,21 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
         bool dropearSegmento = false;
         while(_tablaDePaginas != NULL){
             if(_tablaDePaginas->registro.flagModificado){
-                //todo insert al file system
+                        serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
+                        insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
+                                                            _tablaDePaginas->registro.punteroAPagina->key,
+                                                            _tablaDePaginas->registro.punteroAPagina->value);
+                        serializar_insert(SERVIDOR_FILESYSTEM, insert);
+
+                        uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+
+                        if(confirm){
+                            log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",_TablaDeSegmento->registro.nombreTabla,
+                                     _tablaDePaginas->registro.punteroAPagina->key,
+                                     _tablaDePaginas->registro.punteroAPagina->value);
+                        } else {
+                            log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
+                        }
                 dropearSegmento = true;
             }
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;

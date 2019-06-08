@@ -285,9 +285,6 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
-                    puts("Reconoci el comando");
-                    puts(comandos->arg[0]);
-                    puts(comandos->arg[1]);
                     comando_select(SERVIDOR_FILESYSTEM, comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -295,10 +292,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
-                    puts("Reconoci el comando");
-                    puts(comandos->arg[0]);
-                    puts(comandos->arg[1]);
-                    puts(comandos->arg[2]);
+
                     comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");

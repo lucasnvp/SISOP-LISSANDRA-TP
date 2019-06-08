@@ -10,7 +10,7 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
         struct tablaDePaginas* _tablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         bool dropearSegmento = false;
         while(_tablaDePaginas != NULL){
-            if(_tablaDePaginas->registro.flagModificado){
+            //if(_tablaDePaginas->registro.flagModificado){
                         serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
                         insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
                                                             _tablaDePaginas->registro.punteroAPagina->key,
@@ -27,7 +27,7 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
                             log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
                         }
                 dropearSegmento = true;
-            }
+            //}
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
         }
 
@@ -66,7 +66,10 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_TablaDePaginas != NULL){
             if(_TablaDePaginas->registro.punteroAPagina->key == key){
-                //puts(_TablaDePaginas->registro.punteroAPagina->value);
+                log_info(log_Memoria, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",
+                        _TablaDeSegmento->registro.nombreTabla,
+                        _TablaDePaginas->registro.punteroAPagina->key,
+                        _TablaDePaginas->registro.punteroAPagina->value);
                 return _TablaDePaginas->registro.punteroAPagina->value;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;

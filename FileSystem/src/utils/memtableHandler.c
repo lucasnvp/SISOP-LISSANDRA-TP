@@ -39,7 +39,7 @@ registro_tad* getValueFromMemtable(char *table, int key) {
     }
 }
 
-bool insertValue(char* table, registro_tad* registroTad) {
+void insertValue(char* table, registro_tad* registroTad) {
     t_list * list;
 
     if(!dictionary_has_key(memtable, table)) {
@@ -50,8 +50,6 @@ bool insertValue(char* table, registro_tad* registroTad) {
 
     list_add(list, registroTad);
     dictionary_put(memtable, table, list);
-
-    return true;
 }
 
 t_list* getListOfReg(char* table){

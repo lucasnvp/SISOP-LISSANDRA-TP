@@ -114,8 +114,22 @@ void mostrar_metadatas(int requestOrigin) {
     }
 
     if(requestOrigin != CONSOLE_REQUEST) {
-        serializar_int(requestOrigin, true);
-        serializar_describe_all(requestOrigin, describes);
+
+        if(list_is_empty(describes) == true) {
+
+            serializar_int(requestOrigin, METADATA_NO_OK);
+
+        } else {
+
+            serializar_int(requestOrigin, METADATA_OK);
+            serializar_describe_all(requestOrigin, describes);
+
+        };
+    } else {
+
+        if(list_is_empty(describes) == true) {
+            print_console((void*) log_info, "No hay tablas en el directorio. \n");
+        }
     }
 
     list_destroy(describes);

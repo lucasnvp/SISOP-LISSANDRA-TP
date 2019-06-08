@@ -19,7 +19,7 @@ t_dictionary * memtable;
 
 bool containsTable(char *nameKey);
 registro_tad* getValueFromMemtable(char *table, int key);
-bool insertValue(char* table, registro_tad* registroTad);
+void insertValue(char* table, registro_tad* registroTad);
 t_list* getListOfReg(char* table);
 
 

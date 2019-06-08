@@ -22,7 +22,7 @@ char* comando_select(char* table, int key, int requestOrigin){
     if( existe != true ) {
 
         if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, false);
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
         } else {
             printf("Se intento buscar en una tabla no existente %s", table);
         }
@@ -83,7 +83,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
     if( existe != true ) {
 
         if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, false);
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
         } else {
             printf("Se intento insertar en una tabla no existente. \n");
         }
@@ -95,22 +95,13 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
 
     registro_tad * registroTad = new_registro_tad(currentTime, key, value);
 
-    if(insertValue(table, registroTad)) {
+    insertValue(table, registroTad);
 
-        if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(requestOrigin, true);
-        } else {
-            print_console((void*) log_info, "Se realizo el Insert correctamente \n");
-        };
-
+    if(requestOrigin != CONSOLE_REQUEST){
+        serializar_int(requestOrigin, INSERT_OK);
     } else {
-
-        if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(requestOrigin, false);
-        } else {
-            print_console((void*) log_info, "Hubo un problema al realizar el instert \n");
-        };
-    }
+        print_console((void*) log_info, "Se realizo el Insert correctamente \n");
+    };
 
 }
 
@@ -132,7 +123,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre", table);
 
         if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, false);
+            serializar_int(requestOrigin, YA_EXISTE_TABLA);
         } else {
             printf("Se intentó crear una carpeta ya existente con el nombre %s", table);
         }
@@ -145,7 +136,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
 
         if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, true);
+            serializar_int(requestOrigin, CREATE_OK);
         } else {
             printf("Se creo una carpeta a través del comando CREATE: %s", table);
         }
@@ -182,7 +173,7 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
             describe_tad* describeTad = crearDescribe(metadata, nombre_tabla);
 
-            serializar_int(requestOrigin, true);
+            serializar_int(requestOrigin, DESCRIBE_OK);
             serializar_describe(requestOrigin, describeTad);
 
             free_describe_tad(describeTad);
@@ -199,7 +190,7 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
     } else {
 
         if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, false);
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
         } else {
             printf("No existe una tabla con el nombre %s \n", nombre_tabla);
         }

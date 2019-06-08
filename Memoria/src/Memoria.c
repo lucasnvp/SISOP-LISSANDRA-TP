@@ -172,7 +172,13 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_SELECT: {
             select_tad* select = deserializar_select(socket);
             char* value = funcionSelect(SERVIDOR_FILESYSTEM, select->nameTable, select->key);
-            serializar_string(socket, value);
+
+            if (value == NULL) {
+                serializar_int(socket, false);
+            } else {
+                serializar_int(socket, true);
+                serializar_string(socket, value);
+            }
             break;
         }
         case COMAND_CREATE: {

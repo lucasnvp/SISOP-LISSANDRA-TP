@@ -65,8 +65,15 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
     select_tad* select = new_select_tad(nombreDeTabla, key);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select);
-    char* value = deserializar_string(SERVIDOR_FILESYSTEM);
-    funcionInsert(nombreDeTabla, key, value);
+    uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+    if (confirm) {
+        serializar_select(SERVIDOR_FILESYSTEM, select);
+        char* value = deserializar_string(SERVIDOR_FILESYSTEM);
+        funcionInsert(nombreDeTabla, key, value);
+        return value;
+    } else {
+        return NULL;
+    }
 }
 
 // Agrega un registro de Página a la Tabla de Páginas

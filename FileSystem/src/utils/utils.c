@@ -98,11 +98,8 @@ void mostrar_metadatas(int requestOrigin) {
             t_config * metadata = obtener_metadata_table(path);
 
            if(requestOrigin != CONSOLE_REQUEST) {
-
                 list_add(describes, crearDescribe(metadata, p->d_name));
-
             } else {
-
                 mostrar_metadata_tabla(metadata, p->d_name);
             }
 
@@ -114,19 +111,13 @@ void mostrar_metadatas(int requestOrigin) {
     }
 
     if(requestOrigin != CONSOLE_REQUEST) {
-
         if(list_is_empty(describes) == true) {
-
-            serializar_int(requestOrigin, METADATA_NO_OK);
-
+            // todo no es necesario enviar un ok
         } else {
-
-            serializar_int(requestOrigin, METADATA_OK);
+            // todo no es necesario enviar un ok
             serializar_describe_all(requestOrigin, describes);
-
         };
     } else {
-
         if(list_is_empty(describes) == true) {
             print_console((void*) log_info, "No hay tablas en el directorio. \n");
         }

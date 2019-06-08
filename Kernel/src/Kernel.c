@@ -2,6 +2,7 @@
 // Created by utnso on 06/04/19.
 //
 
+#include <parser/parser.h>
 #include "Kernel.h"
 
 int main(){
@@ -353,7 +354,11 @@ bool parser_line(char * line){
                         parsed.argumentos.CREATE.compactacion);
                 break;
             case DESCRIBE:
-                api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+                if (parsed.argumentos.DESCRIBE.tabla == NULL) {
+                    api_describe_all(SERVIDOR_MEMORIA);
+                } else {
+                    api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+                }
                 break;
             case DROP:
                 api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);

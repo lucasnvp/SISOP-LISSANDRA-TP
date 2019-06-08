@@ -11,6 +11,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+#include <commons/collections/list.h>
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
@@ -21,6 +22,7 @@
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
+#include "comandosMemoria.h"
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
 Type_Config config;
@@ -60,13 +62,6 @@ typedef struct {
 } t_comandos;
 
 //TODO definir estructura de cada registro de la tabla de gossiping(readme)
-
-
-bool validarNombreTabla(char* nombreBuscado, char* nombreTabla);
-bool validarExistenciaDeSegmento(char* nombreTabla);
-
-reg_segmento* obtenerRegistroDeSegmento(char* nombreTabla);
-reg_segmento* agregarRegistroDeSegmento(char* nombreTabla, reg_segmento* ultimoSegmento);
 
 
 

@@ -12,6 +12,8 @@
 #include <readline/readline.h>
 #include <time.h>
 
+#include <commons/collections/list.h>
+#include <commons/collections/dictionary.h>
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
@@ -19,7 +21,6 @@
 
 #include "config/Config_filesystem.h"
 #include "comandos/comandos.h"
-#include "commons/collections/dictionary.h"
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
 

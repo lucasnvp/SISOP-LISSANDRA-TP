@@ -9,71 +9,107 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(char* table, int key){
-    print_console((void*) log_info, "Comando select \n");
+char* comando_select(char* table, int key, int requestOrigin){
+    log_info(log_FileSystem, "Comando select para tabla %s:", table);
 
     char* finalResult = string_new();
 
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    int existe = ValidarArchivo(tabla_objetivo);
+    uint32_t existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
+        } else {
+            log_info(log_FileSystem, "Se intento buscar en una tabla no existente %s", table);
+        }
+
         log_info(log_FileSystem, "No existe la tabla %s", table);
-        printf("Se intento buscar en una tabla no existente %s", table);
-        return;
+        return NULL;
     }
 
     string_append(&tabla_objetivo, "/Metadata.bin");
     t_config * metadata = obtener_metadata_table(tabla_objetivo);
-    int particiones = config_get_int_value(metadata, "PARTITIONS");
+    uint32_t particiones = config_get_int_value(metadata, "PARTITIONS");
 
-    int particion = key % particiones;
+    uint32_t particion = key % particiones;
 
-    char* value = getValue(table, key);
+    registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
 
-    if(!string_equals_ignore_case(value, "error")) {
-        finalResult = string_duplicate(value);
-        printf("VALUE: %s\n", finalResult);
+    // leerBloque("3");
+
+    // registro_tad* registerFromTemporal = getValueFromTemporal(table, key);
+
+    /*
+     * char* valueFromTemporalC = getValueFromTemporalInCompression(table, key);
+     *
+     * char* valueFromBlock = getValueFromBlock(table, key)
+     */
+
+    if(registerFromMemtable == NULL) {
+        return NULL;
+
+    }else {
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+
+            return registerFromMemtable->value;
+
+        } else {
+            log_info(log_FileSystem, "Valor obtenido %s", registerFromMemtable->value);
+            return NULL;
+
+        }
     }
 
-    //TODO
-    // 2 - Recorrer los TMP y TMPC
-    // 3 - Recorrer los .bin
-    // 4 - Devolver resultado por socket o consola
 }
 
-void comando_insert(char* table, int key, char* value, int timestamp, int socket){
+void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin){
 
     string_to_upper(table);
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
+    int currentTime = timestamp;
+
+    // NOT_TIMESTAMP
+    if(timestamp < 0) {
+        currentTime = getCurrentTime();
+    }
+
     int existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
-        log_info(log_FileSystem, "Se intento insertar en una tabla no existente %s", table);
-        printf("Se intento insertar en una tabla no existente %s \n", table);
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
+        } else {
+
+            log_info(log_FileSystem, "Se intento insertar en la tabla '%s' no existente", table);
+        }
+
+        log_info(log_FileSystem, "Se intento insertar en la tabla '%s' no existente", table);
+
         return;
     }
 
-    registro_tad * registroTad = new_registro_tad(timestamp, key, value);
+    registro_tad * registroTad = new_registro_tad(currentTime, key, value);
 
-    if(insertValue(table, registroTad)) {
-        if(socket != -1){
-            //TODO Serializar mensaje al socket
-        } else {
-            print_console((void*) log_info, "Se realizo el Insert correctamente \n");
-        };
+    insertValue(table, registroTad);
+
+    if(requestOrigin != CONSOLE_REQUEST){
+        serializar_int(requestOrigin, INSERT_OK);
     } else {
-        print_console((void*) log_info, "Hubo un problema al realizar el instert \n");
-    }
+        log_info(log_FileSystem, "Se realizo el insert correctamente en la tabla '%s'", table);
+    };
 
 }
 
-void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int socket) {
-    print_console((void*) log_info, "Se ejecuta el comando create \n");
+void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin) {
+    log_info(log_FileSystem, "Se ejecuta el comando create para la tabla '%s'", table);
 
     int particiones = atoi(cantidad_particiones);
 
@@ -86,38 +122,39 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
     int existe = ValidarArchivo(nueva_tabla);
 
     if( existe == true ) {
-        log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre %s", table);
-        printf("Se intentó crear una carpeta ya existente con el nombre %s", table);
-        // TODO: retornar error, validar con los demás
+
+        log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre '%s'", table);
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, YA_EXISTE_TABLA);
+        }
+
     } else {
+
         crear_carpeta(nueva_tabla);
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
-        printf("Se creo una carpeta a través del comando CREATE: %s \n", table);
-        if(socket != -1){
-            //TODO Enviar alta de tabla a Memoria
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, CREATE_OK);
         }
 
-        cantidad_bloquesLibres();
         CANTIDAD_TABLAS++;
-        log_info(log_FileSystem, "La cantidad total de tablas actual es: ", CANTIDAD_TABLAS);
-        printf("La cantidad total de tablas actual es: %i \n", CANTIDAD_TABLAS);
+        log_info(log_FileSystem, "La cantidad total de tablas actual es: %d", CANTIDAD_TABLAS);
     }
 }
 
-void comando_describe_all(int socket){
-    print_console((void*) log_info, "Comando describe \n");
-    if(socket != -1){
-        //TODO Serializar info al socket
-    }else{
-        mostrar_metadatas();
-    }
-    log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para todas las tablas");
+void comando_describe_all(int requestOrigin){
+
+    log_info(log_FileSystem, "Se ejecuta el comando DESCRIBE ALL para todas las tablas");
+
+    mostrar_metadatas(requestOrigin);
+
 }
 
-void comando_describe(char* nombre_tabla,int socket){
-    print_console((void*) log_info, "Comando describe \n");
+void comando_describe(char* nombre_tabla, int requestOrigin){
+    log_info(log_FileSystem, "Se ejecuta el comando DESCRIBE para todas las tablas");
 
     string_to_upper(nombre_tabla);
 
@@ -129,23 +166,37 @@ void comando_describe(char* nombre_tabla,int socket){
 
     if( existe == true) {
         t_config * metadata = obtener_metadata_table(tabla_objetivo);
-        if(socket != -1){
-            //TODO Serializar metadata a enviar a socket
+
+        if(requestOrigin != CONSOLE_REQUEST){
+
+            describe_tad* describeTad = crearDescribe(metadata, nombre_tabla);
+
+            serializar_int(requestOrigin, DESCRIBE_OK);
+            serializar_describe(requestOrigin, describeTad);
+
+            free_describe_tad(describeTad);
+
         }else{
+
             mostrar_metadata_tabla(metadata, nombre_tabla);
         }
+
         config_destroy(metadata);
 
-        log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: ", nombre_tabla);
+        log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: %s \n", nombre_tabla);
 
     } else {
-        log_info(log_FileSystem, "No existe una tabla con el nombre ", nombre_tabla);
-        printf("NO EXISTE UNA TABLA CON EL NOMBRE: %s \n", nombre_tabla);
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
+        }
+
+        log_info(log_FileSystem, "No existe una tabla con el nombre %s \n", nombre_tabla);
     }
 }
 
-void comando_drop(char* table, int socket){
-    print_console((void*) log_info, "Comando drop \n");
+void comando_drop(char* table, int requestOrigin){
+    log_info(log_FileSystem, "Se ejecutó el comando DROP");
 
     string_to_upper(table);
 
@@ -158,57 +209,21 @@ void comando_drop(char* table, int socket){
     // TODO: recorrer directorio de la tabla para liberar los bloques usados
     // TODO: usar la funcion para elmiminar un directorio entero de las commonsFunctions
     if( existe == true ) {
+
         borrar_particion(tabla_objetivo);
-        if(socket != -1){
+
+        if(requestOrigin != CONSOLE_REQUEST){
+
             //TODO Serializar msj por socket
         }else{
-            printf("La tabla se elimino");
+
+            log_info(log_FileSystem, "La tabla %s se elimino correctamente ", table);
         }
 
     }
 }
 
 void comando_dump(){
-    /*Tomo las tablas que se encuentran creadas y las busco en la memtable*/
-
-    t_list * listaDeRegistros = list_create();
-
-    DIR *directorioMontaje = opendir(montajeTablas);
-
-    if (directorioMontaje) {
-        struct dirent *p;
-
-        while (p=readdir(directorioMontaje)) {
-
-            /* Skip the names "." and ".." as we don't want to recurse on them. */
-            if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
-            {
-                continue;
-            }
-
-            /*Me traigo la lista de registros de la tabla que esta en la memtable*/
-            listaDeRegistros = getListOfReg(p->d_name);
-
-            if(listaDeRegistros != NULL){
-                registro_tad * reg = list_get(listaDeRegistros,0);
-                printf("%s\n",reg->value);
-                printf("%d\n",reg->key);
-            }
-
-
-            /*Buscando en la memtable con la tabla*/
-            /*TODO
-             * 1. Recorro la lista. Por cada posicion de la lista busco en la Memtable. Si lo encuentra, se trae la lista de instrucciones
-             * 2. Accedo a la tabla
-             * 3. Creo un .tmp
-             * 4. Escribo el .tpm con los registros obtenidos.
-             * 5. Elimino el registro de la memtable.
-                */
-
-
-        }
-
-        closedir(directorioMontaje);
-    }
-
+    dictionary_iterator(memtable, (void *) _dumpearTabla);
+    dictionary_clean(memtable);
 }

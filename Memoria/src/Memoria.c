@@ -93,7 +93,7 @@ void connect_server_FileSystem(){
         serializar_int(SERVIDOR_FILESYSTEM, NUEVA_CONEXION_MEMORIA_TO_FS);
         tamanoValue = deserializar_int(SERVIDOR_FILESYSTEM);
     } else{
-        log_warning(log_Console, "No se puedo conectar al servidor de File System");
+        log_info(log_Console, "No se puedo conectar al servidor de File System");
         exit(EXIT_SUCCESS);
     }
 }
@@ -172,19 +172,72 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_SELECT: {
             select_tad* select = deserializar_select(socket);
             char* value = funcionSelect(SERVIDOR_FILESYSTEM, select->nameTable, select->key);
-            serializar_string(socket, value);
+
+            if (value == NULL) {
+                serializar_int(socket, false);
+            } else {
+                serializar_int(socket, true);
+                serializar_string(socket, value);
+            }
             break;
         }
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
+            create_tad* create = deserializar_create(socket);
+            log_info(log_Memoria,
+                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
+            serializar_create(SERVIDOR_FILESYSTEM, create);
+            free_create_tad(create);
+            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+            serializar_int(socket, confirm);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
+            char* tabla = deserializar_string(socket);
+            log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
+            serializar_string(SERVIDOR_FILESYSTEM, tabla);
+            free(tabla);
+            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+            if (confirm) {
+                describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
+                log_info(log_Memoria,
+                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+                serializar_int(socket, true);
+                serializar_describe(socket, describe);
+                free_describe_tad(describe);
+            } else {
+                serializar_int(socket, false);
+            }
+            break;
+        }
+        case COMAND_DESCRIBE_ALL: {
+            log_info(log_Memoria, "El kernel envio un describe all");
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
+
+            t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
+            log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
+
+            void print_element_stack(void* element){
+                describe_tad* describe = element;
+                log_info(log_Memoria,
+                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+            }
+
+            list_iterate(listDummy, print_element_stack);
+
+            serializar_describe_all(socket, listDummy);
+            list_destroy(listDummy);
             break;
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
+
             break;
         }
         default:
@@ -232,9 +285,6 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
-                    puts("Reconoci el comando");
-                    puts(comandos->arg[0]);
-                    puts(comandos->arg[1]);
                     comando_select(SERVIDOR_FILESYSTEM, comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -242,10 +292,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
-                    puts("Reconoci el comando");
-                    puts(comandos->arg[0]);
-                    puts(comandos->arg[1]);
-                    puts(comandos->arg[2]);
+
                     comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -265,9 +312,16 @@ void memory_console() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "drop")) {
+            else if (!strcmp(comandos->comando, "journal")) {
                 if (comandos->cantArgs == 0) {
-                    comando_drop();
+                    comando_journal(SERVIDOR_FILESYSTEM);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "drop")) {
+                if (comandos->cantArgs == 1) {
+                    comando_drop(comandos->arg[0]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

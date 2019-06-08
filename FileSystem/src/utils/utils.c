@@ -66,9 +66,19 @@ void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
     puts("--------------------------------------");
 }
 
-void mostrar_metadatas() {
+describe_tad* crearDescribe(t_config* metadata, char* nombreTabla) {
+
+    return new_describe_tad(nombreTabla,
+            config_get_string_value(metadata, "CONSISTENCY"),
+            config_get_int_value(metadata, "PARTITIONS"),
+            config_get_int_value(metadata, "COMPACTATION_TIME"));
+}
+
+void mostrar_metadatas(int requestOrigin) {
 
     DIR *d = opendir(montajeTablas);
+
+    t_list* describes = list_create();
 
     if (d) {
         struct dirent *p;
@@ -86,7 +96,12 @@ void mostrar_metadatas() {
             string_append(&path, "/Metadata.bin");
 
             t_config * metadata = obtener_metadata_table(path);
-            mostrar_metadata_tabla(metadata, p->d_name);
+
+           if(requestOrigin != CONSOLE_REQUEST) {
+                list_add(describes, crearDescribe(metadata, p->d_name));
+            } else {
+                mostrar_metadata_tabla(metadata, p->d_name);
+            }
 
             free(path);
             config_destroy(metadata);
@@ -94,6 +109,21 @@ void mostrar_metadatas() {
 
         closedir(d);
     }
+
+    if(requestOrigin != CONSOLE_REQUEST) {
+        if(list_is_empty(describes) == true) {
+            // todo no es necesario enviar un ok
+        } else {
+            // todo no es necesario enviar un ok
+            serializar_describe_all(requestOrigin, describes);
+        };
+    } else {
+        if(list_is_empty(describes) == true) {
+            log_info(log_FileSystem, "No hay tablas en el directorio");
+        }
+    }
+
+    list_destroy(describes);
 
 }
 
@@ -155,7 +185,7 @@ int bloque_libre() {
     return -1;
 }
 
-void cantidad_bloquesLibres(){
+int cantidad_bloquesLibres(){
 
     int bloques_libres = 0;
     int bloque_libre;
@@ -167,7 +197,8 @@ void cantidad_bloquesLibres(){
         if(bloque_libre == 0)bloques_libres ++;
         bit++;
     }
-    printf("La cantidad de bloques libres que tengo es: %i \n", bloques_libres);
+
+    return bloques_libres;
 }
 
 void borrar_particion(char* path) {
@@ -191,4 +222,10 @@ char** get_bloques_array(char* path) {
     char** bloquesarray = config_get_array_value(filetogetbloques, "BLOQUES");
     config_destroy(filetogetbloques);
     return bloquesarray;
+}
+
+double getCurrentTime() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
 }

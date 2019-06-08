@@ -21,14 +21,17 @@ int main(){
     // Inicializar Queue y Semaforos
     init_queue_and_sem();
 
-    // Conexion al servidor FileSystem
-    connect_server_Memoria();
-
     // Init listado de memorias
-    init_memories(config);
+    init_memories();
 
     // Init listado de criterios
     init_criterios();
+
+    // Init listado de criterios
+    init_METADATA();
+
+    // Conexion al servidor FileSystem
+    connect_server_Memoria();
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
@@ -37,7 +40,7 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de metricas
-//    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
+    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");
@@ -64,10 +67,10 @@ void connect_server_Memoria(){
         log_info(log_Console,"Connected successfully to the Memory");
         serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
         uint32_t memoryNumber = deserializar_int(SERVIDOR_MEMORIA);
-        printf("Memory Number: %d", memoryNumber);
-        // todo agregar la memoria a la lista, y guardar el socket
+        add_memory(memoryNumber, config->IP_MEMORIA, config->PUERTO_MEMORIA, SERVIDOR_MEMORIA);
+        log_info(log_Kernel, "Connected Memory Number: %d", memoryNumber);
     } else{
-        log_warning(log_Console, "No se puedo conectar al servidor de Memoria");
+        log_info(log_Console, "No se puedo conectar al servidor de Memoria");
         exit(EXIT_SUCCESS);
     }
 }
@@ -137,10 +140,14 @@ void consola() {
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 1) {
-                    comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
+                if (comandos->cantArgs == 0) {
+                    comando_describe_all(SERVIDOR_MEMORIA);
+                } else {
+                    if (comandos->cantArgs == 1) {
+                        comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
+                    }
+                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "drop")) {
@@ -159,7 +166,9 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "metrics")) {
                 if (comandos->cantArgs == 0) {
-                    comando_metrics();
+                    pthread_mutex_lock(&mutexMetricas);
+                    showMetrics(log_Kernel);
+                    pthread_mutex_unlock(&mutexMetricas);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -204,25 +213,18 @@ void init_queue_and_sem(){
 }
 
 void metricas(){
+
+    struct timeval timeMetrics;
+
     while(KERNEL_READY){
-        sleep(30);
-        // Comienzo del mutex
+
+        timeMetrics.tv_sec = 30;
+        timeMetrics.tv_usec = 0;
+
+        select(0, NULL, NULL, NULL, &timeMetrics);
+
         pthread_mutex_lock(&mutexMetricas);
-        // todo clonar la queue exit
-        t_queue * QUEUE_EXIT_AUX = QUEUE_EXIT;
-        uint32_t QUEUE_SIZE = queue_size(QUEUE_EXIT_AUX);
-
-        log_warning(log_Kernel, "--------------------------------");
-        log_warning(log_Kernel, "Mostrar Metricas");
-        log_warning(log_Kernel, "QUEUE SIZE: %d", QUEUE_SIZE);
-        for (int k = 0; k < QUEUE_SIZE; ++k) {
-            script_tad* scripToPrint = (script_tad*)queue_pop(QUEUE_EXIT_AUX);
-            log_warning(log_Kernel, "Info del path: %s", scripToPrint->path);
-            log_warning(log_Kernel, "Cantidad de lineas ejecutadas: %d", scripToPrint->lineas_ejecutadas);
-        }
-        log_warning(log_Kernel, "--------------------------------");
-
-        // Libero el mutex
+        showMetrics(log_Kernel);
         pthread_mutex_unlock(&mutexMetricas);
     }
 }
@@ -357,14 +359,14 @@ bool parser_line(char * line){
                 api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
                 break;
             default:
-                log_warning(log_Kernel, "No pude interpretar <%s>", line);
+                log_info(log_Kernel, "No pude interpretar <%s>", line);
                 linea_valida = false;
                 break;
         }
 
         destruir_operacion(parsed);
     } else {
-        log_warning(log_Kernel, "La linea <%s> no es valida", line);
+        log_info(log_Kernel, "La linea <%s> no es valida", line);
         linea_valida = false;
     }
 

@@ -39,7 +39,7 @@ typedef struct tablaDeMarcos {
 struct tablaDeMarcos* primerRegistroDeMarcos;
 __uint32_t cantidadDeMarcos;
 
-
+void liberarMarco(registro_tad* punteroAPagina);
 registro_tad* reservarMarco(); // reserva un marco
 void inicializarMarcos(__uint32_t tamanioMemoria);
 

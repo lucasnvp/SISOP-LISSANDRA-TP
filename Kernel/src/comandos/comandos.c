@@ -29,6 +29,11 @@ void comando_describe(u_int32_t socket, char* tabla){
     api_describe(socket, tabla);
 }
 
+void comando_describe_all(u_int32_t socket){
+    print_console((void*) log_info, "Comando describe all");
+    api_describe_all(socket);
+}
+
 void comando_drop(u_int32_t socket, char* tabla){
     print_console((void*) log_info, "Comando drop");
     api_drop(socket, tabla);
@@ -45,10 +50,6 @@ void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR){
         sem_post(SEM_PLANIFICADOR);
     } else{
         print_console((void*) log_info, "No se encontro el archivo");
-        log_warning(log_Kernel, "No se encontro el archivo");
+        log_info(log_Kernel, "No se encontro el archivo");
     }
-}
-
-void comando_metrics(){
-    print_console((void*) log_info, "Comando metrics");
 }

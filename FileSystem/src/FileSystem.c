@@ -106,17 +106,63 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_INSERT: {
             log_info(log_FileSystem, "Insert");
+
+            insert_tad* insert = deserializar_insert(socket);
+
+            if(string_length(insert->value) > config.TAMANO_VALUE) {
+                serializar_int(socket, false);
+            }
+
+            comando_insert(insert->nameTable, insert->key, insert->value, NOT_TIMESTAMP, socket);
+
+            break;
+        }
+        case COMAND_SELECT: {
+            log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
-            //todo retornar el valor
-            char* valor = "DUMMYVALUE";
-            serializar_string(socket, valor);
+            char* valor = comando_select(select->nameTable, select->key, socket);
+
+            if(valor != NULL) {
+                serializar_int(socket, true);
+                serializar_string(socket, valor);
+            } else {
+                serializar_int(socket, false);
+            }
+
             break;
         }
         case COMAND_CREATE: {
-            //TODO Hacer deserializador de comando create
-
-            //comando_create(table, consistencia, cantidad_particiones, compactacion,socket);
             log_info(log_FileSystem, "Create");
+
+            create_tad* create = deserializar_create(socket);
+
+            log_info(log_FileSystem,
+                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
+
+            comando_create(create->nameTable, create->consistencia, string_itoa(create->particiones), string_itoa(create->compactacion), socket);
+
+            free_create_tad(create);
+
+            break;
+        }
+        case COMAND_DESCRIBE: {
+
+            log_info(log_FileSystem, "La memoria envio un describe");
+
+            char* tabla = deserializar_string(socket);
+
+            log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
+
+            comando_describe(tabla, socket);
+
+            break;
+        }
+        case COMAND_DESCRIBE_ALL: {
+            log_info(log_FileSystem, "La memoria envio un describe all");
+
+            comando_describe_all(socket);
+
             break;
         }
         default:
@@ -169,35 +215,48 @@ void consola() {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
                     int key = atoi(key_string);
-                    comando_select(table,key);
+                    comando_select(table,key, CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "INSERT")) {
                 if (comandos->cantArgs == 4) {
-                    char* table = comandos->arg[0];
-                    char* key_string = comandos->arg[1];
                     char* value = comandos->arg[2];
-                    char* timestamp_string = comandos->arg[3];
 
-                    int key = atoi(key_string);
-                    int timestamp = atoi(timestamp_string);
+                    if(string_length(value) > config.TAMANO_VALUE) {
+                        print_console((void*) log_error, "El tamaño del value es mayor al permitido. \n");
 
-                    string_to_upper(table);
-                    comando_insert(table, key, value, timestamp,-1);
+                    } else {
+
+                        char* table = comandos->arg[0];
+                        char* key_string = comandos->arg[1];
+                        char* timestamp_string = comandos->arg[3];
+
+                        int key = atoi(key_string);
+                        int timestamp = atoi(timestamp_string);
+
+                        string_to_upper(table);
+                        comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                    }
+
                 } else {
 
                     if (comandos->cantArgs == 3) {
-                        char* table = comandos->arg[0];
-                        char* key_string = comandos->arg[1];
                         char* value = comandos->arg[2];
 
-                        int key = atoi(key_string);
-                        int timestamp = (int) time(NULL);
+                        if(string_length(value) > config.TAMANO_VALUE) {
+                            print_console((void *) log_error, "El tamaño del value es mayor al permitido. \n");
 
-                        string_to_upper(table);
-                        comando_insert(table, key, value, timestamp,-1);
+                        } else {
+
+                            char* table = comandos->arg[0];
+                            char* key_string = comandos->arg[1];
+                            int key = atoi(key_string);
+                            string_to_upper(table);
+
+                            comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                        }
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
@@ -239,16 +298,16 @@ void consola() {
                 if (comandos->cantArgs == 0) {
                     printf("---------------------------------------------------------------------------------------------------------\n");
                     printf("Comandos posibles\n");
-                    printf("Nombre del comando: parámetros -> Descripción del comando\n");
-                    printf("EXIT -> Termina el proceso\n");
-                    printf("CREATE: nombre de tabla, consistencia(SC, SHC, bla), particiones, compactacion(segs) -> Crea una tabla\n");
-                    printf("INSERT (simple): tabla, key, value -> Inserta un registro en la tabla\n");
-                    printf("INSERT: tabla, key, value, timestamp -> Inserta un registro en la tabla\n");
-                    printf("SELECT: tabla, key -> Lee un registro de la tabla\n");
-                    printf("DROP (no implementado aún): tabla -> Elimina una tabla\n");
-                    printf("DESCRIBE (simple) -> Muestra los config de todas las tablas\n");
-                    printf("DESCRIBE: tabla -> Muestra los config de una tabla\n");
-                    printf("HELP -> Lista los comandos existentes\n");
+                    printf("Comando:    parámetros                                          -> Descripción del comando\n");
+                    printf("EXIT                                                            -> Termina el proceso\n");
+                    printf("CREATE:     <TABLA> <CONSISTENCIA> <PARTICIONES> <COMPACTACION> -> Crea una tabla\n");
+                    printf("INSERT:     <TABLA> <KEY> <VALUE>                               -> Inserta un registro en la tabla\n");
+                    printf("INSERT:     <TABLA> <KEY> <VALUE> <TIMESTAMP>                   -> Inserta un registro en la tabla\n");
+                    printf("SELECT:     <TABLA> <KEY>                                       -> Lee un registro de la tabla\n");
+                    printf("DROP:       <TABLA>                                             -> Elimina una tabla\n");
+                    printf("DESCRIBE                                                        -> Muestra los config de todas las tablas\n");
+                    printf("DESCRIBE:   <TABLE>                                             -> Muestra los config de una tabla\n");
+                    printf("HELP:                                                           -> Lista los comandos existentes\n");
                     printf("---------------------------------------------------------------------------------------------------------\n");
                 } else {
                     print_console((void*) log_error, "Número de parámetros incorrecto. \n");

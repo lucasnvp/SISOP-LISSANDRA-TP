@@ -8,7 +8,7 @@ bool containsTable(char* nameKey) {
     return dictionary_has_key(memtable, nameKey);
 }
 
-char* getValue(char* table, int key) {
+registro_tad* getValueFromMemtable(char *table, int key) {
 
     if(containsTable(table)) {
         t_list* list = dictionary_get(memtable, table);
@@ -26,23 +26,20 @@ char* getValue(char* table, int key) {
 
             list_sort(listaFiltrada, (void*) _timestampMayor);
 
-            registro_tad * resultado = list_get(listaFiltrada,0);
+            return list_get(listaFiltrada,0);
 
-            return resultado->value;
         } else {
-            log_info(log_FileSystem, "No existe la key en la tabla: %i", key);
-            printf("Se intento buscar una key no existente en la tabla: %i \n", key);
-            return "error";
+            log_info(log_FileSystem, "No existe en la memtable la key %i \n", key);
+            return NULL;
         }
 
     } else {
-        log_info(log_FileSystem, "No existe la tabla en la mematble %s");
-        printf("Se intento buscar en una tabla no existente en la memtable: %s \n", table);
-        return "error";
+        log_info(log_FileSystem, "No existe la tabla en la memtable \n");
+        return NULL;
     }
 }
 
-bool insertValue(char* table, registro_tad* registroTad) {
+void insertValue(char* table, registro_tad* registroTad) {
     t_list * list;
 
     if(!dictionary_has_key(memtable, table)) {
@@ -53,8 +50,6 @@ bool insertValue(char* table, registro_tad* registroTad) {
 
     list_add(list, registroTad);
     dictionary_put(memtable, table, list);
-
-    return true;
 }
 
 t_list* getListOfReg(char* table){

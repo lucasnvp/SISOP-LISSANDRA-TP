@@ -9,10 +9,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include <semaphore.h>
 #include <sys/inotify.h>
+#include <sys/select.h>
 
 #include <commons/collections/queue.h>
 #include <commons/string.h>
@@ -24,6 +25,7 @@
 #include "api/api.h"
 #include "memoria/memoria.h"
 #include "criterios/criterios.h"
+#include "metadata/metadata.h"
 
 // Semaforos
 pthread_mutex_t mutexMetricas;  // Bloqueo el hilo para mostrar las metricas y no se haga otra cosa

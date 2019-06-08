@@ -12,20 +12,19 @@
 
 #include <commons/collections/list.h>
 
-#include "../config/Config_kernel.h"
-
 typedef struct {
     uint32_t MEMORY_NUMBER;
     char* IP_MEMORIA;
     uint32_t PUERTO_MEMORIA;
+    uint32_t SOCKET;
     bool ACTIVA;
 } memory_tad;
 
 t_list * LIST_MEMORIES;
 
-void init_memories(Type_Config* config);
-memory_tad* memory_new(uint32_t number, char* ip, uint32_t port);
-void add_memory(uint32_t number, char* ip, uint32_t port);
+void init_memories();
+memory_tad* memory_new(uint32_t number, char* ip, uint32_t port, uint32_t socket);
+void add_memory(uint32_t number, char* ip, uint32_t port, uint32_t socket);
 memory_tad* search_memory(uint32_t number);
 bool exist_memory(uint32_t number);
 void disable_memory(memory_tad* auxMemory);

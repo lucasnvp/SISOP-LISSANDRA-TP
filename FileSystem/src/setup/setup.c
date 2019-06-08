@@ -41,12 +41,11 @@ void setup(){
     if(access(bitmapbin, F_OK) != -1){
         bitmap_setup(bitmapbin);
     } else{
+        //Bloques
+        bloques_setup();
         new_bitmap_setup(bitmapbin);
         bitmap_setup(bitmapbin);
     }
-
-    //Bloques
-    bloques_setup();
 }
 
 void carpetas_setup(){

@@ -15,5 +15,6 @@
 #include <commonsfunctions/functions.h>
 
 registro_tad* getValueFromTemporal(char* table, int key);
+char* getRegistrosConcatenadosDeUnTmp(char* pathTabla);
 
 #endif //TP_2019_1C_GANK_MID_GETTERVALUESFROMFS_H

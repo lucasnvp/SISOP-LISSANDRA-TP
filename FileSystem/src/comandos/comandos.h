@@ -21,8 +21,13 @@
 
 // Flags que indican quien ejecuta el comando
 #define CONSOLE_REQUEST	-1
-#define SOCKET_REQUEST	0
 #define NOT_TIMESTAMP -1
+
+#define NO_EXISTE_TABLA false
+#define YA_EXISTE_TABLA true
+#define INSERT_OK true
+#define CREATE_OK true
+#define DESCRIBE_OK true
 
 t_log* log_FileSystem;
 

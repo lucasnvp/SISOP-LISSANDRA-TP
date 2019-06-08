@@ -12,6 +12,9 @@
 #include <commons/collections/list.h>
 #include <sys/time.h>
 
+#define METADATA_OK true
+#define METADATA_NO_OK false
+
 static int CANTIDAD_TABLAS = 0;
 
 void crear_carpeta(char* path);

@@ -119,7 +119,7 @@ void mostrar_metadatas(int requestOrigin) {
         };
     } else {
         if(list_is_empty(describes) == true) {
-            print_console((void*) log_info, "No hay tablas en el directorio. \n");
+            log_info(log_FileSystem, "No hay tablas en el directorio");
         }
     }
 

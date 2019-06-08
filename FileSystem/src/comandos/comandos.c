@@ -21,10 +21,10 @@ char* comando_select(char* table, int key, int requestOrigin){
 
     if( existe != true ) {
 
-        if(requestOrigin != SOCKET_REQUEST) {
-            printf("Se intento buscar en una tabla no existente %s", table);
-        } else {
+        if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, false);
+        } else {
+            printf("Se intento buscar en una tabla no existente %s", table);
         }
 
         log_info(log_FileSystem, "No existe la tabla %s", table);
@@ -52,14 +52,14 @@ char* comando_select(char* table, int key, int requestOrigin){
 
     }else {
 
-        if(requestOrigin != SOCKET_REQUEST) {
+        if(requestOrigin != CONSOLE_REQUEST) {
 
+            return registerFromMemtable->value;
+
+        } else {
             printf("VALUE: %s\n", registerFromMemtable->value);
             return NULL;
 
-        } else {
-
-            return registerFromMemtable->value;
         }
     }
 

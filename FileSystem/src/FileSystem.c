@@ -120,7 +120,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_SELECT: {
             log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
-            char* valor = comando_select(select->nameTable, select->key, SOCKET_REQUEST);
+            char* valor = comando_select(select->nameTable, select->key, socket);
 
             if(valor != NULL) {
                 serializar_int(socket, true);

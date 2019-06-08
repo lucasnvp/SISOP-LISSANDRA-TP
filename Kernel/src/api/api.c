@@ -9,9 +9,15 @@ void api_select(u_int32_t socket, char* tabla, u_int16_t key){
     serializar_int(socket, COMAND_SELECT);
     select_tad* select = new_select_tad(tabla, key);
     serializar_select(socket, select);
-    char* value = deserializar_string(socket);
-    log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
-    free(value);
+
+    uint32_t confirm = deserializar_int(socket);
+    if (confirm) {
+        char* value = deserializar_string(socket);
+        log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
+        free(value);
+    } else {
+        log_info(log_Kernel_api, "Error al recibir el SELECT");
+    }
 }
 
 void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){

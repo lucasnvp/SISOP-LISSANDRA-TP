@@ -23,7 +23,7 @@
 #include "marcos.h"
 #include "../comandosMemoria.h"
 
-
+uint32_t SERVIDOR_FILESYSTEM;
 
 // Estructura de los Registros de la Tabla de Páginas
 

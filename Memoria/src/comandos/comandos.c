@@ -35,7 +35,7 @@ void comando_drop(char* nombreTabla){
     // avisar al FS que haga el drop
 }
 
-void comando_journal(){
+void comando_journal(uint32_t servidorFileSystem){
     print_console((void*) log_info, "Comando journal");
-    funcionJournal();
+    funcionJournal(servidorFileSystem);
 }

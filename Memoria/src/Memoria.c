@@ -322,9 +322,9 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "help")) {
                 if (comandos->cantArgs == 0) {
                     printf("---------------------------------------------------------------------------------------------------------------------------\n");
-                    printf("Comandos posibles\n");
+                    printf("Lista de comandos\n");
                     printf("\n");
-                    printf("Comando:    Parámetros                                          -> Descripción del comando\n");
+                    printf("Comando     Parámetros                                          -> Descripción del comando\n");
                     printf("\n");
                     printf("SELECT      <TABLA> <KEY>                                       -> Obtener el valor de una key dentro de una tabla\n");
                     printf("INSERT      <TABLA> <KEY> <VALUE>                               -> Crear/Actualizar el valor de una key dentro de una tabla\n");

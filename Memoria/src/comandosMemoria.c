@@ -27,6 +27,10 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
         }
 
+        tablaDeSegmentos* tablaDeSegmentosAux = _TablaDeSegmento;
+
+        funcionDrop(tablaDeSegmentosAux->registro.nombreTabla);
+
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
     }
 

@@ -37,6 +37,7 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
 }
 
 void funcionDrop(char* nombreDeTabla){
+    string_to_upper(nombreDeTabla);
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     if(_TablaDeSegmento != NULL){
         //encontro la tabla en memoria
@@ -59,6 +60,7 @@ void funcionDrop(char* nombreDeTabla){
 
 
 char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key){
+    string_to_upper(nombreDeTabla);
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     if (_TablaDeSegmento != NULL){
@@ -95,6 +97,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
+    string_to_upper(nombreDeTabla);
     struct tablaDeSegmentos *_TablaDeSegmento = NULL;
     _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     // si la tabla de segmentos es nula, lo agrego

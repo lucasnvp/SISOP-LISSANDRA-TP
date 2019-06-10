@@ -151,7 +151,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "drop")) {
                 if (comandos->cantArgs == 1) {
-                    comando_drop(SERVIDOR_MEMORIA, comandos->arg[0]);
+                    comando_drop(comandos->arg[0]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -357,7 +357,7 @@ bool parser_line(char * line){
                 }
                 break;
             case DROP:
-                api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
+                api_drop(parsed.argumentos.SELECT.tabla);
                 break;
             default:
                 log_info(log_Kernel, "No pude interpretar <%s>", line);

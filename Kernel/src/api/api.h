@@ -25,6 +25,6 @@ void api_insert(char* tabla, u_int16_t key, char* value);
 void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void api_describe(char* tabla);
 void api_describe_all();
-void api_drop(u_int32_t socket, char* tabla);
+void api_drop(char* tabla);
 
 #endif //TP_2019_1C_GANK_MID_API_H

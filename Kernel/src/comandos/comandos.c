@@ -34,9 +34,9 @@ void comando_describe_all(){
     api_describe_all();
 }
 
-void comando_drop(u_int32_t socket, char* tabla){
+void comando_drop(char* tabla){
     print_console((void*) log_info, "Comando drop");
-    api_drop(socket, tabla);
+    api_drop(tabla);
 }
 
 void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR){

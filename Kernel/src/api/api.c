@@ -97,10 +97,15 @@ void api_describe_all () {
     }
 }
 
-void api_drop(u_int32_t socket, char* tabla){
-    // todo Falla si no figura en la tabla en la metadata
-    serializar_int(socket, COMAND_DROP);
-    // todo Envio la info a la memoria
-    // todo Confirmacion de la operacion
-    log_info(log_Kernel_api, "DROP => TABLA: <%s>\t", tabla);
+void api_drop(char* tabla){
+    uint32_t socket = get_memory_socket_from_metadata(tabla);
+
+    if (socket == -1) {
+        log_info(log_Kernel_api, "DROP => La tabla: <%s> no existe", tabla);
+    } else {
+        serializar_int(socket, COMAND_DROP);
+        // todo Envio la info a la memoria
+        // todo Confirmacion de la operacion
+        log_info(log_Kernel_api, "DROP => TABLA: <%s>\t", tabla);
+    }
 }

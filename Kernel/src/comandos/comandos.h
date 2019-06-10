@@ -28,7 +28,7 @@ void comando_insert(char* tabla, u_int16_t key, char* value);
 void comando_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void comando_describe(char* tabla);
 void comando_describe_all();
-void comando_drop(u_int32_t socket, char* tabla);
+void comando_drop(char* tabla);
 void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

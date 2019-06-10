@@ -10,7 +10,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <time.h>
-
+#include "string.h"
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"

@@ -130,7 +130,6 @@ void consola() {
             else if (!strcmp(comandos->comando, "create")) {
                 if (comandos->cantArgs == 4) {
                     comando_create(
-                            SERVIDOR_MEMORIA,
                             comandos->arg[0],
                             comandos->arg[1],
                             atoi(comandos->arg[2]),
@@ -345,7 +344,6 @@ bool parser_line(char * line){
                 break;
             case CREATE:
                 api_create(
-                        SERVIDOR_MEMORIA,
                         parsed.argumentos.CREATE.tabla,
                         parsed.argumentos.CREATE.consistencia,
                         parsed.argumentos.CREATE.particiones,

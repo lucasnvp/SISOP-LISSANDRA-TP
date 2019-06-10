@@ -38,19 +38,25 @@ void api_insert(char* tabla, u_int16_t key, char* value){
     }
 }
 
-void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
-    serializar_int(socket, COMAND_CREATE);
-    log_info(log_Kernel_api,
-             "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-             tabla, consistencia, particiones, compactacion);
-    create_tad* create = new_create_tad(tabla, consistencia, particiones, compactacion);
-    serializar_create(socket, create);
-    free_create_tad(create);
-    uint32_t confirm = deserializar_int(socket);
-    if (confirm) {
-        log_info(log_Kernel_api, "Se creo la tabla: %s, con exito", tabla);
+void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {
+    uint32_t socket = criterio_ramdom_memory_socket();
+
+    if (socket == -1) {
+        log_info(log_Kernel_api, "CREATE => No se encontro memoria disponible");
     } else {
-        log_info(log_Kernel_api, "Error al crear la tabla: %s", tabla);
+        serializar_int(socket, COMAND_CREATE);
+        log_info(log_Kernel_api,
+                 "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 tabla, consistencia, particiones, compactacion);
+        create_tad *create = new_create_tad(tabla, consistencia, particiones, compactacion);
+        serializar_create(socket, create);
+        free_create_tad(create);
+        uint32_t confirm = deserializar_int(socket);
+        if (confirm) {
+            log_info(log_Kernel_api, "Se creo la tabla: %s, con exito", tabla);
+        } else {
+            log_info(log_Kernel_api, "Error al crear la tabla: %s", tabla);
+        }
     }
 }
 

@@ -19,9 +19,9 @@ void comando_insert(char* tabla, u_int16_t key, char* value){
     api_insert(tabla, key, value);
 }
 
-void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
+void comando_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
     print_console((void*) log_info, "Comando create");
-    api_create(socket, tabla, consistencia, particiones, compactacion);
+    api_create(tabla, consistencia, particiones, compactacion);
 }
 
 void comando_describe(char* tabla){

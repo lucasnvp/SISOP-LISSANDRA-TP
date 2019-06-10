@@ -6,6 +6,7 @@
 #define TP_2019_1C_GANK_MID_GETTERVALUESFROMFS_H
 
 #include <commons/collections/list.h>
+#include <libio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <serializador/estructuras.h>
@@ -15,8 +16,8 @@
 #include "../utils/utils.h"
 #include <commonsfunctions/functions.h>
 
-registro_tad* getValueFromTemporal(char* table, int key);
+registro_tad* getValueFromTemporals(char* table, int key);
 char* getRegistrosConcatenadosDeUnTmp(char* pathTabla);
-void leerBloque(char* nroBloque);
+char* leerBloque(char* nroBloque);
 
 #endif //TP_2019_1C_GANK_MID_GETTERVALUESFROMFS_H

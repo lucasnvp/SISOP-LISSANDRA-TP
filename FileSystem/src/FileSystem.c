@@ -120,14 +120,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_SELECT: {
             log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
-            char* valor = comando_select(select->nameTable, select->key, socket);
-
-            if(valor != NULL) {
-                serializar_int(socket, true);
-                serializar_string(socket, valor);
-            } else {
-                serializar_int(socket, false);
-            }
+            comando_select(select->nameTable, select->key, socket);
 
             break;
         }
@@ -307,6 +300,7 @@ void consola() {
                     printf("DROP:       <TABLA>                                             -> Elimina una tabla\n");
                     printf("DESCRIBE                                                        -> Muestra los config de todas las tablas\n");
                     printf("DESCRIBE:   <TABLE>                                             -> Muestra los config de una tabla\n");
+                    printf("EXIT:                                                           -> Baja el proceso\n");
                     printf("HELP:                                                           -> Lista los comandos existentes\n");
                     printf("---------------------------------------------------------------------------------------------------------\n");
                 } else {

@@ -9,37 +9,35 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-char* comando_select(char* table, int key, int requestOrigin){
-    log_info(log_FileSystem, "Comando select para tabla %s:", table);
+void comando_select(char* table, int key, int requestOrigin){
+    log_info(log_FileSystem, "SELECT ==> TABLE <%s> , KEY<%d>", table, key);
 
     char* finalResult = string_new();
 
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    uint32_t existe = ValidarArchivo(tabla_objetivo);
+    // char* regTmp = getRegistrosConcatenadosDeUnTmp(tabla_objetivo);
+
+    int existe = ValidarArchivo(tabla_objetivo);
 
     if( existe != true ) {
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, NO_EXISTE_TABLA);
-        } else {
-            log_info(log_FileSystem, "Se intento buscar en una tabla no existente %s", table);
         }
 
-        log_info(log_FileSystem, "No existe la tabla %s", table);
-        return NULL;
+        log_info(log_FileSystem, "FALLO SELECT ==> LA TABLA <%s> NO EXISTE", table);
     }
 
     string_append(&tabla_objetivo, "/Metadata.bin");
-    t_config * metadata = obtener_metadata_table(tabla_objetivo);
+    t_config* metadata = obtener_metadata_table(tabla_objetivo);
     uint32_t particiones = config_get_int_value(metadata, "PARTITIONS");
 
     uint32_t particion = key % particiones;
 
     registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
 
-    // leerBloque("3");
 
     // registro_tad* registerFromTemporal = getValueFromTemporal(table, key);
 
@@ -50,17 +48,16 @@ char* comando_select(char* table, int key, int requestOrigin){
      */
 
     if(registerFromMemtable == NULL) {
-        return NULL;
+        log_info(log_FileSystem, "FAILED SELECT ==> NO esta en la memtable");
+        serializar_int(requestOrigin, false);
 
     }else {
 
+        log_info(log_FileSystem, "RESULTADO SELECT ==> %s", registerFromMemtable->value);
+
         if(requestOrigin != CONSOLE_REQUEST) {
-
-            return registerFromMemtable->value;
-
-        } else {
-            log_info(log_FileSystem, "Valor obtenido %s", registerFromMemtable->value);
-            return NULL;
+            serializar_int(requestOrigin, true);
+            serializar_string(requestOrigin, registerFromMemtable->value);
 
         }
     }
@@ -86,12 +83,9 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, NO_EXISTE_TABLA);
-        } else {
-
-            log_info(log_FileSystem, "Se intento insertar en la tabla '%s' no existente", table);
         }
 
-        log_info(log_FileSystem, "Se intento insertar en la tabla '%s' no existente", table);
+        log_info(log_FileSystem, "FALLO INSERT ==> NO EXISTE LA TABLA <%s>", table);
 
         return;
     }
@@ -102,14 +96,14 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
 
     if(requestOrigin != CONSOLE_REQUEST){
         serializar_int(requestOrigin, INSERT_OK);
-    } else {
-        log_info(log_FileSystem, "Se realizo el insert correctamente en la tabla '%s'", table);
-    };
+    }
+
+    log_info(log_FileSystem, "SUCCESS INSERT ==> EN LA TABLA <%s>", table);
 
 }
 
 void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin) {
-    log_info(log_FileSystem, "Se ejecuta el comando create para la tabla '%s'", table);
+    log_info(log_FileSystem, "EXECUTE CREATE ==> TABLA <%s>", table);
 
     int particiones = atoi(cantidad_particiones);
 
@@ -123,7 +117,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 
     if( existe == true ) {
 
-        log_info(log_FileSystem, "Se intentó crear una carpeta ya existente con el nombre '%s'", table);
+        log_info(log_FileSystem, "FAIL CREATE ==> YA EXISTE UNA TABLA <%s>", table);
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, YA_EXISTE_TABLA);
@@ -134,27 +128,27 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         crear_carpeta(nueva_tabla);
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
-        log_info(log_FileSystem, "Se creo una carpeta a través del comando CREATE: ", table);
+        log_info(log_FileSystem, "SUCCESS CREATE ==> TABLA <%s>", table);
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, CREATE_OK);
         }
 
         CANTIDAD_TABLAS++;
-        log_info(log_FileSystem, "La cantidad total de tablas actual es: %d", CANTIDAD_TABLAS);
+        log_info(log_FileSystem, "CANTIDAD DE TABLAS ACTUALES: %d", CANTIDAD_TABLAS);
     }
 }
 
 void comando_describe_all(int requestOrigin){
 
-    log_info(log_FileSystem, "Se ejecuta el comando DESCRIBE ALL para todas las tablas");
+    log_info(log_FileSystem, "EXECUTE DESCRIBE ALL");
 
     mostrar_metadatas(requestOrigin);
 
 }
 
 void comando_describe(char* nombre_tabla, int requestOrigin){
-    log_info(log_FileSystem, "Se ejecuta el comando DESCRIBE para todas las tablas");
+    log_info(log_FileSystem, "EXECUTE DESCRIBE ==> TABLA <%s>", nombre_tabla);
 
     string_to_upper(nombre_tabla);
 
@@ -183,7 +177,7 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
         config_destroy(metadata);
 
-        log_info(log_FileSystem, "Se ejecutó el comando DESCRIBE para la tabla: %s \n", nombre_tabla);
+        log_info(log_FileSystem, "SUCCES DESCRIBE ==> TABLA <%s>", nombre_tabla);
 
     } else {
 
@@ -191,12 +185,12 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
             serializar_int(requestOrigin, NO_EXISTE_TABLA);
         }
 
-        log_info(log_FileSystem, "No existe una tabla con el nombre %s \n", nombre_tabla);
+        log_info(log_FileSystem, "FAILED DESCRIBE ==> TABLA <%s>", nombre_tabla);
     }
 }
 
 void comando_drop(char* table, int requestOrigin){
-    log_info(log_FileSystem, "Se ejecutó el comando DROP");
+    log_info(log_FileSystem, "EXECUTE DROP");
 
     string_to_upper(table);
 

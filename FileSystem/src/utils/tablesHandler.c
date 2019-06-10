@@ -142,6 +142,7 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
 
             free(bloquesDelArchivo);
             fclose(newFD);
+            free(tmp);
 
             seguirHastaEncontrarElTmpCorrespondiente = false;
 

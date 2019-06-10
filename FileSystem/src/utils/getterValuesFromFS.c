@@ -4,7 +4,7 @@
 
 #include "getterValuesFromFS.h"
 
-registro_tad* getValueFromTemporal(char* table, int key) {
+registro_tad* getValueFromTemporals(char* table, int key) {
 
     uint32_t mientrasExistanTemporales = true;
     uint32_t bin = 0;
@@ -48,33 +48,54 @@ registro_tad* getValueFromTemporal(char* table, int key) {
 
 }
 
-char* getRegistrosConcatenadosDeUnTmp(char* pathTabla) {
-    /*Tomo los bloques del TMP*/
-    t_config * auxtmp;
-    auxtmp = config_create(pathTabla);
-    char* bloques = config_get_string_value(auxtmp,"BLOQUES");
 
-    /*Lo convierto a vector*/
-    char** bloquesStr = string_get_string_as_array(bloques);
+char* getRegistrosConcatenadosDeUnTmp(char* pathTmp) {
 
-    char* str = string_new();
+    char* result = string_new();
 
-    return str;
+    char* tmp = string_duplicate(pathTmp);
+
+    string_append(&tmp, "/3.tmp");
+
+    t_config * auxtmp = config_create(tmp);
+
+    char* bloques = config_get_string_value(auxtmp, "BLOQUES");
+
+    char** bloquesList = string_get_string_as_array(bloques);
+
+    for (int i = 0; i < string_length(*bloquesList)-1; i++) {
+        string_append(&result, leerBloque(bloquesList[i]));
+    }
+
+    string_iterate_lines(bloquesList, (void*) free);
+    free(bloques);
+    config_destroy(auxtmp);
+
+    return result;
 
 }
 
-void leerBloque(char* nroBloque) {
+char* leerBloque(char* nroBloque) {
 
-    char* path = string_duplicate(montajeBloques);
-    string_append(&path, nroBloque);
+    char* path = string_new();
+    path = string_duplicate(montajeBloques);
+    char* nBloque = string_new();
+    nBloque= string_duplicate(nroBloque);
+    string_append(&path, nBloque);
     string_append(&path, ".bin");
+    char* buffer = calloc(1, TAMANIO_BLOQUES);
 
-    FILE * newFD;
-    newFD = fopen(path, "rb");
+    if(ValidarArchivo(path) == true) {
+        FILE * newFD;
+        newFD = fopen(path, "rb");
 
-    char* buffer = string_new();
+        fread(buffer, 1, TAMANIO_BLOQUES, newFD);
 
-    fread (buffer, 1, TAMANIO_BLOQUES, newFD);
+        fclose(newFD);
+    }
 
-    printf("%s \n", buffer);
+    free(path);
+    free(nBloque);
+
+    return buffer;
 }

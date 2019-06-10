@@ -115,7 +115,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
-                    comando_select(SERVIDOR_MEMORIA, comandos->arg[0], atoi(comandos->arg[1]));
+                    comando_select(comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -146,7 +146,7 @@ void consola() {
                     if (comandos->cantArgs == 1) {
                         comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
                     }
-                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+                    else print_console((void*) log_error, "Número de parámetros incorrecto.");
                 }
             }
 
@@ -336,7 +336,7 @@ bool parser_line(char * line){
     if(parsed.valido){
         switch(parsed.keyword){
             case SELECT:
-                api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
+                api_select(parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
                 break;
             case INSERT:
                 api_insert(SERVIDOR_MEMORIA,

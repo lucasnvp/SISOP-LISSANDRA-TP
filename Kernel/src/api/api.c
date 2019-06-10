@@ -4,19 +4,24 @@
 
 #include "api.h"
 
-void api_select(u_int32_t socket, char* tabla, u_int16_t key){
-    // todo Falla si no figura en la tabla en la metadata
-    serializar_int(socket, COMAND_SELECT);
-    select_tad* select = new_select_tad(tabla, key);
-    serializar_select(socket, select);
+void api_select (char* tabla, u_int16_t key) {
+    uint32_t  socket = get_memory_socket_from_metadata(tabla);
 
-    uint32_t confirm = deserializar_int(socket);
-    if (confirm) {
-        char* value = deserializar_string(socket);
-        log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
-        free(value);
+    if (socket == -1) {
+        log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
     } else {
-        log_info(log_Kernel_api, "Error al recibir el SELECT");
+        serializar_int(socket, COMAND_SELECT);
+        select_tad* select = new_select_tad(tabla, key);
+        serializar_select(socket, select);
+
+        uint32_t confirm = deserializar_int(socket);
+        if (confirm) {
+            char* value = deserializar_string(socket);
+            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
+            free(value);
+        } else {
+            log_info(log_Kernel_api, "Error al recibir el SELECT");
+        }
     }
 }
 

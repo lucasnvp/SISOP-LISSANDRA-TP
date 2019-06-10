@@ -67,12 +67,13 @@ metadata_tad* search_table (char* table) {
     return auxMetadata;
 }
 
-bool exist_table (char* table) {
+uint32_t get_memory_socket_from_metadata (char* table) {
     metadata_tad* auxMetadata = search_table(table);
 
     if (auxMetadata == NULL) {
-        return false;
+        return -1;
     } else {
-        return true;
+        memory_tad* memory = search_memory(auxMetadata->MEMORY_NUMBER);
+        return memory->SOCKET;
     }
 }

@@ -9,9 +9,9 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(u_int32_t socket, char* tabla, u_int16_t key){
+void comando_select(char* tabla, u_int16_t key){
     print_console((void*) log_info, "Comando select");
-    api_select(socket, tabla, key);
+    api_select(tabla, key);
 }
 
 void comando_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){

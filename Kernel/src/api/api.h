@@ -7,9 +7,10 @@
 
 #include <semaphore.h>
 
-#include <commons/log.h>
 #include <commons/collections/queue.h>
 #include <commons/collections/list.h>
+#include <commons/log.h>
+#include <commons/string.h>
 #include <serializador/serializador.h>
 #include <serializador/estructuras.h>
 #include <serializador/handshake.h>
@@ -18,7 +19,7 @@
 
 t_log* log_Kernel_api;
 
-void api_select(u_int32_t socket, char* tabla, u_int16_t key);
+void api_select(char* tabla, u_int16_t key);
 void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value);
 void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void api_describe(u_int32_t socket, char* tabla);

@@ -24,9 +24,9 @@ void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t
     api_create(socket, tabla, consistencia, particiones, compactacion);
 }
 
-void comando_describe(u_int32_t socket, char* tabla){
+void comando_describe(char* tabla){
     print_console((void*) log_info, "Comando describe");
-    api_describe(socket, tabla);
+    api_describe(tabla);
 }
 
 void comando_describe_all(){

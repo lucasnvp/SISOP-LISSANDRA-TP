@@ -49,21 +49,27 @@ void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t par
     }
 }
 
-void api_describe(u_int32_t socket, char* tabla){
-    serializar_int(socket, COMAND_DESCRIBE);
-    serializar_string(socket, tabla);
-    log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
-    bool confirm = deserializar_int(socket);
-    if (confirm) {
-        describe_tad* describe = deserializar_describe(socket);
-        log_info(log_Kernel_api,
-                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-        free_describe_tad(describe);
+void api_describe(char* tabla){
+    uint32_t socket = criterio_ramdom_memory_socket();
+
+    if (socket == -1) {
+        log_info(log_Kernel_api, "DESCRIBE => No se encontro memoria disponible");
     } else {
-        log_info(log_Kernel_api, "La tabla: %s, no existe", tabla);
+        serializar_int(socket, COMAND_DESCRIBE);
+        serializar_string(socket, tabla);
+        log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
+        bool confirm = deserializar_int(socket);
+        if (confirm) {
+            describe_tad *describe = deserializar_describe(socket);
+            log_info(log_Kernel_api,
+                     "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                     describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+            free_describe_tad(describe);
+        } else {
+            log_info(log_Kernel_api, "La tabla: %s, no existe", tabla);
+        }
+        // todo confirmar si aca iria un free de la tabla
     }
-    // todo confirmar si aca iria un free de la tabla
 }
 
 void api_describe_all () {

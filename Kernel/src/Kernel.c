@@ -144,7 +144,7 @@ void consola() {
                     comando_describe_all(SERVIDOR_MEMORIA);
                 } else {
                     if (comandos->cantArgs == 1) {
-                        comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
+                        comando_describe(comandos->arg[0]);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto.");
                 }
@@ -356,7 +356,7 @@ bool parser_line(char * line){
                 if(parsed.argumentos.DESCRIBE.tabla == NULL) {
                     api_describe_all();
                 } else {
-                    api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+                    api_describe(parsed.argumentos.DESCRIBE.tabla);
                 }
                 break;
             case DROP:

@@ -26,7 +26,7 @@ void print_console(void (*log_function)(t_log*, const char*), char* message);
 void comando_select(char* tabla, u_int16_t key);
 void comando_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value);
 void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
-void comando_describe(u_int32_t socket, char* tabla);
+void comando_describe(char* tabla);
 void comando_describe_all();
 void comando_drop(u_int32_t socket, char* tabla);
 void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR);

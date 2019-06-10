@@ -354,7 +354,7 @@ bool parser_line(char * line){
                 break;
             case DESCRIBE:
                 if(parsed.argumentos.DESCRIBE.tabla == NULL) {
-                    api_describe_all(SERVIDOR_MEMORIA);
+                    api_describe_all();
                 } else {
                     api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
                 }

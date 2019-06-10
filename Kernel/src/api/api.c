@@ -5,7 +5,7 @@
 #include "api.h"
 
 void api_select (char* tabla, u_int16_t key) {
-    uint32_t  socket = get_memory_socket_from_metadata(tabla);
+    uint32_t socket = get_memory_socket_from_metadata(tabla);
 
     if (socket == -1) {
         log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
@@ -66,12 +66,18 @@ void api_describe(u_int32_t socket, char* tabla){
     // todo confirmar si aca iria un free de la tabla
 }
 
-void api_describe_all (u_int32_t socket) {
-    serializar_int(socket, COMAND_DESCRIBE_ALL);
-  
-    t_list* listDescribe = deserializar_describe_all(socket);
-    load_METADATA(listDescribe);
-    print_metadata(log_Kernel_api);
+void api_describe_all () {
+    uint32_t socket = criterio_ramdom_memory_socket();
+
+    if (socket == -1) {
+        log_info(log_Kernel_api, "DESCRIBE ALL => No se encontro memoria disponible");
+    } else {
+        serializar_int(socket, COMAND_DESCRIBE_ALL);
+
+        t_list* listDescribe = deserializar_describe_all(socket);
+        load_METADATA(listDescribe);
+        print_metadata(log_Kernel_api);
+    }
 }
 
 void api_drop(u_int32_t socket, char* tabla){

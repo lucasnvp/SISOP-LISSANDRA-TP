@@ -25,12 +25,17 @@ void api_select (char* tabla, u_int16_t key) {
     }
 }
 
-void api_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
-    // todo Falla si no figura en la tabla en la metadata
-    serializar_int(socket, COMAND_INSERT);
-    insert_tad* insert = new_insert_tad(tabla, key, value);
-    serializar_insert(socket, insert);
-    log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
+void api_insert(char* tabla, u_int16_t key, char* value){
+    uint32_t socket = get_memory_socket_from_metadata(tabla);
+
+    if (socket == -1) {
+        log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
+    } else {
+        serializar_int(socket, COMAND_INSERT);
+        insert_tad *insert = new_insert_tad(tabla, key, value);
+        serializar_insert(socket, insert);
+        log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
+    }
 }
 
 void api_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){

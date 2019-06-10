@@ -122,7 +122,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
-                    comando_insert(SERVIDOR_MEMORIA, comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
+                    comando_insert(comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -339,8 +339,7 @@ bool parser_line(char * line){
                 api_select(parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
                 break;
             case INSERT:
-                api_insert(SERVIDOR_MEMORIA,
-                        parsed.argumentos.INSERT.tabla,
+                api_insert(parsed.argumentos.INSERT.tabla,
                         parsed.argumentos.INSERT.key,
                         parsed.argumentos.INSERT.value);
                 break;

@@ -14,9 +14,9 @@ void comando_select(char* tabla, u_int16_t key){
     api_select(tabla, key);
 }
 
-void comando_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
+void comando_insert(char* tabla, u_int16_t key, char* value){
     print_console((void*) log_info, "Comando insert");
-    api_insert(socket, tabla, key, value);
+    api_insert(tabla, key, value);
 }
 
 void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){

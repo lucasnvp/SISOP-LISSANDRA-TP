@@ -21,12 +21,19 @@ void comando_insert(char* nombreDeTabla, char* key, char* value){
 
 }
 
-void comando_create(){
+void comando_create(create_tad* create){
     print_console((void*) log_info, "Comando create");
+    funcionCreate(create);
 }
 
-void comando_describe(){
+void comando_describe(char* tabla){
+    funcionDescribe(tabla);
     print_console((void*) log_info, "Comando describe");
+}
+
+void comando_describe_all(origin){
+    funcionDescribeAll(origin);
+    print_console((void*) log_info, "Comando describe all");
 }
 
 void comando_drop(char* nombreTabla){

@@ -26,5 +26,8 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(uint32_t SERVIDOR_FILESYSTEM);
+void funcionCreate(create_tad* create);
+void funcionDescribe(char* tabla);
+void funcionDescribeAll(bool origin);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOSMEMORIA_H

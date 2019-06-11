@@ -157,3 +157,52 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
              nuevoRegistroPagina->registro.punteroAPagina->value);
     return;
 }
+
+void funcionCreate(create_tad* create) {
+
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
+    serializar_create(SERVIDOR_FILESYSTEM, create);
+    bool confirmacionExistencia = deserializar_int(SERVIDOR_FILESYSTEM);
+
+    if(confirmacionExistencia) {
+        log_info(log_Memoria,
+                 "Ya existe la TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 create->nameTable, create->consistencia, create->particiones, create->compactacion);
+    } else {
+
+        agregarSegmento(create->nameTable);
+
+        log_info(log_Memoria,
+                 "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 create->nameTable, create->consistencia, create->particiones, create->compactacion);
+
+    }
+    free_create_tad(create);
+}
+
+void funcionDescribe(char* nombreTabla) {
+    log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", nombreTabla);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
+    serializar_string(SERVIDOR_FILESYSTEM, nombreTabla);
+    free(nombreTabla);
+}
+
+void funcionDescribeAll(bool origin) {
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
+
+    t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
+
+    void print_element_stack(void* element){
+        describe_tad* describe = element;
+        log_info(log_Memoria,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+    }
+
+    list_iterate(listDummy, print_element_stack);
+    if (origin) {
+    log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
+    serializar_describe_all(socket, listDummy);
+    list_destroy(listDummy);
+    }
+}

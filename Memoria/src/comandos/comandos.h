@@ -27,8 +27,9 @@ t_log* log_Memoria;
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 void comando_select(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key);
 void comando_insert(char* nombreDeTabla, char* key, char* value);
-void comando_create();
-void comando_describe();
+void comando_create(create_tad* create);
+void comando_describe(char* nombreTabla);
+void comando_describe_all(bool origin);
 void comando_drop();
 void comando_journal();
 

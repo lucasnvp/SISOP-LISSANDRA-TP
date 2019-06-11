@@ -27,9 +27,6 @@ int main(){
 
     primerRegistroDeSegmentos = NULL;
 
-	//TODO Hilo de Gossiping
-
-
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
@@ -39,24 +36,10 @@ int main(){
 //    pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
-
-    // Se elimina el espacio para la memoria principal
-
-    //desalocar_MemoriaPrincipal(); TODO: Creo que no deberíamos desalocar la memoria en este punto, o en ningún punto
-
     return EXIT_SUCCESS;
 }
 
-/*
- * TODO 08/05
- *
- * Buscar en las páginas de los segmentos si se contiene el key
- * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
- * Comprobar si la memoria está llena
- * Insert Select Drop Describe
- * Journal, Gossiping
- */
-
+//TODO modificar el código por si viene el request de kernel o por consola
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);
@@ -184,12 +167,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
             create_tad* create = deserializar_create(socket);
-            log_info(log_Memoria,
-                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
-            serializar_create(SERVIDOR_FILESYSTEM, create);
-            free_create_tad(create);
+            funcionCreate(create);
             bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
             serializar_int(socket, confirm);
             break;
@@ -197,10 +175,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
             char* tabla = deserializar_string(socket);
-            log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
-            serializar_string(SERVIDOR_FILESYSTEM, tabla);
-            free(tabla);
+            funcionDescribe(tabla);
             bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
             if (confirm) {
                 describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
@@ -217,27 +192,13 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_Memoria, "El kernel envio un describe all");
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
-
-            t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
-            log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
-
-            void print_element_stack(void* element){
-                describe_tad* describe = element;
-                log_info(log_Memoria,
-                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-            }
-
-            list_iterate(listDummy, print_element_stack);
-
-            serializar_describe_all(socket, listDummy);
-            list_destroy(listDummy);
+            funcionDescribeAll(true);
             break;
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
-
+            char* nombreTabla = deserializar_string(socket);
+            funcionDrop(nombreTabla);<
             break;
         }
         default:
@@ -299,17 +260,22 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "create")) {
-                if (comandos->cantArgs == 0) {
-                    comando_create();
+                if (comandos->cantArgs == 4) {
+                    string_to_upper(comandos->arg[0]);
+                    create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], atoi(comandos->arg[2]), atoi(comandos->arg[3]));
+                    comando_create(create);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 0) {
-                    comando_describe();
+                if (comandos->cantArgs == 1) {
+                    comando_describe(comandos->arg[0]);
+                } else if (comandos->cantArgs == 0) {
+                    comando_describe_all(false);
+                } else {
+                    print_console((void*) log_error, "Número de parámetros incorrecto.");
                 }
-                else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "journal")) {
@@ -329,7 +295,7 @@ void memory_console() {
                     printf("SELECT      <TABLA> <KEY>                                       -> Obtener el valor de una key dentro de una tabla\n");
                     printf("INSERT      <TABLA> <KEY> <VALUE>                               -> Crear/Actualizar el valor de una key dentro de una tabla\n");
                     printf("CREATE      <TABLA> <CONSISTENCIA> <PARTICIONES> <COMPACTACION> -> Crear una nueva tabla dentro del FileSystem\n");
-                    printf("DESCRIBE    <TABLA> <KEY> <VALUE> <TIMESTAMP>                   -> Obtener la metadata de una tabla en particular\n");
+                    printf("DESCRIBE    [<TABLA>]                                           -> Obtener la metadata de una o todas las tablas\n");
                     printf("DROP        <TABLA>                                             -> Eliminar una tabla dentro del FileSystem\n");
                     printf("JOURNAL     <TABLA>                                             -> Envío de información de Memoria a FileSystem\n");
                     printf("HELP                                                            -> Lista los comandos existentes\n");

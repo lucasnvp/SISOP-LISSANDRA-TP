@@ -67,31 +67,15 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_TablaDePaginas != NULL){
             if(_TablaDePaginas->registro.punteroAPagina->key == key){
-                log_info(log_Memoria, "SELECT => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
-                        _TablaDeSegmento->registro.nombreTabla,
-                        _TablaDePaginas->registro.punteroAPagina->key,
-                        _TablaDePaginas->registro.punteroAPagina->value);
+
                 return _TablaDePaginas->registro.punteroAPagina->value;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
         }
         // En este punto se encuentra la tabla de segmentos pero no la key en sus paginas
     }
+    return NULL;
 
-    //solicitar al FS
-    // todo usar select_tad como parametro de funcion
-    select_tad* select = new_select_tad(nombreDeTabla, key);
-    serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
-    serializar_select(SERVIDOR_FILESYSTEM, select);
-    uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-    if (confirm) {
-        serializar_select(SERVIDOR_FILESYSTEM, select);
-        char* value = deserializar_string(SERVIDOR_FILESYSTEM);
-        funcionInsert(nombreDeTabla, key, value);
-        return value;
-    } else {
-        return NULL;
-    }
 }
 
 // Agrega un registro de Página a la Tabla de Páginas
@@ -187,7 +171,7 @@ void funcionDescribe(char* nombreTabla) {
     free(nombreTabla);
 }
 
-void funcionDescribeAll(bool origin) {
+void funcionDescribeAll() {
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
 
     t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
@@ -200,9 +184,8 @@ void funcionDescribeAll(bool origin) {
     }
 
     list_iterate(listDummy, print_element_stack);
-    if (origin) {
+    //todo kernel
     log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
     serializar_describe_all(socket, listDummy);
     list_destroy(listDummy);
-    }
 }

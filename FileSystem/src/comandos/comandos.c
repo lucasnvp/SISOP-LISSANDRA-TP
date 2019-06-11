@@ -138,7 +138,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, CREATE_OK);
-        }<
+        }
 
         CANTIDAD_TABLAS++;
         log_info(log_FileSystem, "La cantidad total de tablas actual es: %d", CANTIDAD_TABLAS);

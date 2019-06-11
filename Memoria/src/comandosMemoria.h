@@ -22,12 +22,14 @@
 #include "estructuras/marcos.h"
 #include "estructuras/paginas.h"
 
+#define CONSOLE_REQUEST	-1
+
 char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key);
 void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(uint32_t SERVIDOR_FILESYSTEM);
 void funcionCreate(create_tad* create);
 void funcionDescribe(char* tabla);
-void funcionDescribeAll(bool origin);
+void funcionDescribeAll();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOSMEMORIA_H

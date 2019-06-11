@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="tp-2019-1c-Gank-mid"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Librerias\;CMake Files\Kernel\;CMake Files\Kernel\test\;CMake Files\Memoria\;CMake Files\FileSystem\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Librerias">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/libLibrerias.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 Librerias"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Librerias/fast">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/libLibrerias.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 Librerias/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Kernel">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Kernel" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 Kernel"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Kernel/fast">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Kernel" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 Kernel/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="KernelTests">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/KernelTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 KernelTests"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="KernelTests/fast">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/KernelTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 KernelTests/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Memoria">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Memoria" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 Memoria"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Memoria/fast">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Memoria" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 Memoria/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FileSystem">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/FileSystem" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 FileSystem"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FileSystem/fast">
+				<Option output="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/FileSystem" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 FileSystem/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/FileSystem.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/FileSystem.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/comandos/comandos.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/comandos/comandos.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/Config_filesystem.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/Config_filesystem.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/setup/setup.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/setup/setup.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/getterValuesFromFS.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/getterValuesFromFS.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/memtableHandler.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/memtableHanlder.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/tablesHandler.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/tablesHandler.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/utils.c">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/utils/utils.h">
+			<Option target="FileSystem"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/Kernel.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/Kernel.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/api/api.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/api/api.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/comandos/comandos.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/comandos/comandos.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/config/Config_kernel.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/config/Config_kernel.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/criterios/criterios.c">
+			<Option target="Kernel"/>
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/criterios/criterios.h">
+			<Option target="Kernel"/>
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/memoria/memoria.c">
+			<Option target="Kernel"/>
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/memoria/memoria.h">
+			<Option target="Kernel"/>
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/metadata/metadata.c">
+			<Option target="Kernel"/>
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/metadata/metadata.h">
+			<Option target="Kernel"/>
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/metricas/metricas.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/metricas/metricas.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/tads/script.c">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/tads/script.h">
+			<Option target="Kernel"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Run_Kernel_Tests.c">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Run_Kernel_Tests.h">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Test_Criterio/Test_Criterio.c">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Test_Criterio/Test_Criterio.h">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Test_Memoria/Test_Memoria.c">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Test_Memoria/Test_Memoria.h">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Test_Metadata/Test_Metadata.c">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/Test_Metadata/Test_Metadata.h">
+			<Option target="KernelTests"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/bitarray.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/bitarray.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/dictionary.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/dictionary.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/list.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/list.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/node.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/queue.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/collections/queue.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/config.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/config.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/error.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/error.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/log.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/log.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/process.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/process.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/string.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/string.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/temporal.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/temporal.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/txt.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commons/txt.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commonsfunctions/functions.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/commonsfunctions/functions.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/parser/parser.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/parser/parser.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/serializador/estructuras.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/serializador/estructuras.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/serializador/handshake.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/serializador/serializador.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/serializador/serializador.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/servidor/servidor.c">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/servidor/servidor.h">
+			<Option target="Librerias"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/Memoria.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/Memoria.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/comandos/comandos.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/comandos/comandos.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/comandosMemoria.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/comandosMemoria.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/Config_memoria.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/Config_memoria.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/estructuras/marcos.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/estructuras/marcos.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/estructuras/paginas.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/estructuras/paginas.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/estructuras/segmentos.c">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/estructuras/segmentos.h">
+			<Option target="Memoria"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Librerias/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Librerias\"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Kernel\"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Kernel\test\"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Memoria\"/>
+		</Unit>
+		<Unit filename="/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\FileSystem\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

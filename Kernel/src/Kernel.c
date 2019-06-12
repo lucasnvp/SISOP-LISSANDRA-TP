@@ -104,7 +104,9 @@ void consola() {
             }
             free(com);
 
-            if (!strcmp(comandos->comando, "exit")) {
+            string_to_upper(comandos->comando);
+
+            if (!strcmp(comandos->comando, "EXIT")) {
                 if (comandos->cantArgs == 0) {
                     KERNEL_READY = false;
                     free(comandos->comando);
@@ -113,21 +115,21 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "select")) {
+            else if (!strcmp(comandos->comando, "SELECT")) {
                 if (comandos->cantArgs == 2) {
                     comando_select(comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "insert")) {
+            else if (!strcmp(comandos->comando, "INSERT")) {
                 if (comandos->cantArgs == 3) {
                     comando_insert(comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "create")) {
+            else if (!strcmp(comandos->comando, "CREATE")) {
                 if (comandos->cantArgs == 4) {
                     comando_create(
                             comandos->arg[0],
@@ -138,7 +140,7 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "describe")) {
+            else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
                     comando_describe_all(SERVIDOR_MEMORIA);
                 } else {
@@ -149,21 +151,21 @@ void consola() {
                 }
             }
 
-            else if (!strcmp(comandos->comando, "drop")) {
+            else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
                     comando_drop(comandos->arg[0]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "run")) {
+            else if (!strcmp(comandos->comando, "RUN")) {
                 if (comandos->cantArgs == 1) {
                     comando_run(comandos->arg[0], QUEUE_READY, &SEM_PLANIFICADOR);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "metrics")) {
+            else if (!strcmp(comandos->comando, "METRICS")) {
                 if (comandos->cantArgs == 0) {
                     pthread_mutex_lock(&mutexMetricas);
                     showMetrics(log_Kernel);

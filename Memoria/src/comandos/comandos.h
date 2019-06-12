@@ -35,6 +35,6 @@ void comando_insert(insert_tad* insert);
 void comando_create(create_tad* create, int requestOrigin);
 void comando_describe(char* nombreTabla, int requestOrigin);
 void comando_drop(char* nombreTabla);
-void comando_journal(uint32_t SERVIDOR_FILESYSTEM);
+void comando_journal(int requestOrigin);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

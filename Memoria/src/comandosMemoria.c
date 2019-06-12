@@ -20,7 +20,7 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
                 uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
     
                 if(confirm){
-                    log_info(log_Memoria, "INSERT A FS => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",_TablaDeSegmento->registro.nombreTabla,
+                    log_info(log_Memoria, "INSERT A FS => TABLA: <%s>\tKEY: <%d>\tVALUE: <%s>",_TablaDeSegmento->registro.nombreTabla,
                              _tablaDePaginas->registro.punteroAPagina->key,
                              _tablaDePaginas->registro.punteroAPagina->value);
                 } else {

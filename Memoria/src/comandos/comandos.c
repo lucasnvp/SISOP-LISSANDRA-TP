@@ -16,6 +16,7 @@ char* comando_select(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
 }
 
 void comando_insert(insert_tad* insert){
+    atoi(insert->key);
     print_console((void*) log_info, "Comando insert");
     funcionInsert(insert, true);
 
@@ -70,7 +71,13 @@ void comando_drop(char* nombreTabla){
     // avisar al FS que haga el drop
 }
 
-void comando_journal(uint32_t servidorFileSystem){
+void comando_journal(int requestOrigin){
     print_console((void*) log_info, "Comando journal");
-    funcionJournal(servidorFileSystem);
+    funcionJournal(SERVIDOR_FILESYSTEM);
+    if (requestOrigin != CONSOLE_REQUEST) {
+
+            serializar_int(requestOrigin, true);
+            //serializar_journal(requestOrigin); TODO SERIALIZAR JOURNAL
+
+    }
 }

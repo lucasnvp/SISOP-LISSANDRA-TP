@@ -209,6 +209,13 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             break;
         }
+
+        case COMAND_JOURNAL: {
+            log_info(log_Memoria, "El kernel envio un journal");
+            comando_journal(socket);
+            break;
+        }
+
         default:
             log_info(log_Memoria, "Error al recibir el comando");
     }
@@ -263,7 +270,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
-                    insert_tad* insert = new_insert_tad(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
+                    insert_tad* insert = new_insert_tad(comandos->arg[0],atoi(comandos->arg[1]),comandos->arg[2]);
                     comando_insert(insert);
                     free_insert_tad(insert);
                 }
@@ -288,7 +295,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "journal")) {
                 if (comandos->cantArgs == 0) {
-                    comando_journal(SERVIDOR_FILESYSTEM);
+                    comando_journal(-1);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

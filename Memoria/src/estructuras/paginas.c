@@ -54,11 +54,12 @@ tablaDePaginas* obtenerRegistroMasViejo() {
         _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
     }
 
-    // en este punto no hay ninguna página en ningún segmento que tenga el flag de modificado activado; entonces compruebo el registro más viejo
+    // en este punto no hay ninguna página en ningún segmento que tenga el flag de modificado activado
     if(flagJournal) {
-        //ejecutar journal -- recordar llamar a reservarMarco dentro del journal
+        //ejecutar journal
         log_info(log_Memoria, "La memoria esta FULL. Se procede a realizar un JOURNAL");
         funcionJournal(SERVIDOR_FILESYSTEM);
+        return NULL; //Se retorna null para que reenlazar registros mas viejos invoque a la funcion reservarMarco
     }
     return registroMasViejo;
 

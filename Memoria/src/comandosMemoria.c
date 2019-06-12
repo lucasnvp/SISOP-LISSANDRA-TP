@@ -11,41 +11,21 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
         struct tablaDePaginas* _tablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_tablaDePaginas != NULL){
             if(_tablaDePaginas->registro.flagModificado){
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
-            insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
-                                                _tablaDePaginas->registro.punteroAPagina->key,
-                                                _tablaDePaginas->registro.punteroAPagina->value);
-            serializar_insert(SERVIDOR_FILESYSTEM, insert);
-
-            uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-
-            if(confirm){
-                log_info(log_Memoria, "INSERT => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",_TablaDeSegmento->registro.nombreTabla,
-                         _tablaDePaginas->registro.punteroAPagina->key,
-                         _tablaDePaginas->registro.punteroAPagina->value);
-            } else {
-                log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
-            }
-
-            //todo comento esto del merge, dejo la versión mía que está testeada
-
-/*
                 serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
                 insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
                                                     _tablaDePaginas->registro.punteroAPagina->key,
                                                     _tablaDePaginas->registro.punteroAPagina->value);
                 serializar_insert(SERVIDOR_FILESYSTEM, insert);
-
+    
                 uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-
+    
                 if(confirm){
-                    log_info(log_Memoria, "JOURNAL A FS => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",_TablaDeSegmento->registro.nombreTabla,
+                    log_info(log_Memoria, "INSERT A FS => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",_TablaDeSegmento->registro.nombreTabla,
                              _tablaDePaginas->registro.punteroAPagina->key,
                              _tablaDePaginas->registro.punteroAPagina->value);
                 } else {
                     log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
                 }
-*/
             }
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
         }

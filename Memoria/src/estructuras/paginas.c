@@ -12,11 +12,14 @@
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
 registro_tad* liberarPagina() {
+    tablaDePaginas* registroMasViejo;
     bool seDebeHacerJournal = verificarPaginas();
     if (seDebeHacerJournal) {
         funcionJournal(SERVIDOR_FILESYSTEM);
+        registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
+    } else {
+        registroMasViejo = obtenerRegistroMasViejo();
     }
-    tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
     return reenlazarRegistros(registroMasViejo);
 
 }

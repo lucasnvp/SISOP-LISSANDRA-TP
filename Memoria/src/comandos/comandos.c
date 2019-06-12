@@ -45,8 +45,13 @@ void comando_describe(char* nombreTabla, int requestOrigin){
     bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
     if (confirm) {
         describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
-        serializar_int(SERVIDOR_FILESYSTEM, true);
-        serializar_describe(SERVIDOR_FILESYSTEM, describe);
+        if (requestOrigin != CONSOLE_REQUEST) {
+
+            serializar_int(requestOrigin, true);
+            serializar_describe(requestOrigin, describe);
+
+        }
+
         log_info(log_Memoria,
                  "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
                  describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);

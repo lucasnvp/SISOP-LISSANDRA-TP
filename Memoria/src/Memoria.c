@@ -193,6 +193,7 @@ void connection_handler(uint32_t socket, uint32_t command){
                      create->nameTable, create->consistencia, create->particiones, create->compactacion);
             serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
             serializar_create(SERVIDOR_FILESYSTEM, create);
+            agregarSegmento(create->nameTable);
             free_create_tad(create);
             bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
             serializar_int(socket, confirm);

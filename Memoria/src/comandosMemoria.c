@@ -27,6 +27,25 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
                 log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
             }
 
+            //todo comento esto del merge, dejo la versión mía que está testeada
+
+/*
+                serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
+                insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
+                                                    _tablaDePaginas->registro.punteroAPagina->key,
+                                                    _tablaDePaginas->registro.punteroAPagina->value);
+                serializar_insert(SERVIDOR_FILESYSTEM, insert);
+
+                uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+
+                if(confirm){
+                    log_info(log_Memoria, "JOURNAL A FS => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",_TablaDeSegmento->registro.nombreTabla,
+                             _tablaDePaginas->registro.punteroAPagina->key,
+                             _tablaDePaginas->registro.punteroAPagina->value);
+                } else {
+                    log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
+                }
+*/
             }
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
         }
@@ -35,7 +54,6 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
         funcionDrop(nombreTabla);
     }
-
 }
 
 void funcionDrop(char* nombreDeTabla){
@@ -67,7 +85,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_TablaDePaginas != NULL){
             if(_TablaDePaginas->registro.punteroAPagina->key == select->key){
-                log_info(log_Memoria, "SELECT => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
+                log_info(log_Memoria, "SELECT EN MEMORIA => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
@@ -79,6 +97,9 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
     }
 
     //solicitar al FS
+    log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tkey: <%d>\t",
+             select->nameTable,select->key);
+
     select_tad* select_FS = new_select_tad(select->nameTable, select->key);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select_FS);
@@ -100,18 +121,35 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
 void funcionInsert(insert_tad* insert, bool flagModificado) {
-    struct tablaDeSegmentos *_TablaDeSegmento = NULL;
-    _TablaDeSegmento = buscarSegmento(insert->nameTable);
-    // si la tabla de segmentos es nula, lo agrego
-    if (_TablaDeSegmento == NULL) {
-        _TablaDeSegmento = agregarSegmento(insert->nameTable);
+    __uint32_t timestampActual = time(NULL);
+    struct tablaDeSegmentos *_TablaDeSegmento = buscarSegmento(insert->nameTable);
+
+    // si la tabla de segmentos es nula, lo agrego y agrego la primera
+    if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
+        struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
+        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
+
+        _TablaDeSegmento = buscarSegmento(insert->nameTable);
+        if(_TablaDeSegmento == NULL ){
+            _TablaDeSegmento = agregarSegmento(insert->nameTable);
+        }
+        nuevoRegistroPagina->siguienteRegistroPagina = NULL;
+        nuevoRegistroPagina->registro.flagModificado = flagModificado;
+        nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
+
+
+        _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
+        nuevoRegistroPagina->registro.numeroPagina = (uint32_t) 1;
+
+        memcpy(nuevoRegistroPagina->registro.punteroAPagina,
+               new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
+
+        return;
     }
 
-    __uint32_t timestampActual = time(NULL);
 
-    struct tablaDePaginas *_TablaDePaginas;
-    _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
-
+    struct tablaDePaginas* _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
+    struct tablaDePaginas* ultimaPagina = NULL;
 
     // en tanto mi tabla de páginas no sea nula
     while (_TablaDePaginas != NULL) {
@@ -119,12 +157,13 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
         if (_TablaDePaginas->registro.punteroAPagina->key == insert->key) {
             //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
             if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestampActual) {
-                _TablaDePaginas->registro.flagModificado = true;
+                _TablaDePaginas->registro.flagModificado = true; //actualizo el valor y seteo a true el flag de modificado
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                        new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
                 return;
             }
         }
+        ultimaPagina = _TablaDePaginas;
         _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
     }
     //si no la encuentro la agrego junto a su registro de pagina
@@ -135,20 +174,15 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
     nuevoRegistroPagina->registro.flagModificado = flagModificado;
     nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
 
-    struct tablaDePaginas* ultimaPagina = NULL;
-    _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
-    while(_TablaDePaginas != NULL){
-        ultimaPagina = _TablaDePaginas;
-        _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
-    }
-
-    if(ultimaPagina == NULL){//si es null no tenemos ninguna pagina en el registro
+    _TablaDeSegmento = buscarSegmento(insert->nameTable);
+    if(_TablaDeSegmento == NULL){
+        _TablaDeSegmento = agregarSegmento(insert->nameTable);
         _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
         nuevoRegistroPagina->registro.numeroPagina = (uint32_t) 1;
-    } else {
-        ultimaPagina->siguienteRegistroPagina = nuevoRegistroPagina;
-        nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
     }
+
+    ultimaPagina->siguienteRegistroPagina = nuevoRegistroPagina;
+    nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
 
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,
            new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));

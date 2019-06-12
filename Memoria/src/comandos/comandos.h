@@ -22,12 +22,15 @@
 #include "../estructuras/segmentos.h"
 #include "../estructuras/marcos.h"
 
+// Flag para intepretar si el comando es enviado por kernel o por consola
+#define CONSOLE_REQUEST -1
+
 t_log* log_Memoria;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 char* comando_select(uint32_t SERVIDOR_FILESYSTEM, select_tad* select);
 void comando_insert(insert_tad* insert);
-void comando_create();
+void comando_create(create_tad* create);
 void comando_describe();
 void comando_drop(char* nombreTabla);
 void comando_journal(uint32_t SERVIDOR_FILESYSTEM);

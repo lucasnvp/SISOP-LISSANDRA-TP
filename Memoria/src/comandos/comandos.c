@@ -21,8 +21,13 @@ void comando_insert(insert_tad* insert){
 
 }
 
-void comando_create(){
+void comando_create(create_tad* create){
     print_console((void*) log_info, "Comando create");
+    log_info(log_Memoria,
+             "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+             create->nameTable, create->consistencia, create->particiones, create->compactacion);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
+    serializar_create(SERVIDOR_FILESYSTEM, create);
 }
 
 void comando_describe(){

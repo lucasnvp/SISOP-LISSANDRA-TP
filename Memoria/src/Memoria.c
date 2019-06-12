@@ -40,22 +40,8 @@ int main(){
     pthread_join(thread_consola, (void**) NULL);
 
 
-    // Se elimina el espacio para la memoria principal
-
-    //desalocar_MemoriaPrincipal(); TODO: Creo que no deberíamos desalocar la memoria en este punto, o en ningún punto
-
     return EXIT_SUCCESS;
 }
-
-/*
- * TODO 08/05
- *
- * Buscar en las páginas de los segmentos si se contiene el key
- * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
- * Comprobar si la memoria está llena
- * Insert Select Drop Describe
- * Journal, Gossiping
- */
 
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
@@ -70,11 +56,6 @@ registro_tad* alocar_MemoriaPrincipal() {
     inicializarMarcos(config.TAM_MEM);
     log_info(log_Memoria, "Se han inicializado los marcos");
     return aux;
-}
-
-void desalocar_MemoriaPrincipal() {
-    log_info(log_Memoria, "Se ha desalocado la memoria principal");
-    free(memoriaPrincipal);
 }
 
 void init_log(char* pathLog){
@@ -156,8 +137,6 @@ void server(void* args) {
 void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
 
-        //TODO aca se reciben los comandos de lo que se conecte a la memoria
-
         case NUEVA_CONEXION_KERNEL_TO_MEMORIA: {
             log_info(log_Memoria, "Se conecto el kernel");
             serializar_int(socket, config.MEMORY_NUMBER);
@@ -188,11 +167,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
             create_tad* create = deserializar_create(socket);
-            log_info(log_Memoria,
-                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
-            serializar_create(SERVIDOR_FILESYSTEM, create);
+            comando_create(create);
             free_create_tad(create);
             bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
             serializar_int(socket, confirm);
@@ -312,8 +287,10 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "create")) {
-                if (comandos->cantArgs == 0) {
-                    comando_create();
+                if (comandos->cantArgs == 4) {
+                    create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], comandos->arg[2], comandos->arg[3]);
+                    comando_create(create);
+                    free_create_tad(create);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

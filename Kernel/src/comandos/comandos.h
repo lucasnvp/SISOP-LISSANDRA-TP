@@ -30,5 +30,6 @@ void comando_describe(char* tabla);
 void comando_describe_all();
 void comando_drop(char* tabla);
 void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR);
+void comando_journal();
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

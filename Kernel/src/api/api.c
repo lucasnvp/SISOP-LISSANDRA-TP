@@ -109,3 +109,7 @@ void api_drop(char* tabla){
         log_info(log_Kernel_api, "DROP => TABLA: <%s>\t", tabla);
     }
 }
+
+void api_journal () {
+
+}

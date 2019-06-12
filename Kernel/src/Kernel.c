@@ -188,6 +188,13 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
+            else if (!strcmp(comandos->comando, "JOURNAL")) {
+                if (comandos->cantArgs == 4) {
+
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
             else print_console((void*) log_error, "Comando incorrecto.");
 
             // Libero toda la memoria

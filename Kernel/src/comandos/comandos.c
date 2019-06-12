@@ -53,3 +53,8 @@ void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR){
         log_info(log_Kernel, "No se encontro el archivo");
     }
 }
+
+void comando_journal() {
+    print_console((void*) log_info, "Comando journal");
+    api_journal();
+}

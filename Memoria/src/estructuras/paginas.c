@@ -46,7 +46,7 @@ tablaDePaginas* obtenerRegistroMasViejo() {
         // en tanto tenga páginas dentro de mi segmento
         while ( pagina != NULL){
             // compruebo si el último acceso es menor que el registroMasViejo, y de ser así, compruebo si la página contiene el flag de modificado en false
-            if (pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso && !pagina->registro.flagModificado){
+            if ( !pagina->registro.flagModificado && pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso){
                 registroMasViejo = pagina;
             }
             pagina = pagina->siguienteRegistroPagina;

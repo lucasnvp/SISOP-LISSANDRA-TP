@@ -167,31 +167,15 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
             create_tad* create = deserializar_create(socket);
-            comando_create(create);
+            comando_create(create, socket);
             free_create_tad(create);
-            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-            serializar_int(socket, confirm);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
             char* tabla = deserializar_string(socket);
-            log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
-            serializar_string(SERVIDOR_FILESYSTEM, tabla);
+            comando_describe(tabla, socket);
             free(tabla);
-            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-            if (confirm) {
-                describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
-                log_info(log_Memoria,
-                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-                serializar_int(socket, true);
-                serializar_describe(socket, describe);
-                free_describe_tad(describe);
-            } else {
-                serializar_int(socket, false);
-            }
             break;
         }
         case COMAND_DESCRIBE_ALL: {
@@ -288,16 +272,16 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "create")) {
                 if (comandos->cantArgs == 4) {
-                    create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], comandos->arg[2], comandos->arg[3]);
-                    comando_create(create);
+                    create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], atoi(comandos->arg[2]), atoi(comandos->arg[3]));
+                    comando_create(create, -1);
                     free_create_tad(create);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 0) {
-                    comando_describe();
+                if (comandos->cantArgs == 1) {
+                    comando_describe(comandos->arg[0], -1);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

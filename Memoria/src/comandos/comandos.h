@@ -12,6 +12,8 @@
 #include <readline/readline.h>
 #include <unistd.h>
 
+#include "string.h"
+
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
@@ -30,8 +32,8 @@ t_log* log_Memoria;
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 char* comando_select(uint32_t SERVIDOR_FILESYSTEM, select_tad* select);
 void comando_insert(insert_tad* insert);
-void comando_create(create_tad* create);
-void comando_describe();
+void comando_create(create_tad* create, int requestOrigin);
+void comando_describe(char* nombreTabla, int requestOrigin);
 void comando_drop(char* nombreTabla);
 void comando_journal(uint32_t SERVIDOR_FILESYSTEM);
 

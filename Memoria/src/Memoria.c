@@ -164,14 +164,18 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case COMAND_INSERT: {
+            log_info(log_Memoria, "El kernel envio un insert");
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
-            funcionInsert(insert->nameTable, insert->key, insert->value, true);
+            comando_insert(insert);
+            free_insert_tad(insert);
             break;
         }
         case COMAND_SELECT: {
+            log_info(log_Memoria, "El kernel envio un select");
             select_tad* select = deserializar_select(socket);
-            char* value = funcionSelect(SERVIDOR_FILESYSTEM, select->nameTable, select->key);
+            char* value = comando_select(SERVIDOR_FILESYSTEM, select);
+            free_select_tad(select);
 
             if (value == NULL) {
                 serializar_int(socket, false);
@@ -237,6 +241,12 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
+            char* tabla = deserializar_string(socket);
+            comando_drop(tabla);
+            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
+            serializar_string(SERVIDOR_FILESYSTEM, tabla);
+            free(tabla);
+
 
             break;
         }
@@ -285,15 +295,18 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
-                    comando_select(SERVIDOR_FILESYSTEM, comandos->arg[0], atoi(comandos->arg[1]));
+                    select_tad* select = new_select_tad(comandos->arg[0], atoi(comandos->arg[1]));
+                    comando_select(SERVIDOR_FILESYSTEM, select);
+                    free_select_tad(select);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
-
-                    comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
+                    insert_tad* insert = new_insert_tad(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
+                    comando_insert(insert);
+                    free_insert_tad(insert);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -329,7 +342,7 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "help")) {
                 if (comandos->cantArgs == 0) {
                     printf("---------------------------------------------------------------------------------------------------------------------------\n");
-                    printf("Comandos posibles:\n");
+                    printf("Comandos posibles\n");
                     printf("\n");
                     printf("Comando     Parámetros                                          -> Descripción del comando\n");
                     printf("\n");

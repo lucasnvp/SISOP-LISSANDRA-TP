@@ -58,8 +58,7 @@ tablaDePaginas* obtenerRegistroMasViejo();
 registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
 registro_tad* liberarPagina();
 void actualizarIdPaginas(tablaDePaginas* registroEliminado);
-void agregarRegistroDePagina(tablaDePaginas* _tablaDePaginas, registro_tad* punteroAPagina); // agrega un registro de página a la tabla de páginas
-
+bool verificarPaginas();
 
 #endif //TP_2019_1C_GANK_MID_PAGINAS_H
 

@@ -22,8 +22,8 @@
 #include "estructuras/marcos.h"
 #include "estructuras/paginas.h"
 
-char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key);
-void funcionInsert(char* nombreDeTabla, uint32_t key, char* value, bool flagModificado);
+char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select);
+void funcionInsert(insert_tad* insert, bool flagModificado);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(uint32_t SERVIDOR_FILESYSTEM);
 

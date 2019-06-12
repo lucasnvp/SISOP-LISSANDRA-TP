@@ -9,7 +9,6 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
     struct tablaDeSegmentos* _TablaDeSegmento = primerRegistroDeSegmentos;
     while(_TablaDeSegmento != NULL){
         struct tablaDePaginas* _tablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
-        bool dropearSegmento = false;
         while(_tablaDePaginas != NULL){
             if(_tablaDePaginas->registro.flagModificado){
             serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
@@ -21,21 +20,20 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
             uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
             if(confirm){
-                log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",_TablaDeSegmento->registro.nombreTabla,
+                log_info(log_Memoria, "INSERT => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",_TablaDeSegmento->registro.nombreTabla,
                          _tablaDePaginas->registro.punteroAPagina->key,
                          _tablaDePaginas->registro.punteroAPagina->value);
             } else {
                 log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
             }
-            dropearSegmento = true;
+
             }
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
         }
 
-        if(dropearSegmento){
-            funcionDrop(_TablaDeSegmento->registro.nombreTabla);
-        }
+        char* nombreTabla = _TablaDeSegmento->registro.nombreTabla;
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
+        funcionDrop(nombreTabla);
     }
 
 }
@@ -54,20 +52,22 @@ void funcionDrop(char* nombreDeTabla){
         }
         reenlazarSegmentos(_TablaDeSegmento);
         actualizarIdSegmentos(_TablaDeSegmento);
+        log_info(log_Memoria, "DROP EN MEMORIA => TABLA: <%s>\t",
+                 _TablaDeSegmento->registro.nombreTabla);
         free(_TablaDeSegmento);
     }
 
 }
 
 
-char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key){
-    struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
+char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
+    struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     if (_TablaDeSegmento != NULL){
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_TablaDePaginas != NULL){
-            if(_TablaDePaginas->registro.punteroAPagina->key == key){
-                log_info(log_Memoria, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",
+            if(_TablaDePaginas->registro.punteroAPagina->key == select->key){
+                log_info(log_Memoria, "SELECT => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
@@ -79,29 +79,32 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
     }
 
     //solicitar al FS
-    // todo usar select_tad como parametro de funcion
-    select_tad* select = new_select_tad(nombreDeTabla, key);
+    select_tad* select_FS = new_select_tad(select->nameTable, select->key);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
-    serializar_select(SERVIDOR_FILESYSTEM, select);
+    serializar_select(SERVIDOR_FILESYSTEM, select_FS);
     uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
     if (confirm) {
-        serializar_select(SERVIDOR_FILESYSTEM, select);
+        serializar_select(SERVIDOR_FILESYSTEM, select_FS);
+        free_select_tad(select_FS);
         char* value = deserializar_string(SERVIDOR_FILESYSTEM);
-        funcionInsert(nombreDeTabla, key, value, false);
+        insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
+        funcionInsert(insert, false);
+        free_insert_tad(insert);
         return value;
     } else {
+        free_select_tad(select_FS);
         return NULL;
     }
 }
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void funcionInsert(char* nombreDeTabla, uint32_t key, char* value, bool flagModificado) {
+void funcionInsert(insert_tad* insert, bool flagModificado) {
     struct tablaDeSegmentos *_TablaDeSegmento = NULL;
-    _TablaDeSegmento = buscarSegmento(nombreDeTabla);
+    _TablaDeSegmento = buscarSegmento(insert->nameTable);
     // si la tabla de segmentos es nula, lo agrego
     if (_TablaDeSegmento == NULL) {
-        _TablaDeSegmento = agregarSegmento(nombreDeTabla);
+        _TablaDeSegmento = agregarSegmento(insert->nameTable);
     }
 
     __uint32_t timestampActual = time(NULL);
@@ -113,12 +116,12 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value, bool flagModi
     // en tanto mi tabla de páginas no sea nula
     while (_TablaDePaginas != NULL) {
         //busco la pagina por la key
-        if (_TablaDePaginas->registro.punteroAPagina->key == key) {
+        if (_TablaDePaginas->registro.punteroAPagina->key == insert->key) {
             //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
             if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestampActual) {
                 _TablaDePaginas->registro.flagModificado = true;
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
-                       new_registro_tad(timestampActual, key, value),sizeof(registro_tad));
+                       new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
                 return;
             }
         }
@@ -148,6 +151,11 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value, bool flagModi
     }
 
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,
-           new_registro_tad(timestampActual, key, value),sizeof(registro_tad));
+           new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
+
+    log_info(log_Memoria, "INSERT EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
+             _TablaDeSegmento->registro.nombreTabla,
+             nuevoRegistroPagina->registro.punteroAPagina->key,
+             nuevoRegistroPagina->registro.punteroAPagina->value);
     return;
 }

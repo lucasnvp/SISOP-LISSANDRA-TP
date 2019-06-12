@@ -28,6 +28,7 @@ void comando_create(create_tad* create){
              create->nameTable, create->consistencia, create->particiones, create->compactacion);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
     serializar_create(SERVIDOR_FILESYSTEM, create);
+    agregarSegmento(create->nameTable);
 }
 
 void comando_describe(){

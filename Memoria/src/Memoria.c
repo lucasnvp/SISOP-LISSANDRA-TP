@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by utnso on 06/04/19.
 //
 
@@ -166,7 +166,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_INSERT: {
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
-            funcionInsert(insert->nameTable, insert->key, insert->value);
+            funcionInsert(insert->nameTable, insert->key, insert->value, true);
             break;
         }
         case COMAND_SELECT: {

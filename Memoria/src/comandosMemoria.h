@@ -23,7 +23,7 @@
 #include "estructuras/paginas.h"
 
 char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t key);
-void funcionInsert(char* nombreDeTabla, uint32_t key, char* value);
+void funcionInsert(char* nombreDeTabla, uint32_t key, char* value, bool flagModificado);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(uint32_t SERVIDOR_FILESYSTEM);
 

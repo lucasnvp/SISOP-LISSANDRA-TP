@@ -17,7 +17,7 @@ void comando_select(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
 
 void comando_insert(char* nombreDeTabla, char* key, char* value){
     print_console((void*) log_info, "Comando insert");
-    funcionInsert(nombreDeTabla, atoi(key), value);
+    funcionInsert(nombreDeTabla, atoi(key), value, true);
 
 }
 

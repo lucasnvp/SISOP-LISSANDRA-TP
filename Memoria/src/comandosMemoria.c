@@ -1,4 +1,4 @@
-
+﻿
 //
 // Created by utnso on 07/06/19.
 //
@@ -11,7 +11,7 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
         struct tablaDePaginas* _tablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         bool dropearSegmento = false;
         while(_tablaDePaginas != NULL){
-            //if(_tablaDePaginas->registro.flagModificado){
+            if(_tablaDePaginas->registro.flagModificado){
             serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
             insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
                                                 _tablaDePaginas->registro.punteroAPagina->key,
@@ -28,7 +28,7 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
                 log_info(log_Memoria, "La tabla %s no existe en File System",_TablaDeSegmento->registro.nombreTabla);
             }
             dropearSegmento = true;
-            //}
+            }
             _tablaDePaginas = _tablaDePaginas->siguienteRegistroPagina;
         }
 
@@ -87,7 +87,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
     if (confirm) {
         serializar_select(SERVIDOR_FILESYSTEM, select);
         char* value = deserializar_string(SERVIDOR_FILESYSTEM);
-        funcionInsert(nombreDeTabla, key, value);
+        funcionInsert(nombreDeTabla, key, value, false);
         return value;
     } else {
         return NULL;
@@ -96,7 +96,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, char* nombreDeTabla, uint32_t 
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
+void funcionInsert(char* nombreDeTabla, uint32_t key, char* value, bool flagModificado) {
     struct tablaDeSegmentos *_TablaDeSegmento = NULL;
     _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     // si la tabla de segmentos es nula, lo agrego
@@ -129,7 +129,7 @@ void funcionInsert(char* nombreDeTabla, uint32_t key, char* value) {
 
     nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;
-    nuevoRegistroPagina->registro.flagModificado = false;
+    nuevoRegistroPagina->registro.flagModificado = flagModificado;
     nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
 
     struct tablaDePaginas* ultimaPagina = NULL;

@@ -26,8 +26,11 @@ int main(){
     // Inicializamos la tabla de segmentos
 
     primerRegistroDeSegmentos = NULL;
+    primerRegistroDeGossip = NULL;
+
 
     //TODO Hilo de Gossiping
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
 
     //Creo el hilo del servidor
@@ -43,6 +46,34 @@ int main(){
     return EXIT_SUCCESS;
 }
 
+
+void journaling(){
+    struct timeval timeJournal;
+
+    while(true){
+
+        timeJournal.tv_sec = 0;
+        timeJournal.tv_usec = config.RETARDO_JOURNAL;
+
+        select(0, NULL, NULL, NULL, &timeJournal);
+
+        funcionJournal(SERVIDOR_FILESYSTEM);
+    }
+}
+
+void gossiping(){
+    struct timeval timeGossip;
+    while(true){
+
+        timeGossip.tv_sec = 0;
+        timeGossip.tv_usec = config.RETARDO_GOSSIPING;
+
+        select(0, NULL, NULL, NULL, &timeGossip);
+
+        funcionGossip();
+    }
+
+}
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);

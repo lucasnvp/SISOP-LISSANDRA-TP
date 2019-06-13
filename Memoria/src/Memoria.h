@@ -22,6 +22,7 @@
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
+#include "estructuras/gossip.h.h"
 #include "comandosMemoria.h"
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
@@ -34,14 +35,6 @@ t_log* log_Memoria;
 uint32_t SERVIDOR_FILESYSTEM;
 
 
-// Estructura de los registros de la tabla de gossiping
-
-typedef struct reg_gossiping{
-    uint32_t idMemoria;
-    char** ipSeeds;
-    char** puertoSeeds;
-
-}reg_gossiping;
 
 
 
@@ -51,6 +44,7 @@ fd_set master;   	// conjunto maestro de descriptores de fichero
 // Variables hilos
 pthread_t thread_server;
 pthread_t thread_consola;
+pthread_t thread_journaling;
 
 // Dirección de la Memoria Principal
 void* memoriaPrincipal;
@@ -75,5 +69,6 @@ void connect_server_FileSystem();
 void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void memory_console();
+void journaling();
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

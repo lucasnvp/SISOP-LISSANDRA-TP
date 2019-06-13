@@ -10,9 +10,33 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-char* comando_select(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
+char* comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
-    return funcionSelect(SERVIDOR_FILESYSTEM, select);
+    char* value = funcionSelect(SERVIDOR_FILESYSTEM, select);
+
+    if (value == NULL) {
+      value = solicitarSelectAFileSystem(select);
+    }
+
+    // vuelvo a preguntar si es null para enviar la señal serializada (por si no existe la key solicitada en FS)
+
+    if (value == NULL) {
+        if (requestOrigin != CONSOLE_REQUEST) {
+
+            serializar_int(requestOrigin, false);
+        }
+    } else {
+
+        if (requestOrigin != CONSOLE_REQUEST) {
+
+            serializar_int(requestOrigin, true);
+            serializar_string(requestOrigin, value);
+        }
+
+    }
+
+    return value ;
+
 }
 
 void comando_insert(insert_tad* insert){
@@ -35,7 +59,6 @@ void comando_create(create_tad* create, int requestOrigin){
     if (requestOrigin != CONSOLE_REQUEST) {
         serializar_int(requestOrigin, confirm);
     }
-
 }
 
 void comando_describe(char* nombreTabla, int requestOrigin){
@@ -59,27 +82,39 @@ void comando_describe(char* nombreTabla, int requestOrigin){
                  describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
 
         free_describe_tad(describe);
+
     } else {
         if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(SERVIDOR_FILESYSTEM, false);
+            serializar_int(requestOrigin, false);
         }
     }
 
 }
 
-void comando_drop(char* nombreTabla){
+void comando_drop(char* nombreTabla, int requestOrigin){
     print_console((void*) log_info, "Comando drop");
     funcionDrop(nombreTabla);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
+    serializar_string(SERVIDOR_FILESYSTEM, nombreTabla);
+    bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
+    if (requestOrigin != CONSOLE_REQUEST) {
+
+       serializar_int(requestOrigin, confirm);
+    }
 }
 
 void comando_journal(int requestOrigin){
     print_console((void*) log_info, "Comando journal");
     funcionJournal(SERVIDOR_FILESYSTEM);
+
     if (requestOrigin != CONSOLE_REQUEST) {
 
-            serializar_int(requestOrigin, true);
-            //serializar_journal(requestOrigin); TODO SERIALIZAR JOURNAL
+        serializar_int(requestOrigin, true);
+
+    } else {
+
+        serializar_int(requestOrigin, false);
 
     }
 }

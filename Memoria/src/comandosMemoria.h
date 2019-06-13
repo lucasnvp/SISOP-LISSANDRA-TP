@@ -24,6 +24,7 @@
 #include "estructuras/paginas.h"
 
 char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select);
+char* solicitarSelectAFileSystem(select_tad* select);
 void funcionInsert(insert_tad* insert, bool flagModificado);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(uint32_t SERVIDOR_FILESYSTEM);

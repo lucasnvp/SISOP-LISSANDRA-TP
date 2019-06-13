@@ -76,18 +76,30 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
         // En este punto se encuentra la tabla de segmentos pero no la key en sus paginas
     }
 
-    //solicitar al FS
-    log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tkey: <%d>\t",
+    return NULL;
+}
+
+char* solicitarSelectAFileSystem(select_tad* select) {
+
+    log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
 
     select_tad* select_FS = new_select_tad(select->nameTable, select->key);
+
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select_FS);
+
     uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+
     if (confirm) {
         serializar_select(SERVIDOR_FILESYSTEM, select_FS);
         free_select_tad(select_FS);
+
         char* value = deserializar_string(SERVIDOR_FILESYSTEM);
+        /*
+         * uint32_t timestamp = deserializar_int(SERVIDOR_FILESYSTEM);
+         * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
+         */
         insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
         funcionInsert(insert, false);
         free_insert_tad(insert);

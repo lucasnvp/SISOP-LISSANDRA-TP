@@ -22,7 +22,7 @@
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
-#include "estructuras/gossip.h.h"
+#include "estructuras/gossip.h"
 #include "comandosMemoria.h"
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";

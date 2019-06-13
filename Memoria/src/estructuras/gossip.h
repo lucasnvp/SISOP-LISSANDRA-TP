@@ -20,4 +20,6 @@ typedef struct tablaDeGossip{
 
 struct tablaDeGossip* primerRegistroDeGossip;
 
+void funcionGossip();
+
 #endif //TP_2019_1C_GANK_MID_GOSSIP_H

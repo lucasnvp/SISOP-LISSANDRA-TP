@@ -70,7 +70,7 @@ void gossiping(){
 
         select(0, NULL, NULL, NULL, &timeGossip);
 
-        funcionGossip();
+     //   funcionGossip();
     }
 
 }
@@ -184,15 +184,9 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_SELECT: {
             log_info(log_Memoria, "El kernel envio un select");
             select_tad* select = deserializar_select(socket);
-            char* value = comando_select(SERVIDOR_FILESYSTEM, select);
+            char* value = comando_select(select, socket);
             free_select_tad(select);
 
-            if (value == NULL) {
-                serializar_int(socket, false);
-            } else {
-                serializar_int(socket, true);
-                serializar_string(socket, value);
-            }
             break;
         }
         case COMAND_CREATE: {
@@ -232,9 +226,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
             char* tabla = deserializar_string(socket);
-            comando_drop(tabla);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
-            serializar_string(SERVIDOR_FILESYSTEM, tabla);
+            comando_drop(tabla, socket);
             free(tabla);
 
 
@@ -293,7 +285,7 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
                     select_tad* select = new_select_tad(comandos->arg[0], atoi(comandos->arg[1]));
-                    comando_select(SERVIDOR_FILESYSTEM, select);
+                    comando_select(select, -1);
                     free_select_tad(select);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -333,7 +325,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "drop")) {
                 if (comandos->cantArgs == 1) {
-                    comando_drop(comandos->arg[0]);
+                    comando_drop(comandos->arg[0], -1);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

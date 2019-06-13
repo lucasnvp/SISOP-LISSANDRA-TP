@@ -154,10 +154,10 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
         //busco la pagina por la key
         if (_TablaDePaginas->registro.punteroAPagina->key == insert->key) {
             //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
-            if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestampActual) {
+            if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestamp) {
                 _TablaDePaginas->registro.flagModificado = true; //actualizo el valor y seteo a true el flag de modificado
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
-                       new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
+                       new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
                 return;
             }
         }
@@ -170,7 +170,7 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
     nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;
     nuevoRegistroPagina->registro.flagModificado = flagModificado;
-    nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
+    nuevoRegistroPagina->registro.ultimoAcceso = timestamp;
 
     _TablaDeSegmento = buscarSegmento(insert->nameTable);
     if(_TablaDeSegmento == NULL){
@@ -183,7 +183,7 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
     nuevoRegistroPagina->registro.numeroPagina = ultimaPagina->registro.numeroPagina + 1;
 
     memcpy(nuevoRegistroPagina->registro.punteroAPagina,
-           new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
+           new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
     log_info(log_Memoria, "INSERT EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
              _TablaDeSegmento->registro.nombreTabla,

@@ -1,4 +1,3 @@
-
 #include "tablesHandler.h"
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
@@ -142,7 +141,6 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
 
             free(bloquesDelArchivo);
             fclose(newFD);
-            free(tmp);
 
             seguirHastaEncontrarElTmpCorrespondiente = false;
 

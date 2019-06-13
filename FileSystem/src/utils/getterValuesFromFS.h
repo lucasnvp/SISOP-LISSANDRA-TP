@@ -18,6 +18,8 @@
 
 registro_tad* getValueFromTemporals(char* table, int key);
 char* getRegistrosConcatenadosDeUnTmp(char* pathTabla);
-char* leerBloque(char* nroBloque);
+char* leerBloque(char* nroBloque, int size);
+t_list* transformRegistersStrToStructs(char* strRegs);
+registro_tad* obtenerRegistroSegunKey(t_list* registros, int key);
 
 #endif //TP_2019_1C_GANK_MID_GETTERVALUESFROMFS_H

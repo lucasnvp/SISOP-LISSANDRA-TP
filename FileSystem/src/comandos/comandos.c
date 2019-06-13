@@ -9,61 +9,6 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(char* table, int key, int requestOrigin){
-    log_info(log_FileSystem, "SELECT ==> TABLE <%s> , KEY<%d>", table, key);
-
-    char* finalResult = string_new();
-
-    char* tabla_objetivo = string_duplicate(montajeTablas);
-    string_append(&tabla_objetivo, table);
-
-    // char* regTmp = getRegistrosConcatenadosDeUnTmp(tabla_objetivo);
-
-    int existe = ValidarArchivo(tabla_objetivo);
-
-    if( existe != true ) {
-
-        if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, NO_EXISTE_TABLA);
-        }
-
-        log_info(log_FileSystem, "FALLO SELECT ==> LA TABLA <%s> NO EXISTE", table);
-    }
-
-    string_append(&tabla_objetivo, "/Metadata.bin");
-    t_config* metadata = obtener_metadata_table(tabla_objetivo);
-    uint32_t particiones = config_get_int_value(metadata, "PARTITIONS");
-
-    uint32_t particion = key % particiones;
-
-    registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
-
-
-    // registro_tad* registerFromTemporal = getValueFromTemporal(table, key);
-
-    /*
-     * char* valueFromTemporalC = getValueFromTemporalInCompression(table, key);
-     *
-     * char* valueFromBlock = getValueFromBlock(table, key)
-     */
-
-    if(registerFromMemtable == NULL) {
-        log_info(log_FileSystem, "FAILED SELECT ==> NO esta en la memtable");
-        serializar_int(requestOrigin, false);
-
-    }else {
-
-        log_info(log_FileSystem, "RESULTADO SELECT ==> %s", registerFromMemtable->value);
-
-        if(requestOrigin != CONSOLE_REQUEST) {
-            serializar_int(requestOrigin, true);
-            serializar_string(requestOrigin, registerFromMemtable->value);
-
-        }
-    }
-
-}
-
 void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin){
 
     string_to_upper(table);
@@ -98,7 +43,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
         serializar_int(requestOrigin, INSERT_OK);
     }
 
-    log_info(log_FileSystem, "SUCCESS INSERT ==> EN LA TABLA <%s>", table);
+    log_info(log_FileSystem, "SUCCESS INSERT ==> TABLA <%s> , VALUE <%s>, KEY <%d>", table, value, key);
 
 }
 
@@ -137,6 +82,79 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         CANTIDAD_TABLAS++;
         log_info(log_FileSystem, "CANTIDAD DE TABLAS ACTUALES: %d", CANTIDAD_TABLAS);
     }
+}
+
+void comando_select(char* table, int key, int requestOrigin){
+    log_info(log_FileSystem, "SELECT ==> TABLE <%s> , KEY<%d>", table, key);
+
+    char* finalResult = string_new();
+
+    char* tabla_objetivo = string_duplicate(montajeTablas);
+    string_append(&tabla_objetivo, table);
+
+    int existe = ValidarArchivo(tabla_objetivo);
+
+    if( existe != true ) {
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, NO_EXISTE_TABLA);
+        }
+
+        log_info(log_FileSystem, "FALLO SELECT ==> LA TABLA <%s> NO EXISTE", table);
+
+        free(finalResult);
+        free(tabla_objetivo);
+
+        return;
+    }
+
+    string_append(&tabla_objetivo, "/Metadata.bin");
+
+    // Obtenemos value de la metadata
+    t_config* metadata = obtener_metadata_table(tabla_objetivo);
+    uint32_t particiones = config_get_int_value(metadata, "PARTITIONS");
+
+    registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
+
+    if(registerFromMemtable != NULL) {
+        finalResult = string_duplicate(registerFromMemtable->value);
+    }
+
+    // Obtenemos value de los tmp
+    registro_tad* registerFromTemporal = getValueFromTemporals(table, key);
+
+    if(registerFromTemporal != NULL) {
+
+        if(registerFromMemtable != NULL) {
+            if(registerFromTemporal->timestamp > registerFromMemtable->timestamp) {
+                finalResult = string_duplicate(registerFromTemporal->value);
+            } else {
+                finalResult = string_duplicate(registerFromMemtable->value);
+            }
+        }
+    }
+
+    // Obtenemos value de las particiones
+    uint32_t particion = key % particiones;
+    if(string_is_empty(finalResult)) {
+        log_info(log_FileSystem, "FAILED SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON ESTA KEY <%d> ", key);
+
+        if( requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, false);
+        }
+
+    }else {
+
+        if(requestOrigin != CONSOLE_REQUEST) {
+            serializar_int(requestOrigin, true);
+            serializar_string(requestOrigin, finalResult);
+        }
+
+        //log_info(log_FileSystem, "RESULTADO SELECT ==> %s", finalResult);
+        log_info(log_FileSystem, "RESULTADO: %s", finalResult);
+    }
+
+    free(finalResult);
 }
 
 void comando_describe_all(int requestOrigin){

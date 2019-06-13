@@ -118,9 +118,9 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case COMAND_SELECT: {
-            log_info(log_FileSystem, "Select");
             select_tad* select = deserializar_select(socket);
             comando_select(select->nameTable, select->key, socket);
+            free_select_tad(select);
 
             break;
         }
@@ -210,6 +210,7 @@ void consola() {
                     int key = atoi(key_string);
                     comando_select(table,key, CONSOLE_REQUEST);
                 }
+
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 

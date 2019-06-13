@@ -32,6 +32,7 @@ int main(){
     //TODO Hilo de Gossiping
     pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
+    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
 
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
@@ -63,6 +64,9 @@ void journaling(){
 
 void gossiping(){
     struct timeval timeGossip;
+
+    inicializarTablaDeGossiping();
+
     while(true){
 
         timeGossip.tv_sec = 0;
@@ -236,6 +240,12 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_JOURNAL: {
             log_info(log_Memoria, "El kernel envio un journal");
             comando_journal(socket);
+            break;
+        }
+
+        case COMAND_GOSSIP: {
+            log_info(log_Memoria, "Se solicito la Tabla de Gossiping");
+            comando_gossip(socket);
             break;
         }
 

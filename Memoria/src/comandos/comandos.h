@@ -23,6 +23,7 @@
 #include "../estructuras/paginas.h"
 #include "../estructuras/segmentos.h"
 #include "../estructuras/marcos.h"
+#include "../estructuras/gossip.h"
 
 // Flag para intepretar si el comando es enviado por kernel o por consola
 #define CONSOLE_REQUEST -1
@@ -36,5 +37,6 @@ void comando_create(create_tad* create, int requestOrigin);
 void comando_describe(char* nombreTabla, int requestOrigin);
 void comando_drop(char* nombreTabla, int requestOrigin);
 void comando_journal(int requestOrigin);
+void comando_gossip(int requestOrigin);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

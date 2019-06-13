@@ -10,6 +10,11 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
+
+void comando_gossip(int requestOrigin) {
+
+}
+
 char* comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
     char* value = funcionSelect(SERVIDOR_FILESYSTEM, select);

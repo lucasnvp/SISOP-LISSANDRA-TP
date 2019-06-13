@@ -45,6 +45,7 @@ fd_set master;   	// conjunto maestro de descriptores de fichero
 pthread_t thread_server;
 pthread_t thread_consola;
 pthread_t thread_journaling;
+pthread_t thread_gossiping;
 
 // Dirección de la Memoria Principal
 void* memoriaPrincipal;

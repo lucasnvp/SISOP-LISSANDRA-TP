@@ -16,23 +16,53 @@ char* comando_select(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
 }
 
 void comando_insert(insert_tad* insert){
+    atoi(insert->key);
     print_console((void*) log_info, "Comando insert");
     funcionInsert(insert, true);
 
 }
 
-void comando_create(create_tad* create){
+void comando_create(create_tad* create, int requestOrigin){
+    string_to_upper(create->nameTable);
     print_console((void*) log_info, "Comando create");
     log_info(log_Memoria,
              "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
              create->nameTable, create->consistencia, create->particiones, create->compactacion);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
     serializar_create(SERVIDOR_FILESYSTEM, create);
-    agregarSegmento(create->nameTable);
+
+    if (requestOrigin != CONSOLE_REQUEST) {
+        bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+        serializar_int(requestOrigin, confirm);
+    }
 }
 
-void comando_describe(){
+void comando_describe(char* nombreTabla, int requestOrigin){
     print_console((void*) log_info, "Comando describe");
+    string_to_upper(nombreTabla);
+    log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", nombreTabla);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
+    serializar_string(SERVIDOR_FILESYSTEM, nombreTabla);
+    bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+    if (confirm) {
+        describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
+        if (requestOrigin != CONSOLE_REQUEST) {
+
+            serializar_int(requestOrigin, true);
+            serializar_describe(requestOrigin, describe);
+
+        }
+
+        log_info(log_Memoria,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
+
+        free_describe_tad(describe);
+    } else {
+
+        serializar_int(SERVIDOR_FILESYSTEM, false);
+    }
+
 }
 
 void comando_drop(char* nombreTabla){
@@ -41,7 +71,13 @@ void comando_drop(char* nombreTabla){
     // avisar al FS que haga el drop
 }
 
-void comando_journal(uint32_t servidorFileSystem){
+void comando_journal(int requestOrigin){
     print_console((void*) log_info, "Comando journal");
-    funcionJournal(servidorFileSystem);
+    funcionJournal(SERVIDOR_FILESYSTEM);
+    if (requestOrigin != CONSOLE_REQUEST) {
+
+            serializar_int(requestOrigin, true);
+            //serializar_journal(requestOrigin); TODO SERIALIZAR JOURNAL
+
+    }
 }

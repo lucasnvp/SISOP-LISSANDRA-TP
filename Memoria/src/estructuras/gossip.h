@@ -20,4 +20,6 @@ typedef struct tablaDeGossip{
 
 struct tablaDeGossip* primerRegistroDeGossip;
 
+void inicializarTablaDeGossiping(char** ipSeeds, uint32_t* puertos, uint32_t numeroDeMemoria);
+
 #endif //TP_2019_1C_GANK_MID_GOSSIP_H

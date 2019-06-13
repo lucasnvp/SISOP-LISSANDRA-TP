@@ -22,7 +22,7 @@
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
-#include "estructuras/gossip.h.h"
+#include "estructuras/gossip.h"
 #include "comandosMemoria.h"
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
@@ -70,5 +70,6 @@ void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void memory_console();
 void journaling();
+void gossiping();
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

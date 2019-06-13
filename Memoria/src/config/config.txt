@@ -10,3 +10,5 @@ TAM_MEM=128
 RETARDO_JOURNAL=60000
 RETARDO_GOSSIPING=30000
 MEMORY_NUMBER=1
+
+//el primer ip seed y puerto tienen que correspoder al de la propia memoria

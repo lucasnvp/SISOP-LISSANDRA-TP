@@ -70,7 +70,7 @@ void gossiping(){
 
         select(0, NULL, NULL, NULL, &timeGossip);
 
-        funcionGossip();
+        //funcionGossip();
     }
 
 }

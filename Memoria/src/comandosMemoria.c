@@ -76,6 +76,8 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
         // En este punto se encuentra la tabla de segmentos pero no la key en sus paginas
     }
 
+
+
     //solicitar al FS
     log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tkey: <%d>\t",
              select->nameTable,select->key);
@@ -101,7 +103,13 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
 void funcionInsert(insert_tad* insert, bool flagModificado) {
-    __uint32_t timestampActual = time(NULL);
+    uint32_t timestamp;
+    //if(flagModificado){
+        timestamp = time(NULL);
+    //} else {
+   //     timestamp = *el que viene de FS*
+   // }
+
     struct tablaDeSegmentos *_TablaDeSegmento = buscarSegmento(insert->nameTable);
 
     // si la tabla de segmentos es nula, lo agrego y agrego la primera
@@ -115,14 +123,14 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
         }
         nuevoRegistroPagina->siguienteRegistroPagina = NULL;
         nuevoRegistroPagina->registro.flagModificado = flagModificado;
-        nuevoRegistroPagina->registro.ultimoAcceso = timestampActual;
+        nuevoRegistroPagina->registro.ultimoAcceso = timestamp;
 
 
         _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
         nuevoRegistroPagina->registro.numeroPagina = (uint32_t) 1;
 
         memcpy(nuevoRegistroPagina->registro.punteroAPagina,
-               new_registro_tad(timestampActual, insert->key, insert->value),sizeof(registro_tad));
+               new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
         return;
     }

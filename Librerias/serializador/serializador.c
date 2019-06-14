@@ -54,12 +54,12 @@ void serializar_registro(uint32_t socket, registro_tad* registro){
     uint32_t offset = 0;
     uint32_t size_to_send;
 
-    size_to_send = strlen(registro->timestamp) + 1;
-    memcpy(ENVIAR + offset, registro->timestamp, size_to_send);
+    size_to_send = sizeof(registro->timestamp);
+    memcpy(ENVIAR + offset, &(registro->timestamp), size_to_send);
     offset += size_to_send;
 
-    size_to_send = strlen(registro->key) + 1;
-    memcpy(ENVIAR + offset, registro->key, size_to_send);
+    size_to_send = sizeof(registro->key);
+    memcpy(ENVIAR + offset, &(registro->key), size_to_send);
     offset += size_to_send;
 
     size_to_send = strlen(registro->value) + 1;
@@ -349,4 +349,45 @@ t_list* deserializar_describe_all(uint32_t socket) {
 
     free(buffer);
     return describe_list;
+}
+
+void serializar_memory_info(uint32_t socket, memory_info_tad* memory) {
+    uint32_t datos_size = sizeof(memory_info_tad);
+    void* ENVIAR = malloc(datos_size);
+    uint32_t offset = 0;
+    uint32_t size_to_send;
+
+    size_to_send = sizeof(memory->MEMORY_NUMBER);
+    memcpy(ENVIAR + offset, &(memory->MEMORY_NUMBER), size_to_send);
+    offset += size_to_send;
+
+    size_to_send = sizeof(memory->RETARDO_GOSSIPING);
+    memcpy(ENVIAR + offset, &(memory->RETARDO_GOSSIPING), size_to_send);
+    offset += size_to_send;
+
+    serializar_int(socket, offset);
+    send_data(socket, ENVIAR, offset);
+    free(ENVIAR);
+
+}
+
+memory_info_tad* deserializar_memory_info(uint32_t socket) {
+    uint32_t buffer_size = deserializar_int(socket);
+    void* buffer = malloc(buffer_size);
+    memory_info_tad* memory = malloc(sizeof(memory_info_tad));
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
+
+    recive_data(socket, buffer, buffer_size);
+
+    size_to_recive = sizeof(memory->MEMORY_NUMBER);
+    memcpy(&memory->MEMORY_NUMBER, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    size_to_recive = sizeof(memory->RETARDO_GOSSIPING);
+    memcpy(&memory->RETARDO_GOSSIPING, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    free(buffer);
+    return memory;
 }

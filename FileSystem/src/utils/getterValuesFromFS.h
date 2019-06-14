@@ -7,6 +7,7 @@
 
 #include <commons/collections/list.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <serializador/estructuras.h>
 #include <commons/string.h>
 #include "../setup/setup.h"
@@ -16,5 +17,6 @@
 
 registro_tad* getValueFromTemporal(char* table, int key);
 char* getRegistrosConcatenadosDeUnTmp(char* pathTabla);
+void leerBloque(char* nroBloque);
 
 #endif //TP_2019_1C_GANK_MID_GETTERVALUESFROMFS_H

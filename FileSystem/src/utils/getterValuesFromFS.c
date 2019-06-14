@@ -62,3 +62,19 @@ char* getRegistrosConcatenadosDeUnTmp(char* pathTabla) {
     return str;
 
 }
+
+void leerBloque(char* nroBloque) {
+
+    char* path = string_duplicate(montajeBloques);
+    string_append(&path, nroBloque);
+    string_append(&path, ".bin");
+
+    FILE * newFD;
+    newFD = fopen(path, "rb");
+
+    char* buffer = string_new();
+
+    fread (buffer, 1, TAMANIO_BLOQUES, newFD);
+
+    printf("%s \n", buffer);
+}

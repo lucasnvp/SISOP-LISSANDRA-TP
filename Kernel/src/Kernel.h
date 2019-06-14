@@ -60,7 +60,6 @@ uint32_t wd_inotify;
 uint32_t length_inotify;
 size_t bufferInotifySize;
 
-uint32_t SERVIDOR_MEMORIA;
 bool KERNEL_READY;
 
 typedef struct {

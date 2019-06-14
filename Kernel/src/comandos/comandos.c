@@ -9,34 +9,34 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_select(u_int32_t socket, char* tabla, u_int16_t key){
+void comando_select(char* tabla, u_int16_t key){
     print_console((void*) log_info, "Comando select");
-    api_select(socket, tabla, key);
+    api_select(tabla, key);
 }
 
-void comando_insert(u_int32_t socket, char* tabla, u_int16_t key, char* value){
+void comando_insert(char* tabla, u_int16_t key, char* value){
     print_console((void*) log_info, "Comando insert");
-    api_insert(socket, tabla, key, value);
+    api_insert(tabla, key, value);
 }
 
-void comando_create(u_int32_t socket, char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
+void comando_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion){
     print_console((void*) log_info, "Comando create");
-    api_create(socket, tabla, consistencia, particiones, compactacion);
+    api_create(tabla, consistencia, particiones, compactacion);
 }
 
-void comando_describe(u_int32_t socket, char* tabla){
+void comando_describe(char* tabla){
     print_console((void*) log_info, "Comando describe");
-    api_describe(socket, tabla);
+    api_describe(tabla);
 }
 
-void comando_describe_all(u_int32_t socket){
+void comando_describe_all(){
     print_console((void*) log_info, "Comando describe all");
-    api_describe_all(socket);
+    api_describe_all();
 }
 
-void comando_drop(u_int32_t socket, char* tabla){
+void comando_drop(char* tabla){
     print_console((void*) log_info, "Comando drop");
-    api_drop(socket, tabla);
+    api_drop(tabla);
 }
 
 void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR){
@@ -52,4 +52,9 @@ void comando_run(char* path, t_queue* QUEUE_READY, sem_t* SEM_PLANIFICADOR){
         print_console((void*) log_info, "No se encontro el archivo");
         log_info(log_Kernel, "No se encontro el archivo");
     }
+}
+
+void comando_journal() {
+    print_console((void*) log_info, "Comando journal");
+    api_journal();
 }

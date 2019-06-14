@@ -30,6 +30,7 @@ void init_criterios();
 criterio_tad* criterio_new (uint32_t number, char* criterio);
 bool criterio_add(uint32_t memoryNumber, char* criterio);
 t_list* criterio_search (char* criterio);
-uint32_t criterio_ramdom_memory (char* criterio);
+uint32_t criterio_ramdom_memory_socket ();
+uint32_t criterio_ramdom_memory_by (char* criterio);
 
 #endif //TP_2019_1C_GANK_MID_CRITERIOS_H

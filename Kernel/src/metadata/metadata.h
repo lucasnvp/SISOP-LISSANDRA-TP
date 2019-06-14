@@ -35,6 +35,6 @@ void update_metadata_memory_number(metadata_tad* metadata, uint32_t number);
 void load_METADATA(t_list* listDescribes);
 void print_metadata(t_log* log);
 metadata_tad* search_table(char* table);
-bool exist_table(char* table);
+uint32_t get_memory_socket_from_metadata(char* table);
 
 #endif //TP_2019_1C_GANK_MID_METADATA_H

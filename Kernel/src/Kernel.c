@@ -30,8 +30,8 @@ int main(){
     // Init listado de criterios
     init_METADATA();
 
-    // Conexion al servidor FileSystem
-    connect_server_Memoria();
+    // Connect memory
+    connect_memory(config->IP_MEMORIA, config->PUERTO_MEMORIA);
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
@@ -56,23 +56,7 @@ void init_log(char* pathLog){
     log_Console = log_create(pathLog, "Kernel", true, LOG_LEVEL_INFO);
     log_Kernel = log_create(pathLog, "Kernel", false, LOG_LEVEL_INFO);
     log_Kernel_api = log_Kernel;
-}
-
-void connect_server_Memoria(){
-    //Conexion al servidor Memoria
-    SERVIDOR_MEMORIA = connect_server(config->IP_MEMORIA,config->PUERTO_MEMORIA);
-
-    //Si conecto, informo
-    if(SERVIDOR_MEMORIA > 1){
-        log_info(log_Console,"Connected successfully to the Memory");
-        serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
-        uint32_t memoryNumber = deserializar_int(SERVIDOR_MEMORIA);
-        add_memory(memoryNumber, config->IP_MEMORIA, config->PUERTO_MEMORIA, SERVIDOR_MEMORIA);
-        log_info(log_Kernel, "Connected Memory Number: %d", memoryNumber);
-    } else{
-        log_info(log_Console, "No se puedo conectar al servidor de Memoria");
-        exit(EXIT_SUCCESS);
-    }
+    log_Kernel_memory = log_Kernel;
 }
 
 void consola() {

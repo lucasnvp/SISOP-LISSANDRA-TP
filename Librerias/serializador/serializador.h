@@ -48,4 +48,7 @@ describe_tad* deserializar_describe(uint32_t socket);
 void serializar_describe_all(uint32_t socket, t_list* describe_all);
 t_list* deserializar_describe_all(uint32_t socket);
 
+void serializar_memory_info(uint32_t socket, memory_info_tad* memory);
+memory_info_tad* deserializar_memory_info(uint32_t socket);
+
 #endif /* SERIALIZADOR_H_ */

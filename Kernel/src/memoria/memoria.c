@@ -8,6 +8,22 @@ void init_memories () {
     LIST_MEMORIES = list_create();
 };
 
+void connect_memory (char* ip, uint32_t port) {
+    uint32_t SERVIDOR_MEMORIA = connect_server(ip, port);
+
+    //Si conecto, informo
+    if(SERVIDOR_MEMORIA > 1){
+        log_info(log_Kernel_memory,"Connected successfully to the Memory");
+        serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
+        memory_info_tad* memoryInfo = deserializar_memory_info(SERVIDOR_MEMORIA);
+        add_memory(memoryInfo->MEMORY_NUMBER, ip, port, SERVIDOR_MEMORIA);
+        log_info(log_Kernel_memory, "Connected Memory Number: %d", memoryInfo->MEMORY_NUMBER);
+        log_info(log_Kernel_memory, "Retardo del gossiping: %d", memoryInfo->RETARDO_GOSSIPING);
+    } else{
+        log_info(log_Kernel_memory, "No se puedo conectar con la Memoria. IP <%s>", ip);
+    }
+}
+
 memory_tad* memory_new (uint32_t number, char* ip, uint32_t port, uint32_t socket) {
     memory_tad* auxMemory = malloc(sizeof(memory_tad));
     auxMemory->MEMORY_NUMBER = number;

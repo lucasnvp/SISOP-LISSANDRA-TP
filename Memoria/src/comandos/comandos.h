@@ -37,6 +37,6 @@ void comando_create(create_tad* create, int requestOrigin);
 void comando_describe(char* nombreTabla, int requestOrigin);
 void comando_drop(char* nombreTabla, int requestOrigin);
 void comando_journal(int requestOrigin);
-void comando_gossip(int requestOrigin);
+void comando_gossip(uint32_t requestOrigin);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

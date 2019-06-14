@@ -71,8 +71,20 @@ memory_info_tad* new_memory_info_tad (uint32_t number, uint32_t delayGossip) {
     memory_info_tad* memory = malloc(sizeof(memory_info_tad));
     memory->MEMORY_NUMBER = number;
     memory->RETARDO_GOSSIPING = delayGossip;
+    return memory;
 }
 
 void free_memory_info_tad (memory_info_tad* memoryInfo) {
     free(memoryInfo);
+}
+
+gossip_tad* new_gossip_tad(char* ip, uint32_t port) {
+    gossip_tad* gossip = malloc(sizeof(gossip_tad));
+    gossip->IP = strdup(ip);
+    gossip->PORT = port;
+}
+
+void free_gossip_tad(gossip_tad* gossip) {
+    free(gossip->IP);
+    free(gossip);
 }

@@ -16,9 +16,11 @@ void connect_memory (char* ip, uint32_t port) {
         log_info(log_Kernel_memory,"Connected successfully to the Memory");
         serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
         memory_info_tad* memoryInfo = deserializar_memory_info(SERVIDOR_MEMORIA);
+        RETARDO_GOSSIPING = memoryInfo->RETARDO_GOSSIPING;
         add_memory(memoryInfo->MEMORY_NUMBER, ip, port, SERVIDOR_MEMORIA);
         log_info(log_Kernel_memory, "Connected Memory Number: %d", memoryInfo->MEMORY_NUMBER);
         log_info(log_Kernel_memory, "Retardo del gossiping: %d", memoryInfo->RETARDO_GOSSIPING);
+        free_memory_info_tad(memoryInfo);
     } else{
         log_info(log_Kernel_memory, "No se puedo conectar con la Memoria. IP <%s>", ip);
     }
@@ -61,4 +63,19 @@ bool exist_memory (uint32_t number) {
 
 void disable_memory(memory_tad* auxMemory){
     auxMemory->ACTIVA = false;
+}
+
+void gossip_memory() {
+    serializar_int(memory_ramdom_socket(), COMAND_GOSSIP);
+}
+
+uint32_t memory_ramdom_socket () {
+    uint32_t listSize = list_size(LIST_MEMORIES);
+    if (listSize == 0) {
+        return -1;
+    } else {
+        uint32_t index = rand() % listSize;
+        memory_tad* memory =  list_get(LIST_MEMORIES, index);
+        return memory->SOCKET;
+    }
 }

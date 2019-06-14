@@ -42,6 +42,9 @@ int main(){
     // Hilo de metricas
     pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
+    // Hilo de gossiping
+    pthread_create(&thread_metricas, NULL, (void*) gossiping, "Gossiping");
+
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");
 
@@ -365,4 +368,19 @@ bool parser_line(char * line){
     }
 
     return linea_valida;
+}
+
+void gossiping(){
+    struct timeval timeGossip;
+
+    while(KERNEL_READY){
+
+        timeGossip.tv_sec = 0;
+        timeGossip.tv_usec = (RETARDO_GOSSIPING * 1000);
+
+        select(0, NULL, NULL, NULL, &timeGossip);
+
+        gossip_memory();
+
+    }
 }

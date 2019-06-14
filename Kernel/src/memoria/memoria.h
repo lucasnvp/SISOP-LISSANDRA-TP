@@ -27,6 +27,8 @@ typedef struct {
 
 t_list * LIST_MEMORIES;
 
+uint32_t RETARDO_GOSSIPING;
+
 void init_memories();
 void connect_memory(char* ip, uint32_t port);
 memory_tad* memory_new(uint32_t number, char* ip, uint32_t port, uint32_t socket);
@@ -34,5 +36,7 @@ void add_memory(uint32_t number, char* ip, uint32_t port, uint32_t socket);
 memory_tad* search_memory(uint32_t number);
 bool exist_memory(uint32_t number);
 void disable_memory(memory_tad* auxMemory);
+void gossip_memory();
+uint32_t memory_ramdom_socket();
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

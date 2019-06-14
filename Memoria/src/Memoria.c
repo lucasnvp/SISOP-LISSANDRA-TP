@@ -174,7 +174,9 @@ void connection_handler(uint32_t socket, uint32_t command){
 
         case NUEVA_CONEXION_KERNEL_TO_MEMORIA: {
             log_info(log_Memoria, "Se conecto el kernel");
-            serializar_int(socket, config.MEMORY_NUMBER);
+            memory_info_tad* memoryInfo = new_memory_info_tad(config.MEMORY_NUMBER, config.RETARDO_GOSSIPING);
+            serializar_memory_info(socket, memoryInfo);
+            free_memory_info_tad(memoryInfo);
             break;
         }
         case COMAND_INSERT: {

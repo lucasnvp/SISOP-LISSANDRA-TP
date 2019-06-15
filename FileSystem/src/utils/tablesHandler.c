@@ -118,13 +118,13 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
             newFD = fopen(tmp, "w+");
 
             char* tamanioDeBloques = string_new();
-            string_append(&tamanioDeBloques, "TAMANIO_BLOQUES=");
+            string_append(&tamanioDeBloques, "SIZE=");
             string_append(&tamanioDeBloques, string_itoa(TAMANIO_BLOQUES));
             string_append(&tamanioDeBloques, "\n");
             fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
 
             char* bloquesDelArchivo = string_new();
-            string_append(&bloquesDelArchivo, "BLOQUES=[");
+            string_append(&bloquesDelArchivo, "BLOCKS=[");
 
             for(int i = 0; i< list_size(bloques); i++) {
                 int bloque = (int)list_get(bloques, i);

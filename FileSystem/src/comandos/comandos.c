@@ -131,6 +131,8 @@ void comando_select(char* table, int key, int requestOrigin){
             } else {
                 finalResult = string_duplicate(registerFromMemtable->value);
             }
+        } else {
+            finalResult = string_duplicate(registerFromTemporal->value);
         }
     }
 
@@ -150,8 +152,7 @@ void comando_select(char* table, int key, int requestOrigin){
             serializar_string(requestOrigin, finalResult);
         }
 
-        //log_info(log_FileSystem, "RESULTADO SELECT ==> %s", finalResult);
-        log_info(log_FileSystem, "RESULTADO: %s", finalResult);
+        log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult);
     }
 
     free(finalResult);

@@ -14,6 +14,7 @@
 #include <serializador/serializador.h>
 
 #include "../config/Config_memoria.h"
+#include "serializador/handshake.h"
 
 t_list * LIST_GOSSIP;
 

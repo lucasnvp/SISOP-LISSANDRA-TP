@@ -3,6 +3,7 @@
 //
 
 #include "gossip.h"
+#include "paginas.h"
 
 void inicializarTablaDeGossiping(){
     LIST_GOSSIP = list_create();
@@ -16,7 +17,8 @@ void inicializarTablaDeGossiping(){
 }
 
 void funcionGossip(){
-
+    char* ip = config.IP_SEEDS[0];
+    uint32_t port = atoi(config.PUERTO_SEEDS[0]);
 }
 
 void sendGossipingTable (uint32_t socket) {

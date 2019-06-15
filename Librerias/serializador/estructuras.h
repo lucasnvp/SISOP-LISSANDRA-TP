@@ -55,4 +55,12 @@ typedef struct memory_info_tad {
 memory_info_tad* new_memory_info_tad(uint32_t number, uint32_t delayGossip);
 void free_memory_info_tad(memory_info_tad* memoryInfo);
 
+typedef struct gossip_tad{
+    char* IP;
+    uint32_t PORT;
+} gossip_tad;
+
+gossip_tad* new_gossip_tad(char* ip, uint32_t port);
+void free_gossip_tad(gossip_tad* gossip);
+
 #endif /* ESTRUCTURAS_H_ */

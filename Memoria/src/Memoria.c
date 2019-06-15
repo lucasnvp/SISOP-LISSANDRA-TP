@@ -26,8 +26,6 @@ int main(){
     // Inicializamos la tabla de segmentos
 
     primerRegistroDeSegmentos = NULL;
-    primerRegistroDeGossip = NULL;
-
 
     //TODO Hilo de Gossiping
     pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");

@@ -11,8 +11,8 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
 }
 
 
-void comando_gossip(int requestOrigin) {
-
+void comando_gossip(uint32_t requestOrigin) {
+    sendGossipingTable(requestOrigin);
 }
 
 char* comando_select(select_tad* select, int requestOrigin){

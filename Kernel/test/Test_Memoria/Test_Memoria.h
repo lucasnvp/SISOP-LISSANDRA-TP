@@ -9,7 +9,6 @@
 #include <stdlib.h>
 
 #include "../Run_Kernel_Tests.h"
-#include "../../src/memoria/memoria.h"
 
 void agregar_tests_memoria();
 int inicializar_memoria();

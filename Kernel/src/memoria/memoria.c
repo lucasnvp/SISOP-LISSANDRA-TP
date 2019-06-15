@@ -66,7 +66,18 @@ void disable_memory(memory_tad* auxMemory){
 }
 
 void gossip_memory() {
-    serializar_int(memory_ramdom_socket(), COMAND_GOSSIP);
+    uint32_t socket = memory_ramdom_socket();
+    serializar_int(socket, COMAND_GOSSIP);
+    t_list* gossip_table = deserializar_gossip_table(socket);
+
+    void print_gossiping_table(void* element) {
+        gossip_tad* gossip = element;
+        // todo connect memory foreach element
+        log_info(log_Kernel_memory, "IP: <%s> - Port: <%d>",gossip->IP, gossip->PORT);
+    }
+
+    list_iterate(gossip_table, print_gossiping_table);
+    list_destroy_and_destroy_elements(gossip_table, free_gossip_tad);
 }
 
 uint32_t memory_ramdom_socket () {

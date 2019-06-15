@@ -7,9 +7,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <commons/collections/list.h>
 #include <serializador/estructuras.h>
+#include <serializador/serializador.h>
 
 #include "../config/Config_memoria.h"
 
@@ -17,7 +19,7 @@ t_list * LIST_GOSSIP;
 
 void inicializarTablaDeGossiping();
 void funcionGossip();
-void sendGossipingTable();
+void sendGossipingTable(uint32_t socket);
 
 Type_Config config;
 

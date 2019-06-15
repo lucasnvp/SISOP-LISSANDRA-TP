@@ -19,12 +19,6 @@ void funcionGossip(){
 
 }
 
-void sendGossipingTable () {
-    // todo Enviar tabla a kernel.
-//    void print_gossiping_table(void* element) {
-//        gossip_tad* gossip = element;
-//        printf("IP: <%s> - Port: <%d> /n",gossip->IP, gossip->PORT);
-//    }
-//
-//    list_iterate(LIST_GOSSIP, print_gossiping_table);
+void sendGossipingTable (uint32_t socket) {
+    serializar_gossip_table(socket, LIST_GOSSIP);
 }

@@ -323,7 +323,6 @@ void serializar_describe_all(uint32_t socket, t_list* describe_all) {
     serializar_int(socket, ENVIAR->size);
     send_data(socket, ENVIAR->data, ENVIAR->size);
     free(ENVIAR);
-
 }
 
 t_list* deserializar_describe_all(uint32_t socket) {
@@ -368,7 +367,6 @@ void serializar_memory_info(uint32_t socket, memory_info_tad* memory) {
     serializar_int(socket, offset);
     send_data(socket, ENVIAR, offset);
     free(ENVIAR);
-
 }
 
 memory_info_tad* deserializar_memory_info(uint32_t socket) {
@@ -390,4 +388,91 @@ memory_info_tad* deserializar_memory_info(uint32_t socket) {
 
     free(buffer);
     return memory;
+}
+
+t_stream* serializar_gossip(gossip_tad* gossip) {
+    uint32_t datos_size = sizeof(gossip_tad) + (strlen(gossip->IP) + 1);
+    t_stream* ENVIAR = stream_create(datos_size);
+    uint32_t offset = 0;
+    uint32_t size_to_send;
+
+    size_to_send = strlen(gossip->IP) + 1;
+    memcpy(ENVIAR->data + offset, gossip->IP, size_to_send);
+    offset += size_to_send;
+
+    size_to_send = sizeof(gossip->PORT);
+    memcpy(ENVIAR->data + offset, &(gossip->PORT),size_to_send);
+    offset += size_to_send;
+
+    return ENVIAR;
+}
+
+gossip_tad* deserializar_gossip(char* stream, int* size) {
+    gossip_tad* gossip = malloc(sizeof(gossip_tad));
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
+
+    gossip->IP = strdup(stream + offset);
+    offset += strlen(gossip->IP) + 1;
+
+    size_to_recive = sizeof(gossip->PORT);
+    memcpy(&gossip->PORT, stream + offset, size_to_recive);
+    offset += size_to_recive;
+
+    *size = sizeof(gossip_tad) + (strlen(gossip->IP) + 1);
+
+    return gossip;
+}
+
+void serializar_gossip_table(uint32_t socket, t_list* gossip) {
+    uint32_t datos_size = sizeof(uint32_t);
+    t_stream* ENVIAR = stream_create(datos_size);
+    uint32_t offset = 0;
+    uint32_t size_to_send;
+
+    void serialize_element_stack(void* element){
+        gossip_tad* lineStack = element;
+        t_stream* stream_lineStack = serializar_gossip(lineStack);
+        ENVIAR->data = realloc(ENVIAR->data, ENVIAR->size + stream_lineStack->size);
+        memcpy(ENVIAR->data + offset, stream_lineStack->data, stream_lineStack->size);
+        ENVIAR->size += stream_lineStack->size;
+        offset += stream_lineStack->size;
+        stream_destroy(stream_lineStack);
+    }
+
+    uint32_t count_line_stack = list_size(gossip);
+    size_to_send = sizeof(count_line_stack);
+    memcpy(ENVIAR->data + offset, &(count_line_stack),size_to_send);
+    offset += size_to_send;
+
+    list_iterate(gossip, serialize_element_stack);
+
+    serializar_int(socket, ENVIAR->size);
+    send_data(socket, ENVIAR->data, ENVIAR->size);
+    free(ENVIAR);
+}
+
+t_list* deserializar_gossip_table(uint32_t socket) {
+    uint32_t buffer_size = deserializar_int(socket);
+    void* buffer = malloc(buffer_size);
+    t_list* gossip_list = list_create();
+    uint32_t tmp_size = 0;
+    uint32_t offset = 0;
+    uint32_t size_to_recive;
+
+    recive_data(socket, buffer, buffer_size);
+
+    uint32_t count_line_stack = 0;
+    size_to_recive = sizeof(count_line_stack);
+    memcpy(&count_line_stack, buffer + offset, size_to_recive);
+    offset += size_to_recive;
+
+    for(i = 0; i < count_line_stack; ++i){
+        gossip_tad* lineStack = deserializar_gossip(buffer + offset, &tmp_size);
+        offset += tmp_size;
+        list_add(gossip_list, lineStack);
+    }
+
+    free(buffer);
+    return gossip_list;
 }

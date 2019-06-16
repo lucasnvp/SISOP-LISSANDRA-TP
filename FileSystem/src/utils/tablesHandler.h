@@ -13,7 +13,7 @@
 void _dumpearTabla(char *nombreTabla, t_list *registros);
 int getSizeRegistroTad(registro_tad* registro);
 int getBloquesParaRegistro(registro_tad *registro);
-void crearArchivoTemporal(char* nombreTabla, t_list* bloques);
+void crearArchivoTemporal(char* nombreTabla, t_list* bloques, int size);
 char* crear_path_tmp(char* tabla, int dump);
 int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar);
 char* transformRegisterToString(registro_tad *registro);

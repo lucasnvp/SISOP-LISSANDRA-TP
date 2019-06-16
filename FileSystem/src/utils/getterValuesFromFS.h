@@ -16,10 +16,12 @@
 #include "../utils/utils.h"
 #include <commonsfunctions/functions.h>
 
-registro_tad* getValueFromTemporals(char* table, int key);
-char* getRegistrosConcatenadosDeUnTmp(char* pathTabla);
+registro_tad* getValueFromTemporalFile(char *table, int key, char *typeFile);
+registro_tad* getValueFromPartition(char *table, int key, char* typeFile, uint32_t partition);
+char* getRegistersFromBinaryFile(char *pathTabla);
 char* leerBloque(char* nroBloque, int size);
 t_list* transformRegistersStrToStructs(char* strRegs);
 registro_tad* obtenerRegistroSegunKey(t_list* registros, int key);
+registro_tad* verifyMaxValue(registro_tad* finalResult, registro_tad *registerFrom);
 
 #endif //TP_2019_1C_GANK_MID_GETTERVALUESFROMFS_H

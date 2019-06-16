@@ -26,7 +26,7 @@ registro_tad* getValueFromMemtable(char *table, int key) {
 
             list_sort(listaFiltrada, (void*) _timestampMayor);
 
-            return list_get(listaFiltrada,0);
+            list_get(listaFiltrada,0);
 
         } else {
             log_info(log_FileSystem, "No existe en la memtable la key %i", key);

@@ -9,7 +9,7 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
     int hayLugar = getBloquesNecesariosParaDumpearTabla(registrosADumpear, bloquesParaAsignar);
 
     if(hayLugar == true) {
-        crearArchivoTemporal(nombreTabla, bloquesParaAsignar);
+        crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
         guardarEnBloques(registrosADumpear, bloquesParaAsignar);
         list_destroy(registros);
     } else {
@@ -103,7 +103,7 @@ char* crear_path_tmp(char* tabla, int dump) {
     return tmp;
 }
 
-void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
+void crearArchivoTemporal(char* nombreTabla, t_list* bloques, int size) {
 
     int seguirHastaEncontrarElTmpCorrespondiente = true;
     int dump = 1;
@@ -119,7 +119,7 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
 
             char* tamanioDeBloques = string_new();
             string_append(&tamanioDeBloques, "SIZE=");
-            string_append(&tamanioDeBloques, string_itoa(TAMANIO_BLOQUES));
+            string_append(&tamanioDeBloques, string_itoa(size));
             string_append(&tamanioDeBloques, "\n");
             fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
 

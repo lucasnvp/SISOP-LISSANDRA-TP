@@ -87,7 +87,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 void comando_select(char* table, int key, int requestOrigin){
     log_info(log_FileSystem, "SELECT ==> TABLE <%s> , KEY<%d>", table, key);
 
-    char* finalResult = string_new();
+    registro_tad* finalResult = NULL;
 
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
@@ -110,52 +110,41 @@ void comando_select(char* table, int key, int requestOrigin){
 
     string_append(&tabla_objetivo, "/Metadata.bin");
 
-    // Obtenemos value de la metadata
     t_config* metadata = obtener_metadata_table(tabla_objetivo);
-    uint32_t particiones = config_get_int_value(metadata, "PARTITIONS");
 
     registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
-
     if(registerFromMemtable != NULL) {
-        finalResult = string_duplicate(registerFromMemtable->value);
+        finalResult = registerFromMemtable;
     }
 
-    // Obtenemos value de los tmp
-    registro_tad* registerFromTemporal = getValueFromTemporals(table, key);
+    registro_tad* registerFromTemporal = getValueFromTemporalFile(table, key, ".tmp");
+    finalResult = verifyMaxValue(finalResult, registerFromTemporal);
 
-    if(registerFromTemporal != NULL) {
+    registro_tad* registerFromTemporalC = getValueFromTemporalFile(table, key, ".tmpc");
+    finalResult = verifyMaxValue(finalResult, registerFromTemporalC);
 
-        if(registerFromMemtable != NULL) {
-            if(registerFromTemporal->timestamp > registerFromMemtable->timestamp) {
-                finalResult = string_duplicate(registerFromTemporal->value);
-            } else {
-                finalResult = string_duplicate(registerFromMemtable->value);
-            }
-        } else {
-            finalResult = string_duplicate(registerFromTemporal->value);
-        }
-    }
+    /*uint32_t particion = key % config_get_int_value(metadata, "PARTITIONS");
+    registro_tad* registerFromPartition = getValueFromPartition(table, key, ".bin", particion);
+    finalResult = verifyMaxValue(finalResult, registerFromPartition);*/
 
-    // Obtenemos value de las particiones
-    uint32_t particion = key % particiones;
-    if(string_is_empty(finalResult)) {
-        log_info(log_FileSystem, "FAILED SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON ESTA KEY <%d> ", key);
+    if(finalResult == NULL) {
+        log_info(log_FileSystem, "FALLO SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON LA KEY <%d> EN LA TABLA <%s>", key, table);
 
         if( requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, false);
         }
 
-    }else {
+    } else {
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, true);
-            serializar_string(requestOrigin, finalResult);
+            serializar_string(requestOrigin, finalResult->value);
+            //serializar_registro(requestOrigin, finalResult);
         }
 
-        log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult);
+        log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
     }
-
-    free(finalResult);
+    
 }
 
 void comando_describe_all(int requestOrigin){

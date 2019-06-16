@@ -4,9 +4,9 @@
 
 #include "getterValuesFromFS.h"
 
-registro_tad* getValueFromTemporals(char* table, int key) {
+registro_tad* getValueFromTemporalFile(char* table, int key, char* typeFile) {
 
-    uint32_t mientrasExistanTemporales = true;
+    uint32_t mientrasExistanArchivos = true;
     uint32_t tmp = 1;
     char* registrosConcatenados =  string_new();
 
@@ -15,23 +15,25 @@ registro_tad* getValueFromTemporals(char* table, int key) {
     string_append(&pathTabla,"/");
 
 
-    while(mientrasExistanTemporales == true) {
+    while(mientrasExistanArchivos == true) {
 
         char* pathTmp = string_duplicate(pathTabla);
         string_append(&pathTmp, string_itoa(tmp));
-        string_append(&pathTmp, ".tmp");
+        string_append(&pathTmp, typeFile);
 
         if(ValidarArchivo(pathTmp) == true) {
 
-            char* registrosConcatenadosDeUnTmp = getRegistrosConcatenadosDeUnTmp(pathTmp);
+            char* registrosConcatenadosDeUnTmp = getRegistersFromBinaryFile(pathTmp);
 
             string_append(&registrosConcatenados,registrosConcatenadosDeUnTmp);
 
             tmp++;
 
+
         } else {
 
-            mientrasExistanTemporales = false;
+            mientrasExistanArchivos = false;
+
         }
 
         free(pathTmp);
@@ -50,8 +52,37 @@ registro_tad* getValueFromTemporals(char* table, int key) {
     //return registroTad;
 }
 
+registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32_t partition) {
 
-char* getRegistrosConcatenadosDeUnTmp(char* pathTmp) {
+    char* registrosConcatenados =  string_new();
+
+    char* pathTabla = string_duplicate(montajeTablas);
+    string_append(&pathTabla,table);
+    string_append(&pathTabla,"/");
+    string_append(&pathTabla, string_itoa(partition));
+    string_append(&pathTabla, typeFile);
+
+    if(ValidarArchivo(pathTabla) == true) {
+
+        char* registrosConcatenadosDeUnBloque = getRegistersFromBinaryFile(pathTabla);
+
+        string_append(&registrosConcatenados,registrosConcatenadosDeUnBloque);
+
+        free(registrosConcatenadosDeUnBloque);
+
+    } else {
+
+        return NULL;
+
+    }
+
+    t_list* listaRegistros = transformRegistersStrToStructs(registrosConcatenados);
+
+    return obtenerRegistroSegunKey(listaRegistros, key);
+}
+
+
+char* getRegistersFromBinaryFile(char *pathTmp) {
 
     char* result = string_new();
 
@@ -65,7 +96,7 @@ char* getRegistrosConcatenadosDeUnTmp(char* pathTmp) {
     char** bloquesList = string_get_string_as_array(bloques);
 
     // TODO: ir calculando cuanto queda por leer
-    for (int i = 0; i < string_length(*bloquesList); i++) {
+    for (int i = 0; i < string_length(*bloquesList) && bloquesList[i] != NULL; i++) {
         string_append(&result, leerBloque(bloquesList[i], atoi(size)));
     }
 
@@ -152,7 +183,21 @@ registro_tad* obtenerRegistroSegunKey(t_list* registros, int key) {
 
     } else {
 
-        log_info(log_FileSystem, "No existe la key %d en los archivos temporales", key);
+        //log_info(log_FileSystem, "No existe la key %d en los archivos temporales", key);
         return NULL;
     }
+}
+
+registro_tad* verifyMaxValue(registro_tad* finalResult, registro_tad *registerFrom) {
+    if (registerFrom != NULL) {
+        if (finalResult != NULL) {
+            if (registerFrom->timestamp > finalResult->timestamp) {
+                return registerFrom;
+            }
+        } else {
+            return registerFrom;
+        }
+    }
+
+    return finalResult;
 }

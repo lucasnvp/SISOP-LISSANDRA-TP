@@ -66,6 +66,10 @@ registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32
 
         char* registrosConcatenadosDeUnBloque = getRegistersFromBinaryFile(pathTabla);
 
+        if(registrosConcatenadosDeUnBloque == NULL) {
+            return NULL;
+        }
+
         string_append(&registrosConcatenados,registrosConcatenadosDeUnBloque);
 
         free(registrosConcatenadosDeUnBloque);
@@ -91,22 +95,28 @@ char* getRegistersFromBinaryFile(char *pathTmp) {
     t_config * auxtmp = config_create(tmp);
 
     char* bloques = config_get_string_value(auxtmp, "BLOCKS");
-    char* size = config_get_string_value(auxtmp, "SIZE");
 
-    char** bloquesList = string_get_string_as_array(bloques);
+    if(bloques != NULL) {
 
-    // TODO: ir calculando cuanto queda por leer
-    for (int i = 0; i < string_length(*bloquesList) && bloquesList[i] != NULL; i++) {
-        string_append(&result, leerBloque(bloquesList[i], atoi(size)));
+        char* size = config_get_string_value(auxtmp, "SIZE");
+
+        char** bloquesList = string_get_string_as_array(bloques);
+
+        // TODO: ir calculando cuanto queda por leer
+        for (int i = 0; i < string_length(*bloquesList) && bloquesList[i] != NULL; i++) {
+            string_append(&result, leerBloque(bloquesList[i], atoi(size)));
+        }
+
+        string_iterate_lines(bloquesList, (void*) free);
+        free(bloques);
+
+        // TODO SE ROMPE CUANDO QUIERO LIBERARLO
+        //config_destroy(auxtmp);
+
+        return result;
+    } else {
+        return NULL;
     }
-
-    string_iterate_lines(bloquesList, (void*) free);
-    free(bloques);
-
-    // TODO SE ROMPE CUANDO QUIERO LIBERARLO
-    //config_destroy(auxtmp);
-
-    return result;
 
 }
 

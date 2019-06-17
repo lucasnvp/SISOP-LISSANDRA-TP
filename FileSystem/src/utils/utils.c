@@ -152,15 +152,17 @@ void asignar_bloques(char* path) {
         FILE * newFD;
         newFD = fopen(path, "w+");
 
-        // TODO: segun metadata del FS
-        fwrite(TAMANIO_BLOQUE,1,strlen(TAMANIO_BLOQUE),newFD);
+        char* tamanioDeBloques = string_new();
+        string_append(&tamanioDeBloques, "SIZE=0");
+        fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
+        free(tamanioDeBloques);
 
         //Agregar el bloque
         int bloque_to_add = bloque_libre();
 
         if(bloque_to_add != -1){
             char* bloquesDelArchivo = string_new();
-            string_append(&bloquesDelArchivo, "BLOQUES=[");
+            string_append(&bloquesDelArchivo, "BLOCKS=[");
             string_append(&bloquesDelArchivo, string_itoa(bloque_to_add));
             string_append(&bloquesDelArchivo, "]\n");
             fwrite(bloquesDelArchivo,1,strlen(bloquesDelArchivo),newFD);

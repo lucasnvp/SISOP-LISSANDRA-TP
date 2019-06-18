@@ -229,3 +229,7 @@ void comando_dump(){
     dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
 }
+
+void comando_compactation(char* table) {
+    runCompactation(table);
+}

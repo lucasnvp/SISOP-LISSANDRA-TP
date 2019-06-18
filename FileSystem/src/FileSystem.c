@@ -316,6 +316,14 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
+            else if (!strcmp(comandos->comando, "COMPACTAR")) {
+                if (comandos->cantArgs == 1) {
+                    char* table = comandos->arg[0];
+                    comando_compactation(table);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+            }
+
             else print_console((void*) log_error, "Comando incorrecto.\n");
 
             // Libero toda la memoria

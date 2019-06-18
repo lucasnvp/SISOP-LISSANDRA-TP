@@ -6,6 +6,23 @@
 
 registro_tad* getValueFromTemporalFile(char* table, int key, char* typeFile) {
 
+    t_list* listaRegistros = getRegistersFromTemporals(table, typeFile);
+
+    if(listaRegistros == NULL) {
+        return NULL;
+    }
+
+    //registro_tad* registroTad = obtenerRegistroSegunKey(listaRegistros, key);
+    return obtenerRegistroSegunKey(listaRegistros, key);
+
+    // TODO: no me deja eliminar la lista, rompe
+    //list_destroy(listaRegistros);
+
+    //return registroTad;
+}
+
+t_list* getRegistersFromTemporals(char* table, char* typeFile) {
+
     uint32_t mientrasExistanArchivos = true;
     uint32_t tmp = 1;
     char* registrosConcatenados =  string_new();
@@ -41,15 +58,11 @@ registro_tad* getValueFromTemporalFile(char* table, int key, char* typeFile) {
 
     free(pathTabla);
 
-    t_list* listaRegistros = transformRegistersStrToStructs(registrosConcatenados);
+    if(string_is_empty(registrosConcatenados)) {
+        return NULL;
+    }
 
-    //registro_tad* registroTad = obtenerRegistroSegunKey(listaRegistros, key);
-    return obtenerRegistroSegunKey(listaRegistros, key);
-
-    // TODO: no me deja eliminar la lista, rompe
-    //list_destroy(listaRegistros);
-
-    //return registroTad;
+    return transformRegistersStrToStructs(registrosConcatenados);
 }
 
 registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32_t partition) {
@@ -81,6 +94,10 @@ registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32
     }
 
     t_list* listaRegistros = transformRegistersStrToStructs(registrosConcatenados);
+
+    if(listaRegistros == NULL) {
+        return NULL;
+    }
 
     return obtenerRegistroSegunKey(listaRegistros, key);
 }
@@ -153,14 +170,17 @@ t_list* transformRegistersStrToStructs(char* strRegs) {
     int i = 0;
     while(registers[i] != NULL) {
 
-        char* registro = registers[i];
-        char** tad = string_split(registro, ";");
+        if(string_contains(registers[i], ";")) {
+            char* registro = registers[i];
+            char** tad = string_split(registro, ";");
 
-        list_add(list_registers, new_registro_tad(atoi(tad[0]), atoi(tad[1]), tad[2]));
+            list_add(list_registers, new_registro_tad(atoi(tad[0]), atoi(tad[1]), tad[2]));
 
-        free(registro);
-        string_iterate_lines(tad, (void*) free);
-        free(tad);
+            free(registro);
+            string_iterate_lines(tad, (void*) free);
+            free(tad);
+        }
+
 
         i++;
     }
@@ -173,6 +193,10 @@ t_list* transformRegistersStrToStructs(char* strRegs) {
 }
 
 registro_tad* obtenerRegistroSegunKey(t_list* registros, int key) {
+
+    if(registros->elements_count == 0) {
+        return NULL;
+    }
 
     bool _mismaKey(registro_tad* registro) {
         return registro->key == key;

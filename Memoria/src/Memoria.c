@@ -4,10 +4,17 @@
 
 #include "Memoria.h"
 //main
-int main(){
+int main(int argc, char *argv[]){
     system("clear"); /* limpia la pantalla al empezar */
 
     puts("Proceso Memoria");
+
+    //Cargo los argumentos
+    PATH_CONFIG = strdup(argv[1]);
+    if (!ValidarArchivo(PATH_CONFIG)) {
+        puts("Error en el path del archivo de config");
+        return EXIT_FAILURE;
+    }
 
     //Inicializar Log
     init_log(PATH_LOG);

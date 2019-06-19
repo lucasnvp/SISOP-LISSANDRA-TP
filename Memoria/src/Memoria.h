@@ -15,6 +15,7 @@
 
 
 #include <commons/collections/list.h>
+#include <commonsfunctions/functions.h>
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
@@ -28,9 +29,9 @@
 #include "estructuras/gossip.h"
 #include "comandosMemoria.h"
 
-pthread_mutex_t mutexJournal; // Semáforo para el Journal -- Se utiliza mutex para garantizar la EM
 
-char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
+pthread_mutex_t mutexJournal; // Semáforo para el Journal -- Se utiliza mutex para garantizar la EM
+char* PATH_CONFIG;
 Type_Config config;
 
 char* PATH_LOG = "/home/utnso/Gank-mid/Logs/logMemoria.txt";
@@ -38,10 +39,6 @@ t_log* log_Console;
 t_log* log_Memoria;
 
 uint32_t SERVIDOR_FILESYSTEM;
-
-
-
-
 
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero

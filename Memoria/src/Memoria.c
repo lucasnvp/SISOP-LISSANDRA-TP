@@ -4,12 +4,19 @@
 
 #include "Memoria.h"
 //main
-int main(){
+int main(int argc, char *argv[]){
     system("clear"); /* limpia la pantalla al empezar */
 
     puts("Proceso Memoria");
 
-    // Inicializar Log
+    //Cargo los argumentos
+    PATH_CONFIG = strdup(argv[1]);
+    if (!ValidarArchivo(PATH_CONFIG)) {
+        puts("Error en el path del archivo de config");
+        return EXIT_FAILURE;
+    }
+
+    //Inicializar Log
     init_log(PATH_LOG);
 
     // Configuracion inicial
@@ -27,6 +34,7 @@ int main(){
 
 
     // Inicializamos la tabla de segmentos
+
     primerRegistroDeSegmentos = NULL;
 
     // Inicializamos los hilos de journal, gossiping, servidor y consola
@@ -63,11 +71,11 @@ void gossiping(){
     while(true){
 
         timeGossip.tv_sec = 0;
-        timeGossip.tv_usec = config.RETARDO_GOSSIPING;
+        timeGossip.tv_usec = (config.RETARDO_GOSSIPING * 1000);
 
         select(0, NULL, NULL, NULL, &timeGossip);
 
-        //funcionGossip();
+        funcionGossip();
     }
 
 }
@@ -90,6 +98,7 @@ void init_log(char* pathLog){
     mkdir("/home/utnso/Gank-mid/Logs",0755);
     log_Console = log_create(pathLog, "Memoria", true, LOG_LEVEL_INFO);
     log_Memoria = log_create(pathLog, "Memoria", false, LOG_LEVEL_INFO);
+    log_Memoria_gossip = log_Memoria;
 }
 
 void connect_server_FileSystem(){

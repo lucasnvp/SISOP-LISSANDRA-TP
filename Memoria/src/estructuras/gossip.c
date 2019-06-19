@@ -17,6 +17,18 @@ void inicializarTablaDeGossiping(){
 
 void funcionGossip(){
 
+    void gossip_element(void* element){
+        gossip_tad* gossip = element;
+        uint32_t socket = connect_server(gossip->IP,gossip->PORT);
+        if(socket > 1){
+            log_info(log_Memoria_gossip,"GOSSIP => Connected successfully <%s> <%d>", gossip->IP, gossip->PORT);
+        } else{
+            log_info(log_Memoria_gossip, "GOSSIP => Connect failed <%s> <%d>", gossip->IP, gossip->PORT);
+        }
+    }
+
+    list_iterate(LIST_GOSSIP, gossip_element);
+
 }
 
 void sendGossipingTable (uint32_t socket) {

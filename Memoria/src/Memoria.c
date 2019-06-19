@@ -79,7 +79,7 @@ void gossiping(){
 
         select(0, NULL, NULL, NULL, &timeGossip);
 
-        //funcionGossip();
+        funcionGossip();
     }
 
 }
@@ -102,6 +102,7 @@ void init_log(char* pathLog){
     mkdir("/home/utnso/Gank-mid/Logs",0755);
     log_Console = log_create(pathLog, "Memoria", true, LOG_LEVEL_INFO);
     log_Memoria = log_create(pathLog, "Memoria", false, LOG_LEVEL_INFO);
+    log_Memoria_gossip = log_Memoria;
 }
 
 void connect_server_FileSystem(){

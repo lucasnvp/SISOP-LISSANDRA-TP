@@ -10,11 +10,13 @@
 #include <unistd.h>
 
 #include <commons/collections/list.h>
+#include <commons/log.h>
 #include <serializador/estructuras.h>
 #include <serializador/serializador.h>
 
 #include "../config/Config_memoria.h"
 
+t_log* log_Memoria_gossip;
 t_list * LIST_GOSSIP;
 
 void inicializarTablaDeGossiping();

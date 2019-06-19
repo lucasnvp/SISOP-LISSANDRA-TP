@@ -75,7 +75,7 @@ void gossiping(){
     while(true){
 
         timeGossip.tv_sec = 0;
-        timeGossip.tv_usec = config.RETARDO_GOSSIPING;
+        timeGossip.tv_usec = (config.RETARDO_GOSSIPING * 1000);
 
         select(0, NULL, NULL, NULL, &timeGossip);
 

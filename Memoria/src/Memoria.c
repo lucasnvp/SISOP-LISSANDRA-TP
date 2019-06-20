@@ -368,6 +368,13 @@ void memory_console() {
                 }
             }
 
+            else if (!strcmp(comandos->comando, "pG")) {
+                if (comandos->cantArgs == 0) {
+                    printGossip(config.MEMORY_NUMBER);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
             else print_console((void*) log_error, "Comando incorrecto.");
 
             // Libero toda la memoria

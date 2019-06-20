@@ -255,6 +255,14 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
 
+        case COMAND_GOSSIP_RECEIVED: {
+            log_info(log_Memoria, "Se recibe la Tabla de Gossiping de la otra memoria");
+            t_list* gossipOtherMemory = deserializar_gossip_table(socket);
+            compararTablasGossip(gossipOtherMemory);
+            list_destroy_and_destroy_elements(gossipOtherMemory, free_gossip_tad);
+            break;
+        }
+
         default:
             log_info(log_Memoria, "Error al recibir el comando");
     }
@@ -368,7 +376,7 @@ void memory_console() {
                 }
             }
 
-            else if (!strcmp(comandos->comando, "pG")) {
+            else if (!strcmp(comandos->comando, "printGossip")) {
                 if (comandos->cantArgs == 0) {
                     printGossip(config.MEMORY_NUMBER);
                 }

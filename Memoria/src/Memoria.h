@@ -13,7 +13,6 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-
 #include <commons/collections/list.h>
 #include <commonsfunctions/functions.h>
 #include "servidor/servidor.h"

@@ -26,6 +26,8 @@ void funcionGossip(){
             serializar_int(socket, COMAND_GOSSIP);
             t_list* listaGossip = deserializar_gossip_table(socket);
             compararTablasGossip(listaGossip);
+            serializar_int(socket, COMAND_GOSSIP_RECEIVED);
+            serializar_gossip_table(socket, LIST_GOSSIP);
             list_destroy_and_destroy_elements(listaGossip, free_gossip_tad);
             close(socket);
         } else{

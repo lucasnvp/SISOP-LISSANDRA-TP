@@ -15,5 +15,6 @@
 #define COMAND_DROP                         105
 #define COMAND_JOURNAL                      106
 #define COMAND_GOSSIP                       107
+#define COMAND_GOSSIP_RECEIVED              108
 
 #endif //TP_2019_1C_GANK_MID_HANDSHAKE_H

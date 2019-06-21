@@ -11,16 +11,19 @@
 
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registro_tad* liberarPagina() {
+registro_tad* liberarPagina(uint32_t socket) {
     tablaDePaginas* registroMasViejo;
     bool seDebeHacerJournal = verificarPaginas();
+    if (socket != CONSOLE_REQUEST) {
+        serializar_int(socket, seDebeHacerJournal);
+    }
     if (seDebeHacerJournal) {
-        funcionJournal(SERVIDOR_FILESYSTEM);
+//        funcionJournal(SERVIDOR_FILESYSTEM);
         registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
     } else {
         registroMasViejo = obtenerRegistroMasViejo();
     }
-    return reenlazarRegistros(registroMasViejo);
+    return reenlazarRegistros(socket, registroMasViejo);
 
 }
 
@@ -65,10 +68,10 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 }
 
 // Reenlaza los registros de páginas
-registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
+registro_tad* reenlazarRegistros(uint32_t socket, tablaDePaginas* registroMasViejo) {
 
     if(registroMasViejo == NULL){
-        return reservarMarco();
+        return reservarMarco(socket);
     }
 
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;

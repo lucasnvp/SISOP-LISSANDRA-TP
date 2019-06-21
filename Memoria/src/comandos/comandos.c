@@ -20,7 +20,7 @@ char* comando_select(select_tad* select, int requestOrigin){
     char* value = funcionSelect(SERVIDOR_FILESYSTEM, select);
 
     if (value == NULL) {
-      value = solicitarSelectAFileSystem(select);
+      value = solicitarSelectAFileSystem(requestOrigin, select);
     }
 
     // vuelvo a preguntar si es null para enviar la señal serializada (por si no existe la key solicitada en FS)
@@ -44,11 +44,10 @@ char* comando_select(select_tad* select, int requestOrigin){
 
 }
 
-void comando_insert(insert_tad* insert){
+void comando_insert(uint32_t socket, insert_tad* insert){
     atoi(insert->key);
     print_console((void*) log_info, "Comando insert");
-    funcionInsert(insert, true);
-
+    funcionInsert(socket, insert, true);
 }
 
 void comando_create(create_tad* create, int requestOrigin){

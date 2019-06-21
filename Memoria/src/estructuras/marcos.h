@@ -40,7 +40,7 @@ struct tablaDeMarcos* primerRegistroDeMarcos;
 __uint32_t cantidadDeMarcos;
 
 void liberarMarco(registro_tad* punteroAPagina);
-registro_tad* reservarMarco(); // reserva un marco
+registro_tad* reservarMarco(uint32_t socket); // reserva un marco
 void inicializarMarcos(__uint32_t tamanioMemoria);
 
 #endif //TP_2019_1C_GANK_MID_MARCOS_H

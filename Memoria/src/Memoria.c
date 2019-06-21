@@ -185,7 +185,7 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "El kernel envio un insert");
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
-            comando_insert(insert);
+            comando_insert(socket, insert);
             free_insert_tad(insert);
             break;
         }
@@ -318,7 +318,7 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
                     insert_tad* insert = new_insert_tad(comandos->arg[0],atoi(comandos->arg[1]),comandos->arg[2]);
-                    comando_insert(insert);
+                    comando_insert(-1, insert);
                     free_insert_tad(insert);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");

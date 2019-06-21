@@ -34,6 +34,15 @@ void api_insert(char* tabla, u_int16_t key, char* value){
         serializar_int(socket, COMAND_INSERT);
         insert_tad *insert = new_insert_tad(tabla, key, value);
         serializar_insert(socket, insert);
+
+        // Hacer journal si la memoria esta full
+        bool memoryFull = deserializar_int(socket);
+        if (memoryFull) {
+            //todo Mandar a todas las memorias journal
+            serializar_int(socket, COMAND_INSERT);
+            serializar_insert(socket, insert);
+        }
+
         log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
     }
 }

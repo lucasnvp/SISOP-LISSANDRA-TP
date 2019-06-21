@@ -22,12 +22,12 @@ void liberarMarco(registro_tad* punteroAPagina){
 
 }
 
-registro_tad* reservarMarco(uint32_t socket) {
+registro_tad* reservarMarco(int socket) {
     struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
-            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * sizeof(registro_tad));
+            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue));
         }
 
 
@@ -39,7 +39,8 @@ registro_tad* reservarMarco(uint32_t socket) {
 
 void inicializarMarcos(uint32_t tamanioMemoria){
     //calculo la cantidad de marcos
-    cantidadDeMarcos = tamanioMemoria / sizeof(registro_tad);
+
+    cantidadDeMarcos = tamanioMemoria / (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue);
     struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
     primerRegistroDeMarco->registro.numeroMarco = 0;
     primerRegistroDeMarco->registro.marcoOcupado = false;

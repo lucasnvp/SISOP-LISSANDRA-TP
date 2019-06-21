@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <semaphore.h>
+#include <pthread.h>
 
 #include <commons/collections/list.h>
 #include <commonsfunctions/functions.h>
@@ -26,6 +28,8 @@
 #include "estructuras/gossip.h"
 #include "comandosMemoria.h"
 
+
+pthread_mutex_t mutexJournal; // Semáforo para el Journal -- Se utiliza mutex para garantizar la EM
 char* PATH_CONFIG;
 Type_Config config;
 
@@ -59,9 +63,9 @@ typedef struct {
 
 registro_tad* alocar_MemoriaPrincipal();
 
-void crearRegistroDeSegmento(char* nombreTabla);
+void inicializarSemaforos();
+void inicializarHilos();
 void recibir_valores_FileSystem(uint32_t servidorFileSystem);
-void desalocar_MemoriaPrincipal();
 void init_log(char* pathLog);
 void connect_server_FileSystem();
 void server(void* args);

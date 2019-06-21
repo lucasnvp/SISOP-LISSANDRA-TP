@@ -19,11 +19,14 @@ int main(int argc, char *argv[]){
     //Inicializar Log
     init_log(PATH_LOG);
 
-    //Configuracion inicial
+    // Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
 
-    //Conexion al servidor FileSystem
+    // Inicializamos los semáforos
+    inicializarSemaforos();
+
+    // Conexion al servidor FileSystem
     connect_server_FileSystem();
 
     // Se crea el espacio para la memoria principal
@@ -34,16 +37,8 @@ int main(int argc, char *argv[]){
 
     primerRegistroDeSegmentos = NULL;
 
-    //TODO Hilo de Gossiping
-    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
-
-    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
-
-    //Creo el hilo del servidor
-    pthread_create(&thread_server, NULL, (void*) server, "Servidor");
-
-    //Creo el hilo de la consola
-    pthread_create(&thread_consola, NULL, (void*) memory_console, "Consola");
+    // Inicializamos los hilos de journal, gossiping, servidor y consola
+    inicializarHilos();
 
 //    pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
@@ -62,8 +57,9 @@ void journaling(){
         timeJournal.tv_usec = config.RETARDO_JOURNAL;
 
         select(0, NULL, NULL, NULL, &timeJournal);
-
+        pthread_mutex_lock(&mutexJournal);
         funcionJournal(SERVIDOR_FILESYSTEM);
+        pthread_mutex_unlock(&mutexJournal);
     }
 }
 
@@ -189,7 +185,7 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "El kernel envio un insert");
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
-            comando_insert(insert);
+            comando_insert(socket, insert);
             free_insert_tad(insert);
             break;
         }
@@ -247,13 +243,23 @@ void connection_handler(uint32_t socket, uint32_t command){
 
         case COMAND_JOURNAL: {
             log_info(log_Memoria, "El kernel envio un journal");
+            pthread_mutex_lock(&mutexJournal);
             comando_journal(socket);
+            pthread_mutex_unlock(&mutexJournal);
             break;
         }
 
         case COMAND_GOSSIP: {
             log_info(log_Memoria, "Se solicito la Tabla de Gossiping");
             comando_gossip(socket);
+            break;
+        }
+
+        case COMAND_GOSSIP_RECEIVED: {
+            log_info(log_Memoria, "Se recibe la Tabla de Gossiping de la otra memoria");
+            t_list* gossipOtherMemory = deserializar_gossip_table(socket);
+            compararTablasGossip(gossipOtherMemory);
+            list_destroy_and_destroy_elements(gossipOtherMemory, free_gossip_tad);
             break;
         }
 
@@ -312,7 +318,7 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
                     insert_tad* insert = new_insert_tad(comandos->arg[0],atoi(comandos->arg[1]),comandos->arg[2]);
-                    comando_insert(insert);
+                    comando_insert(-1, insert);
                     free_insert_tad(insert);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -336,7 +342,9 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "journal")) {
                 if (comandos->cantArgs == 0) {
+                    pthread_mutex_lock(&mutexJournal);
                     comando_journal(-1);
+                    pthread_mutex_unlock(&mutexJournal);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -368,6 +376,13 @@ void memory_console() {
                 }
             }
 
+            else if (!strcmp(comandos->comando, "printGossip")) {
+                if (comandos->cantArgs == 0) {
+                    printGossip(config.MEMORY_NUMBER);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
             else print_console((void*) log_error, "Comando incorrecto.");
 
             // Libero toda la memoria
@@ -378,4 +393,23 @@ void memory_console() {
         }
         free(linea);
     }
+}
+
+void inicializarSemaforos() {
+    pthread_mutex_init(&mutexJournal, NULL);
+}
+
+void inicializarHilos() {
+
+    //Hilo de Journal
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+
+    //Hilo de Gossiping
+    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
+
+    //Hilo del Servidor
+    pthread_create(&thread_server, NULL, (void*) server, "Servidor");
+
+    //Hilo de la Consola
+    pthread_create(&thread_consola, NULL, (void*) memory_console, "Consola");
 }

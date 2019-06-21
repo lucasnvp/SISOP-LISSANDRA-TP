@@ -79,7 +79,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
     return NULL;
 }
 
-char* solicitarSelectAFileSystem(select_tad* select) {
+char* solicitarSelectAFileSystem(uint32_t socket, select_tad* select) {
 
     log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
@@ -101,7 +101,7 @@ char* solicitarSelectAFileSystem(select_tad* select) {
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
          */
         insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
-        funcionInsert(insert, false);
+        funcionInsert(socket, insert, false);
         free_insert_tad(insert);
         return value;
     } else {
@@ -112,7 +112,7 @@ char* solicitarSelectAFileSystem(select_tad* select) {
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void funcionInsert(insert_tad* insert, bool flagModificado) {
+void funcionInsert(uint32_t socket, insert_tad* insert, bool flagModificado) {
     uint32_t timestamp;
     //if(flagModificado){
         timestamp = time(NULL);
@@ -125,7 +125,7 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
     // si la tabla de segmentos es nula, lo agrego y agrego la primera
     if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
         struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
-        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
+        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
 
         _TablaDeSegmento = buscarSegmento(insert->nameTable);
         if(_TablaDeSegmento == NULL ){
@@ -167,7 +167,7 @@ void funcionInsert(insert_tad* insert, bool flagModificado) {
     //si no la encuentro la agrego junto a su registro de pagina
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
 
-    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;
     nuevoRegistroPagina->registro.flagModificado = flagModificado;
     nuevoRegistroPagina->registro.ultimoAcceso = timestamp;

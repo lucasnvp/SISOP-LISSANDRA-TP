@@ -16,9 +16,13 @@ void api_select (char* tabla, u_int16_t key) {
 
         uint32_t confirm = deserializar_int(socket);
         if (confirm) {
-            char* value = deserializar_string(socket);
-            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
-            free(value);
+            registro_tad* registro = deserializar_registro(socket);
+            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%d>",
+                    tabla,
+                    registro->key,
+                    registro->value,
+                    registro->timestamp);
+            free_registro_tad(registro);
         } else {
             log_info(log_Kernel_api, "Error al recibir el SELECT");
         }

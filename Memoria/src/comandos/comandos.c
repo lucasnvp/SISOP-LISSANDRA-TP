@@ -17,15 +17,16 @@ void comando_gossip(uint32_t requestOrigin) {
 
 char* comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
-    char* value = funcionSelect(select);
+//    char* value = funcionSelect(select);
+    registro_tad* registro = funcionSelect(select);
 
-    if (value == NULL) {
-      value = solicitarSelectAFileSystem(requestOrigin, select);
+    if (registro == NULL) {
+      registro = solicitarSelectAFileSystem(requestOrigin, select);
     }
 
     // vuelvo a preguntar si es null para enviar la señal serializada (por si no existe la key solicitada en FS)
 
-    if (value == NULL) {
+    if (registro == NULL) {
         if (requestOrigin != CONSOLE_REQUEST) {
 
             serializar_int(requestOrigin, false);
@@ -35,7 +36,8 @@ char* comando_select(select_tad* select, int requestOrigin){
         if (requestOrigin != CONSOLE_REQUEST) {
 
             serializar_int(requestOrigin, true);
-            serializar_string(requestOrigin, value);
+//            serializar_string(requestOrigin, value);
+            serializar_registro(requestOrigin, registro);
         }
 
     }

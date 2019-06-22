@@ -58,7 +58,7 @@ void funcionDrop(char* nombreDeTabla){
 }
 
 
-char* funcionSelect(select_tad* select){
+registro_tad* funcionSelect(select_tad* select){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     if (_TablaDeSegmento != NULL){
@@ -69,7 +69,7 @@ char* funcionSelect(select_tad* select){
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
-                return _TablaDePaginas->registro.punteroAPagina->value;
+                return _TablaDePaginas->registro.punteroAPagina;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
         }
@@ -79,7 +79,7 @@ char* funcionSelect(select_tad* select){
     return NULL;
 }
 
-char* solicitarSelectAFileSystem(int socket, select_tad* select) {
+registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
@@ -88,14 +88,13 @@ char* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select_FS);
+    free_select_tad(select_FS);
 
     uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
     if (confirm) {
-        serializar_select(SERVIDOR_FILESYSTEM, select_FS);
-        free_select_tad(select_FS);
 
-        char* value = deserializar_string(SERVIDOR_FILESYSTEM);
+        registro_tad* registro = deserializar_registro(SERVIDOR_FILESYSTEM);
         /*
          * uint32_t timestamp = deserializar_int(SERVIDOR_FILESYSTEM);
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
@@ -103,9 +102,8 @@ char* solicitarSelectAFileSystem(int socket, select_tad* select) {
         insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
         funcionInsert(socket, insert, false);
         free_insert_tad(insert);
-        return value;
+        return registro;
     } else {
-        free_select_tad(select_FS);
         return NULL;
     }
 }

@@ -58,7 +58,7 @@ void funcionDrop(char* nombreDeTabla){
 }
 
 
-char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
+char* funcionSelect(select_tad* select){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     if (_TablaDeSegmento != NULL){
@@ -79,7 +79,7 @@ char* funcionSelect(uint32_t SERVIDOR_FILESYSTEM, select_tad* select){
     return NULL;
 }
 
-char* solicitarSelectAFileSystem(uint32_t socket, select_tad* select) {
+char* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
@@ -112,7 +112,7 @@ char* solicitarSelectAFileSystem(uint32_t socket, select_tad* select) {
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void funcionInsert(uint32_t socket, insert_tad* insert, bool flagModificado) {
+void funcionInsert(int socket, insert_tad* insert, bool flagModificado) {
     uint32_t timestamp;
     //if(flagModificado){
         timestamp = time(NULL);
@@ -126,6 +126,11 @@ void funcionInsert(uint32_t socket, insert_tad* insert, bool flagModificado) {
     if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
         struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
         nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
+
+        if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
+            free(nuevoRegistroPagina);
+            return;
+        }
 
         _TablaDeSegmento = buscarSegmento(insert->nameTable);
         if(_TablaDeSegmento == NULL ){
@@ -168,6 +173,10 @@ void funcionInsert(uint32_t socket, insert_tad* insert, bool flagModificado) {
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
 
     nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
+    if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
+        free(nuevoRegistroPagina);
+        return;
+    }
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;
     nuevoRegistroPagina->registro.flagModificado = flagModificado;
     nuevoRegistroPagina->registro.ultimoAcceso = timestamp;

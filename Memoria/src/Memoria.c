@@ -57,9 +57,9 @@ void journaling(){
         timeJournal.tv_usec = config.RETARDO_JOURNAL;
 
         select(0, NULL, NULL, NULL, &timeJournal);
-        pthread_mutex_lock(&mutexJournal);
+        pthread_mutex_lock(&mutexJournalyDrop);
         funcionJournal(SERVIDOR_FILESYSTEM);
-        pthread_mutex_unlock(&mutexJournal);
+        pthread_mutex_unlock(&mutexJournalyDrop);
     }
 }
 
@@ -82,14 +82,14 @@ void gossiping(){
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);
-    tiempoDump = deserializar_int(servidorFileSystem);
 }
 
 
 registro_tad* alocar_MemoriaPrincipal() {
-    registro_tad* aux = malloc(config.TAM_MEM);
-    log_info(log_Memoria, "Se ha alocado la memoria principal");
     inicializarMarcos(config.TAM_MEM);
+    uint32_t tamanioMemoria = sizeof(registro_tad) * cantidadDeMarcos;
+    registro_tad* aux = malloc(tamanioMemoria);
+    log_info(log_Memoria, "Se ha alocado la memoria principal");
     log_info(log_Memoria, "Se han inicializado los marcos");
     return aux;
 }
@@ -185,16 +185,19 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "El kernel envio un insert");
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
-            comando_insert(socket, insert);
+            pthread_mutex_lock(&mutexInsertSelectyJournal);
+            comando_insert(insert, socket);
+            pthread_mutex_unlock(&mutexInsertSelectyJournal);
             free_insert_tad(insert);
             break;
         }
         case COMAND_SELECT: {
             log_info(log_Memoria, "El kernel envio un select");
             select_tad* select = deserializar_select(socket);
-            char* value = comando_select(select, socket);
+            pthread_mutex_lock(&mutexInsertSelectyJournal);
+            comando_select(select, socket);
+            pthread_mutex_unlock(&mutexInsertSelectyJournal);
             free_select_tad(select);
-
             break;
         }
         case COMAND_CREATE: {
@@ -234,16 +237,20 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
             char* tabla = deserializar_string(socket);
+            pthread_mutex_lock(&mutexJournalyDrop);
             comando_drop(tabla, socket);
+            pthread_mutex_unlock(&mutexJournalyDrop);
             free(tabla);
             break;
         }
 
         case COMAND_JOURNAL: {
             log_info(log_Memoria, "El kernel envio un journal");
-            pthread_mutex_lock(&mutexJournal);
+            pthread_mutex_lock(&mutexInsertSelectyJournal);
+            pthread_mutex_lock(&mutexJournalyDrop);
             comando_journal(socket);
-            pthread_mutex_unlock(&mutexJournal);
+            pthread_mutex_unlock(&mutexJournalyDrop);
+            pthread_mutex_unlock(&mutexInsertSelectyJournal);
             break;
         }
 
@@ -307,7 +314,9 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
                     select_tad* select = new_select_tad(comandos->arg[0], atoi(comandos->arg[1]));
-                    comando_select(select, -1);
+                    pthread_mutex_lock(&mutexInsertSelectyJournal);
+                    comando_select(select, CONSOLE_REQUEST);
+                    pthread_mutex_unlock(&mutexInsertSelectyJournal);
                     free_select_tad(select);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -316,7 +325,9 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
                     insert_tad* insert = new_insert_tad(comandos->arg[0],atoi(comandos->arg[1]),comandos->arg[2]);
-                    comando_insert(-1, insert);
+                    pthread_mutex_lock(&mutexInsertSelectyJournal);
+                    comando_insert(insert, CONSOLE_REQUEST);
+                    pthread_mutex_unlock(&mutexInsertSelectyJournal);
                     free_insert_tad(insert);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -325,7 +336,7 @@ void memory_console() {
             else if (!strcmp(comandos->comando, "create")) {
                 if (comandos->cantArgs == 4) {
                     create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], atoi(comandos->arg[2]), atoi(comandos->arg[3]));
-                    comando_create(create, -1);
+                    comando_create(create, CONSOLE_REQUEST);
                     free_create_tad(create);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
@@ -333,23 +344,27 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "describe")) {
                 if (comandos->cantArgs == 1) {
-                    comando_describe(comandos->arg[0], -1);
+                    comando_describe(comandos->arg[0], CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "journal")) {
                 if (comandos->cantArgs == 0) {
-                    pthread_mutex_lock(&mutexJournal);
-                    comando_journal(-1);
-                    pthread_mutex_unlock(&mutexJournal);
+                    pthread_mutex_lock(&mutexInsertSelectyJournal);
+                    pthread_mutex_lock(&mutexJournalyDrop);
+                    comando_journal(CONSOLE_REQUEST);
+                    pthread_mutex_unlock(&mutexJournalyDrop);
+                    pthread_mutex_unlock(&mutexInsertSelectyJournal);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "drop")) {
                 if (comandos->cantArgs == 1) {
-                    comando_drop(comandos->arg[0], -1);
+                    pthread_mutex_lock(&mutexJournalyDrop);
+                    comando_drop(comandos->arg[0], CONSOLE_REQUEST);
+                    pthread_mutex_unlock(&mutexJournalyDrop);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -394,7 +409,9 @@ void memory_console() {
 }
 
 void inicializarSemaforos() {
-    pthread_mutex_init(&mutexJournal, NULL);
+    pthread_mutex_init(&mutexJournalyDrop, NULL);
+    pthread_mutex_init(&mutexInsertSelectyJournal, NULL);
+
 }
 
 void inicializarHilos() {

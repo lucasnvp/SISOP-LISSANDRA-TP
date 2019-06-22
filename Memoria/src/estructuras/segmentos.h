@@ -42,8 +42,6 @@ typedef struct tablaDeSegmentos {
 }tablaDeSegmentos;
 
 uint32_t tamanoValue;
-uint32_t tiempoDump;
-uint32_t cantDeMarcos;
 
 
 // Direccion de la tabla de segmentos

@@ -17,7 +17,7 @@ void comando_gossip(uint32_t requestOrigin) {
 
 char* comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
-    char* value = funcionSelect(SERVIDOR_FILESYSTEM, select);
+    char* value = funcionSelect(select);
 
     if (value == NULL) {
       value = solicitarSelectAFileSystem(requestOrigin, select);
@@ -44,10 +44,10 @@ char* comando_select(select_tad* select, int requestOrigin){
 
 }
 
-void comando_insert(uint32_t socket, insert_tad* insert){
+void comando_insert(insert_tad* insert, int requestOrigin){
     atoi(insert->key);
     print_console((void*) log_info, "Comando insert");
-    funcionInsert(socket, insert, true);
+    funcionInsert(requestOrigin, insert, true);
 }
 
 void comando_create(create_tad* create, int requestOrigin){
@@ -116,9 +116,12 @@ void comando_journal(int requestOrigin){
 
         serializar_int(requestOrigin, true);
 
-    } else {
+    }
+        //Esto se deberia quitar
+    /* else {
 
         serializar_int(requestOrigin, false);
 
     }
+    */
 }

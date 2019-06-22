@@ -11,11 +11,14 @@
 
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registro_tad* liberarPagina(uint32_t socket) {
+registro_tad* liberarPagina(int socket) {
     tablaDePaginas* registroMasViejo;
     bool seDebeHacerJournal = verificarPaginas();
     if (socket != CONSOLE_REQUEST) {
         serializar_int(socket, seDebeHacerJournal);
+    } else {
+        print_console((void*) log_info, "Memory FULL: Se requiere ejecutar JOURNAL para insertar un nuevo registro");
+        return NULL;
     }
     if (seDebeHacerJournal) {
 //        funcionJournal(SERVIDOR_FILESYSTEM);
@@ -68,7 +71,7 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 }
 
 // Reenlaza los registros de páginas
-registro_tad* reenlazarRegistros(uint32_t socket, tablaDePaginas* registroMasViejo) {
+registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo) {
 
     if(registroMasViejo == NULL){
         return reservarMarco(socket);

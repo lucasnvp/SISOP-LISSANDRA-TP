@@ -48,11 +48,12 @@ void* limpiarYLiberarBloque(char* path){
     for (uint32_t i = 0; bloquesList[i] != NULL; i++) {
 
         string_append(&pathBloques,bloquesList[i]);
+
         string_append(&pathBloques,".bin");
 
         if(ValidarArchivo(pathBloques)== true){
 
-            bitarray_clean_bit(bitarray,i);
+            bitarray_clean_bit(bitarray,atoi(bloquesList[i]));
                 /*TODO: Probar crear 3 tablas y borrar la segunda.
                  * Crear una tercera con varias particiones y ver si asigna en los bloques de la segunda y los que siguen a la tercera*/
         }

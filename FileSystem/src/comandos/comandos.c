@@ -210,8 +210,6 @@ void comando_drop(char* table, int requestOrigin){
 
     if( existe == true ) {
 
-        log_info(log_FileSystem, "La tabla %s existe ", table);
-
         /*Libero los bloques de los Tmps y Tmpcs*/
         freeBlocksFromTemps(tabla_objetivo, ".tmp");
         /*Libero los bloques del FS*/

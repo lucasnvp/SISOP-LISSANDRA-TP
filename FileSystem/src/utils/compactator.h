@@ -15,5 +15,8 @@
 
 void runCompactation(char* table);
 bool tmpToTmpc(char* path);
+void liberarBloques(char* path);
+void crearParticionCompactada(char* path, t_list* bloques, int size);
+void eliminarTmpc(char* path);
 
 #endif //TP_2019_1C_GANK_MID_COMPACTATOR_H

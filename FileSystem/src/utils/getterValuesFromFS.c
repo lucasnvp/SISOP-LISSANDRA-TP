@@ -65,7 +65,7 @@ t_list* getRegistersFromTemporals(char* table, char* typeFile) {
     return transformRegistersStrToStructs(registrosConcatenados);
 }
 
-registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32_t partition) {
+t_list* getRegistersFromPartition(char* table, char* typeFile, uint32_t partition) {
 
     char* registrosConcatenados =  string_new();
 
@@ -97,6 +97,18 @@ registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32
 
     if(listaRegistros == NULL) {
         return NULL;
+    } else {
+        return listaRegistros;
+    }
+
+}
+
+registro_tad* getValueFromPartition(char* table, int key, char* typeFile, uint32_t partition) {
+
+    t_list* listaRegistros = getRegistersFromPartition(table, typeFile, partition);
+
+    if(listaRegistros == NULL) {
+        return NULL;
     }
 
     return obtenerRegistroSegunKey(listaRegistros, key);
@@ -112,16 +124,17 @@ char* getRegistersFromBinaryFile(char *pathTmp) {
     t_config * auxtmp = config_create(tmp);
 
     char* bloques = config_get_string_value(auxtmp, "BLOCKS");
+    char* size = config_get_string_value(auxtmp, "SIZE");
 
-    if(bloques != NULL) {
-
-        char* size = config_get_string_value(auxtmp, "SIZE");
+    if(bloques != NULL && !string_equals_ignore_case(size, "0")) {
 
         char** bloquesList = string_get_string_as_array(bloques);
 
         // TODO: ir calculando cuanto queda por leer
-        for (int i = 0; i < string_length(*bloquesList) && bloquesList[i] != NULL; i++) {
-            string_append(&result, leerBloque(bloquesList[i], atoi(size)));
+
+        uint32_t int_size = atoi(size)-1;
+        for (int i = 0; i < bloquesList[i] != NULL; i++) {
+            string_append(&result, leerBloque(bloquesList[i], int_size));
         }
 
         string_iterate_lines(bloquesList, (void*) free);

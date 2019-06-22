@@ -153,7 +153,7 @@ void asignar_bloques(char* path) {
         newFD = fopen(path, "w+");
 
         char* tamanioDeBloques = string_new();
-        string_append(&tamanioDeBloques, "SIZE=0");
+        string_append(&tamanioDeBloques, "SIZE=0\n");
         fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
         free(tamanioDeBloques);
 
@@ -221,7 +221,7 @@ void borrar_particion(char* path) {
 
 char** get_bloques_array(char* path) {
     t_config* filetogetbloques = config_create(path);
-    char** bloquesarray = config_get_array_value(filetogetbloques, "BLOQUES");
+    char** bloquesarray = config_get_array_value(filetogetbloques, "BLOCKS");
     config_destroy(filetogetbloques);
     return bloquesarray;
 }

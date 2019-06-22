@@ -12,6 +12,8 @@
 
 #include <commons/collections/list.h>
 #include <commons/log.h>
+#include <commons/string.h>
+#include <serializador/estructuras.h>
 #include <serializador/serializador.h>
 #include <serializador/handshake.h>
 
@@ -37,6 +39,7 @@ memory_tad* search_memory(uint32_t number);
 bool exist_memory(uint32_t number);
 void disable_memory(memory_tad* auxMemory);
 void gossip_memory();
-uint32_t memory_ramdom_socket();
+void gossip_memory_connect(t_list* gossip_table);
+void compareGossipWithListMemory(gossip_tad* gossip);
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

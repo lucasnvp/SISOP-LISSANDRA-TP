@@ -27,6 +27,8 @@ registro_tad* reservarMarco(int socket) {
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
+            // serializo un "false" para kernel ya que la memoria no esta full
+            serializar_int(socket, false); // encontramos un marco libre por lo que no tenemos que hacer journal
             return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue));
         }
 

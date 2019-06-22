@@ -16,9 +16,13 @@ void api_select (char* tabla, u_int16_t key) {
 
         uint32_t confirm = deserializar_int(socket);
         if (confirm) {
-            char* value = deserializar_string(socket);
-            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
-            free(value);
+            registro_tad* registro = deserializar_registro(socket);
+            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%d>",
+                    tabla,
+                    registro->key,
+                    registro->value,
+                    registro->timestamp);
+            free_registro_tad(registro);
         } else {
             log_info(log_Kernel_api, "Error al recibir el SELECT");
         }
@@ -29,7 +33,7 @@ void api_insert(char* tabla, u_int16_t key, char* value){
     uint32_t socket = get_memory_socket_from_metadata(tabla);
 
     if (socket == -1) {
-        log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
+        log_info(log_Kernel_api, "INSERT => La tabla: <%s> no existe", tabla);
     } else {
         serializar_int(socket, COMAND_INSERT);
         insert_tad *insert = new_insert_tad(tabla, key, value);
@@ -38,6 +42,7 @@ void api_insert(char* tabla, u_int16_t key, char* value){
         bool memoryFull = deserializar_int(socket);
         if (memoryFull) {
             //todo Mandar a todas las memorias journal
+            log_info(log_Kernel_api, "JOURNAL => Se envio el request a memoria");
             serializar_int(socket, COMAND_JOURNAL);
         }
 
@@ -75,7 +80,6 @@ void api_describe(char* tabla){
     } else {
         serializar_int(socket, COMAND_DESCRIBE);
         serializar_string(socket, tabla);
-        log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
         bool confirm = deserializar_int(socket);
         if (confirm) {
             describe_tad *describe = deserializar_describe(socket);
@@ -100,6 +104,7 @@ void api_describe_all () {
 
         t_list* listDescribe = deserializar_describe_all(socket);
         load_METADATA(listDescribe);
+        list_destroy_and_destroy_elements(listDescribe, free_describe_tad);
         print_metadata(log_Kernel_api);
     }
 }
@@ -111,9 +116,18 @@ void api_drop(char* tabla){
         log_info(log_Kernel_api, "DROP => La tabla: <%s> no existe", tabla);
     } else {
         serializar_int(socket, COMAND_DROP);
-        // todo Envio la info a la memoria
-        // todo Confirmacion de la operacion
+        serializar_string(socket, tabla);
+
         log_info(log_Kernel_api, "DROP => TABLA: <%s>\t", tabla);
+
+        bool confirm = deserializar_int(socket);
+        if (confirm) {
+            // todo Eliminar de la tabla
+            log_info(log_Kernel_api, "DROP => Se elimino la tabla con exito");
+        } else {
+            log_info(log_Kernel_api, "DROP => Fallo el request");
+        }
+
     }
 }
 

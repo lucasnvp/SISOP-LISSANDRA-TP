@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "../comandos/comandos.h"
 #include "../setup/setup.h"
 #include <commons/bitarray.h>

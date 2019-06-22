@@ -15,37 +15,37 @@ void comando_gossip(uint32_t requestOrigin) {
     sendGossipingTable(requestOrigin);
 }
 
-char* comando_select(select_tad* select, int requestOrigin){
+void comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
-    char* value = funcionSelect(select);
+    registro_tad* registro = funcionSelect(select);
 
-    if (value == NULL) {
-      value = solicitarSelectAFileSystem(requestOrigin, select);
+    if (registro == NULL) {
+      registro = solicitarSelectAFileSystem(requestOrigin, select);
     }
 
     // vuelvo a preguntar si es null para enviar la señal serializada (por si no existe la key solicitada en FS)
 
-    if (value == NULL) {
+    if (registro == NULL) {
         if (requestOrigin != CONSOLE_REQUEST) {
-
             serializar_int(requestOrigin, false);
         }
     } else {
+        log_info(log_Memoria, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%d>",
+            select->nameTable,
+            registro->key,
+            registro->value,
+            registro->timestamp);
 
         if (requestOrigin != CONSOLE_REQUEST) {
-
             serializar_int(requestOrigin, true);
-            serializar_string(requestOrigin, value);
+            serializar_registro(requestOrigin, registro);
         }
 
     }
 
-    return value ;
-
 }
 
 void comando_insert(insert_tad* insert, int requestOrigin){
-    atoi(insert->key);
     print_console((void*) log_info, "Comando insert");
     sem_wait(&semaforoInsert);
     funcionInsert(requestOrigin, insert, true);

@@ -237,8 +237,6 @@ void connection_handler(uint32_t socket, uint32_t command){
             char* tabla = deserializar_string(socket);
             comando_drop(tabla, socket);
             free(tabla);
-
-
             break;
         }
 

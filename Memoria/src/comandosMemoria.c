@@ -58,7 +58,7 @@ void funcionDrop(char* nombreDeTabla){
 }
 
 
-char* funcionSelect(select_tad* select){
+registro_tad* funcionSelect(select_tad* select){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     if (_TablaDeSegmento != NULL){
@@ -69,7 +69,7 @@ char* funcionSelect(select_tad* select){
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
-                return _TablaDePaginas->registro.punteroAPagina->value;
+                return _TablaDePaginas->registro.punteroAPagina;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
         }
@@ -79,7 +79,7 @@ char* funcionSelect(select_tad* select){
     return NULL;
 }
 
-char* solicitarSelectAFileSystem(int socket, select_tad* select) {
+registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
@@ -88,26 +88,27 @@ char* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select_FS);
+    // todo revisar que pasa con este free
+//    free_select_tad(select_FS);
 
     uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
     if (confirm) {
-        serializar_select(SERVIDOR_FILESYSTEM, select_FS);
-        free_select_tad(select_FS);
 
-        char* value = deserializar_string(SERVIDOR_FILESYSTEM);
+        registro_tad* registro = deserializar_registro(SERVIDOR_FILESYSTEM);
         /*
          * uint32_t timestamp = deserializar_int(SERVIDOR_FILESYSTEM);
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
          */
+
         insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
         sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false);
-        sem_wait(&semaforoInsert);
-        free_insert_tad(insert);
+        sem_post(&semaforoInsert);
+        // todo Revisar donde hacer el free del insert.
+ //       free_insert_tad(insert);
         return value;
     } else {
-        free_select_tad(select_FS);
         return NULL;
     }
 }
@@ -165,6 +166,10 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado) {
                 _TablaDePaginas->registro.flagModificado = true; //actualizo el valor y seteo a true el flag de modificado
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                        new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
+
+                if(socket != CONSOLE_REQUEST){
+                    serializar_int(socket, false);
+                }
                 return;
             }
         }

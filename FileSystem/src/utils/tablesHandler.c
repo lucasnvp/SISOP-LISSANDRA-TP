@@ -1,4 +1,3 @@
-
 #include "tablesHandler.h"
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
@@ -7,21 +6,21 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
 
     char* registrosADumpear = transformAllRegistersToUniqueString(registros);
 
-    int hayLugar = getBloquesNecesariosParaDumpearTabla(registrosADumpear, bloquesParaAsignar);
+    int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosADumpear, bloquesParaAsignar);
 
     if(hayLugar == true) {
-        crearArchivoTemporal(nombreTabla, bloquesParaAsignar);
+        crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
         guardarEnBloques(registrosADumpear, bloquesParaAsignar);
         list_destroy(registros);
     } else {
-        // TODO: que hacemos si no hay lugar?
+        // TODO: si no hay lugar perdemos los datos
     }
 
     list_destroy(bloquesParaAsignar);
     free(registrosADumpear);
 }
 
-int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar) {
+int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {
 
     int bloquesNecesarios = cuantosBloquesOcupa(registros);
 
@@ -104,7 +103,7 @@ char* crear_path_tmp(char* tabla, int dump) {
     return tmp;
 }
 
-void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
+void crearArchivoTemporal(char* nombreTabla, t_list* bloques, int size) {
 
     int seguirHastaEncontrarElTmpCorrespondiente = true;
     int dump = 1;
@@ -119,13 +118,13 @@ void crearArchivoTemporal(char* nombreTabla, t_list* bloques) {
             newFD = fopen(tmp, "w+");
 
             char* tamanioDeBloques = string_new();
-            string_append(&tamanioDeBloques, "TAMANIO_BLOQUES=");
-            string_append(&tamanioDeBloques, string_itoa(TAMANIO_BLOQUES));
+            string_append(&tamanioDeBloques, "SIZE=");
+            string_append(&tamanioDeBloques, string_itoa(size));
             string_append(&tamanioDeBloques, "\n");
             fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
 
             char* bloquesDelArchivo = string_new();
-            string_append(&bloquesDelArchivo, "BLOQUES=[");
+            string_append(&bloquesDelArchivo, "BLOCKS=[");
 
             for(int i = 0; i< list_size(bloques); i++) {
                 int bloque = (int)list_get(bloques, i);

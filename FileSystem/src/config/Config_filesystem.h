@@ -22,7 +22,8 @@ typedef struct ConfigType{
     uint32_t TIEMPO_DUMP;
 } Type_Config;
 
-Type_Config load_config(char* path);
-void print_config(Type_Config auxConfig, t_log* log_Console);
+Type_Config* load_config(char* path);
+void print_config(Type_Config* auxConfig, t_log* log_Console);
+void free_config(Type_Config* config);
 
 #endif //TP_2019_1C_GANK_MID_CONFIG_FILESYSTEM_H

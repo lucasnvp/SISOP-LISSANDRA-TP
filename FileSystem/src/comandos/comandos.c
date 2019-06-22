@@ -198,30 +198,40 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 }
 
 void comando_drop(char* table, int requestOrigin){
+
     log_info(log_FileSystem, "EXECUTE DROP");
 
     string_to_upper(table);
 
     char* tabla_objetivo = strdup(montajeTablas);
     string_append(&tabla_objetivo, table);
-    string_append(&tabla_objetivo, "/0.bin");
 
     int existe = ValidarArchivo(tabla_objetivo);
 
-    // TODO: recorrer directorio de la tabla para liberar los bloques usados
-    // TODO: usar la funcion para elmiminar un directorio entero de las commonsFunctions
     if( existe == true ) {
 
-        borrar_particion(tabla_objetivo);
+        log_info(log_FileSystem, "La tabla %s existe ", table);
+
+        /*Libero los bloques de los Tmps y Tmpcs*/
+        freeBlocksFromTemps(tabla_objetivo, ".tmp");
+        /*Libero los bloques del FS*/
+        freeBlocksFromFS(tabla_objetivo);
+
+        /*Elimino el directorio*/
+        uint32_t directorioRemovido = remove_directory(tabla_objetivo);
 
         if(requestOrigin != CONSOLE_REQUEST){
 
             //TODO Serializar msj por socket
+
         }else{
 
             log_info(log_FileSystem, "La tabla %s se elimino correctamente ", table);
         }
 
+    }else{
+
+        log_info(log_FileSystem, "La tabla %s no existe", table);
     }
 }
 

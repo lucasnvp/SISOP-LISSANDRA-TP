@@ -23,7 +23,7 @@
 #include "comandos/comandos.h"
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
-
+#include "utils/freeBlocksFromFS.h"
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/config.txt";
 Type_Config config;

@@ -105,6 +105,7 @@ char* getRegistersFromBinaryFile(char *pathTmp) {
 
     // TODO SE ROMPE CUANDO QUIERO LIBERARLO
     //config_destroy(auxtmp);
+    free(tmp);
 
     return result;
 

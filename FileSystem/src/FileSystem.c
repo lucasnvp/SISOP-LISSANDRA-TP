@@ -40,6 +40,7 @@ void init_log(char* pathLog){
     mkdir("/home/utnso/Gank-mid/Logs",0755);
     log_Console = log_create(pathLog, "FileSystem", true, LOG_LEVEL_INFO);
     log_FileSystem = log_create(pathLog, "FileSystem", false, LOG_LEVEL_INFO);
+    log_FileSystem_Free_Blocks = log_FileSystem;
 }
 
 void server(void* args) {
@@ -142,6 +143,18 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_DESCRIBE: {
 
             log_info(log_FileSystem, "La memoria envio un describe");
+
+            char* tabla = deserializar_string(socket);
+
+            log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
+
+            comando_describe(tabla, socket);
+
+            break;
+        }
+        case COMAND_DROP: {
+
+            log_info(log_FileSystem, "La memoria envio un drop");
 
             char* tabla = deserializar_string(socket);
 

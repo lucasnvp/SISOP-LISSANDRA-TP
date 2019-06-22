@@ -33,7 +33,7 @@ void api_insert(char* tabla, u_int16_t key, char* value){
     uint32_t socket = get_memory_socket_from_metadata(tabla);
 
     if (socket == -1) {
-        log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
+        log_info(log_Kernel_api, "INSERT => La tabla: <%s> no existe", tabla);
     } else {
         serializar_int(socket, COMAND_INSERT);
         insert_tad *insert = new_insert_tad(tabla, key, value);
@@ -42,6 +42,7 @@ void api_insert(char* tabla, u_int16_t key, char* value){
         bool memoryFull = deserializar_int(socket);
         if (memoryFull) {
             //todo Mandar a todas las memorias journal
+            log_info(log_Kernel_api, "JOURNAL => Se envio el request a memoria");
             serializar_int(socket, COMAND_JOURNAL);
         }
 

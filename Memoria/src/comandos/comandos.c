@@ -46,7 +46,6 @@ void comando_select(select_tad* select, int requestOrigin){
 }
 
 void comando_insert(insert_tad* insert, int requestOrigin){
-    atoi(insert->key);
     print_console((void*) log_info, "Comando insert");
     funcionInsert(requestOrigin, insert, true);
 }

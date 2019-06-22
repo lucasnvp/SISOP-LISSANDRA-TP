@@ -88,7 +88,8 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select_FS);
-    free_select_tad(select_FS);
+    // todo revisar que pasa con este free
+//    free_select_tad(select_FS);
 
     uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
@@ -162,6 +163,10 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado) {
                 _TablaDePaginas->registro.flagModificado = true; //actualizo el valor y seteo a true el flag de modificado
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                        new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
+
+                if(socket != CONSOLE_REQUEST){
+                    serializar_int(socket, false);
+                }
                 return;
             }
         }

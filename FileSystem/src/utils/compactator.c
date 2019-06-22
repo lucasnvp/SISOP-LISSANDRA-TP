@@ -9,6 +9,7 @@ void runCompactation(char* table) {
 
     uint32_t partition = 0;
     char* pathTemporal = string_duplicate(path);
+    string_append(&pathTemporal, "/");
     string_append(&pathTemporal, string_itoa(partition+1));
     string_append(&pathTemporal, ".tmpc");
 
@@ -83,24 +84,27 @@ void runCompactation(char* table) {
 
             }
 
-
             liberarBloques(pathPartition);
             remove(pathPartition);
 
-            t_list* bloquesParaAsignar = list_create();
+            if(listFromPartition != NULL) {
 
-            char* registrosAGuardar = transformAllRegistersToUniqueString(listFromPartition);
+                t_list* bloquesParaAsignar = list_create();
 
-            int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosAGuardar, bloquesParaAsignar);
+                char* registrosAGuardar = transformAllRegistersToUniqueString(listFromPartition);
 
-            if(hayLugar == true) {
-                crearParticionCompactada(pathPartition, bloquesParaAsignar, string_length(registrosAGuardar));
-                guardarEnBloques(registrosAGuardar, bloquesParaAsignar);
-            } else {
-                // TODO: si no hay lugar perdemos los datos
+                int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosAGuardar, bloquesParaAsignar);
+
+                if(hayLugar == true) {
+                    crearParticionCompactada(pathPartition, bloquesParaAsignar, string_length(registrosAGuardar));
+                    guardarEnBloques(registrosAGuardar, bloquesParaAsignar);
+                } else {
+                    // TODO: si no hay lugar perdemos los datos
+                }
+
+                list_destroy(bloquesParaAsignar);
+                free(registrosAGuardar);
             }
-            list_destroy(bloquesParaAsignar);
-            free(registrosAGuardar);
 
             if(listFromPartition != NULL) {
                 list_destroy(listFromPartition);
@@ -197,6 +201,9 @@ void liberarBloques(char* path) {
     for(i=0 ; bloquestodelete[i] != NULL ; i++){
         bitarray_clean_bit(bitarray, atoi(bloquestodelete[i]));
     }
+
+    free(bloquestodelete);
+
 }
 
 void crearParticionCompactada(char* path, t_list* bloques, int size) {

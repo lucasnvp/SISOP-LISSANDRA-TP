@@ -15,7 +15,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    int currentTime = timestamp;
+    long currentTime = timestamp;
 
     // NOT_TIMESTAMP
     if(timestamp < 0) {

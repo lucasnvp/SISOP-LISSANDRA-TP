@@ -229,5 +229,5 @@ char** get_bloques_array(char* path) {
 double getCurrentTime() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+    return fabs((tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
 }

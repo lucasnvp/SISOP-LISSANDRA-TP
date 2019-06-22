@@ -319,13 +319,6 @@ void consola() {
                 }
             }
 
-            else if (!strcmp(comandos->comando, "DUMP")) {
-                if (comandos->cantArgs == 0) {
-                    comando_dump();
-                }
-                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
-            }
-
             else if (!strcmp(comandos->comando, "COMPACTAR")) {
                 if (comandos->cantArgs == 1) {
                     char* table = comandos->arg[0];

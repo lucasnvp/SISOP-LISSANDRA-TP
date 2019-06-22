@@ -11,6 +11,8 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <time.h>
+#include <sys/inotify.h>
+#include <sys/select.h>
 
 #include <commons/collections/list.h>
 #include <commons/collections/dictionary.h>
@@ -24,9 +26,12 @@
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
 
+// Semaforos
+pthread_mutex_t mutexConfig;    // Bloqueo el hilo para cambiar la config
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/config.txt";
-Type_Config config;
+Type_Config* config;
+uint32_t configFilePathSize;
 
 char* PATH_LOG = "/home/utnso/Gank-mid/Logs/logFileSystem.txt";
 t_log* log_Console;
@@ -38,6 +43,13 @@ fd_set master;   	// conjunto maestro de descriptores de fichero
 // Variables hilos
 pthread_t thread_server;
 pthread_t thread_consola;
+pthread_t thread_config;
+
+// Variables inotify
+uint32_t fd_inotify;
+uint32_t wd_inotify;
+uint32_t length_inotify;
+size_t bufferInotifySize;
 
 typedef struct {
     uint32_t cantArgs;
@@ -49,5 +61,7 @@ void init_log(char* pathLog);
 void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void consola();
+void watching_config();
+void init_queue_and_sem();
 
 #endif //TP_2019_1C_GANK_MID_FILESYSTEM_H

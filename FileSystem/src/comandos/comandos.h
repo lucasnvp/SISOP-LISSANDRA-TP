@@ -18,6 +18,7 @@
 #include "../utils/memtableHanlder.h"
 #include "../utils/tablesHandler.h"
 #include "../utils/getterValuesFromFS.h"
+#include "../utils/compactator.h"
 
 // Flags que indican quien ejecuta el comando
 #define CONSOLE_REQUEST	-1
@@ -39,5 +40,6 @@ void comando_describe_all(int requestOrigin);
 void comando_describe(char* nombre_tabla, int requestOrigin);
 void comando_drop(char* nombre_tabla, int requestOrigin);
 void comando_dump();
+void comando_compactation(char* table);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOS_H

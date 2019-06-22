@@ -152,15 +152,17 @@ void asignar_bloques(char* path) {
         FILE * newFD;
         newFD = fopen(path, "w+");
 
-        // TODO: segun metadata del FS
-        fwrite(TAMANIO_BLOQUE,1,strlen(TAMANIO_BLOQUE),newFD);
+        char* tamanioDeBloques = string_new();
+        string_append(&tamanioDeBloques, "SIZE=0\n");
+        fwrite(tamanioDeBloques,1,strlen(tamanioDeBloques),newFD);
+        free(tamanioDeBloques);
 
         //Agregar el bloque
         int bloque_to_add = bloque_libre();
 
         if(bloque_to_add != -1){
             char* bloquesDelArchivo = string_new();
-            string_append(&bloquesDelArchivo, "BLOQUES=[");
+            string_append(&bloquesDelArchivo, "BLOCKS=[");
             string_append(&bloquesDelArchivo, string_itoa(bloque_to_add));
             string_append(&bloquesDelArchivo, "]\n");
             fwrite(bloquesDelArchivo,1,strlen(bloquesDelArchivo),newFD);
@@ -219,7 +221,7 @@ void borrar_particion(char* path) {
 
 char** get_bloques_array(char* path) {
     t_config* filetogetbloques = config_create(path);
-    char** bloquesarray = config_get_array_value(filetogetbloques, "BLOQUES");
+    char** bloquesarray = config_get_array_value(filetogetbloques, "BLOCKS");
     config_destroy(filetogetbloques);
     return bloquesarray;
 }
@@ -227,5 +229,5 @@ char** get_bloques_array(char* path) {
 double getCurrentTime() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+    return fabs((tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
 }

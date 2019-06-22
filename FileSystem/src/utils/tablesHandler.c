@@ -6,21 +6,21 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
 
     char* registrosADumpear = transformAllRegistersToUniqueString(registros);
 
-    int hayLugar = getBloquesNecesariosParaDumpearTabla(registrosADumpear, bloquesParaAsignar);
+    int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosADumpear, bloquesParaAsignar);
 
     if(hayLugar == true) {
         crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
         guardarEnBloques(registrosADumpear, bloquesParaAsignar);
         list_destroy(registros);
     } else {
-        // TODO: que hacemos si no hay lugar?
+        // TODO: si no hay lugar perdemos los datos
     }
 
     list_destroy(bloquesParaAsignar);
     free(registrosADumpear);
 }
 
-int getBloquesNecesariosParaDumpearTabla(char* registros, t_list* bloquesAOcupar) {
+int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {
 
     int bloquesNecesarios = cuantosBloquesOcupa(registros);
 

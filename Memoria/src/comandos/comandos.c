@@ -15,7 +15,7 @@ void comando_gossip(uint32_t requestOrigin) {
     sendGossipingTable(requestOrigin);
 }
 
-registro_tad* comando_select(select_tad* select, int requestOrigin){
+void comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
     registro_tad* registro = funcionSelect(select);
 
@@ -27,20 +27,21 @@ registro_tad* comando_select(select_tad* select, int requestOrigin){
 
     if (registro == NULL) {
         if (requestOrigin != CONSOLE_REQUEST) {
-
             serializar_int(requestOrigin, false);
         }
     } else {
+        log_info(log_Memoria, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%d>",
+            select->nameTable,
+            registro->key,
+            registro->value,
+            registro->timestamp);
 
         if (requestOrigin != CONSOLE_REQUEST) {
-
             serializar_int(requestOrigin, true);
             serializar_registro(requestOrigin, registro);
         }
 
     }
-
-    return registro ;
 
 }
 

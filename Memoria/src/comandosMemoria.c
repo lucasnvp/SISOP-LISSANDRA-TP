@@ -101,7 +101,8 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
          */
         insert_tad* insert = new_insert_tad(select->nameTable, select->key, registro->value);
         funcionInsert(socket, insert, false);
-        free_insert_tad(insert);
+        // todo Revisar donde hacer el free del insert.
+//        free_insert_tad(insert);
         return registro;
     } else {
         return NULL;

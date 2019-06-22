@@ -15,9 +15,8 @@ void comando_gossip(uint32_t requestOrigin) {
     sendGossipingTable(requestOrigin);
 }
 
-char* comando_select(select_tad* select, int requestOrigin){
+registro_tad* comando_select(select_tad* select, int requestOrigin){
     print_console((void*) log_info, "Comando select");
-//    char* value = funcionSelect(select);
     registro_tad* registro = funcionSelect(select);
 
     if (registro == NULL) {
@@ -36,13 +35,12 @@ char* comando_select(select_tad* select, int requestOrigin){
         if (requestOrigin != CONSOLE_REQUEST) {
 
             serializar_int(requestOrigin, true);
-//            serializar_string(requestOrigin, value);
             serializar_registro(requestOrigin, registro);
         }
 
     }
 
-    return value ;
+    return registro ;
 
 }
 

@@ -99,7 +99,7 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
          * uint32_t timestamp = deserializar_int(SERVIDOR_FILESYSTEM);
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
          */
-        insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
+        insert_tad* insert = new_insert_tad(select->nameTable, select->key, registro->value);
         funcionInsert(socket, insert, false);
         free_insert_tad(insert);
         return registro;

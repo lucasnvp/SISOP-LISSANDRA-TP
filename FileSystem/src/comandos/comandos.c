@@ -138,8 +138,7 @@ void comando_select(char* table, int key, int requestOrigin){
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, true);
-            serializar_string(requestOrigin, finalResult->value);
-            //serializar_registro(requestOrigin, finalResult);
+            serializar_registro(requestOrigin, finalResult);
         }
 
         log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);

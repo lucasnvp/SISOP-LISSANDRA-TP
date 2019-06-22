@@ -31,7 +31,7 @@
 t_log* log_Memoria;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
-char* comando_select(select_tad* select, int requestOrigin);
+registro_tad* comando_select(select_tad* select, int requestOrigin);
 void comando_insert(insert_tad* insert, int requestOrigin);
 void comando_create(create_tad* create, int requestOrigin);
 void comando_describe(char* nombreTabla, int requestOrigin);

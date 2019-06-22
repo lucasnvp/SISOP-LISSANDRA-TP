@@ -102,6 +102,7 @@ void api_describe_all () {
 
         t_list* listDescribe = deserializar_describe_all(socket);
         load_METADATA(listDescribe);
+        list_destroy_and_destroy_elements(listDescribe, free_describe_tad);
         print_metadata(log_Kernel_api);
     }
 }

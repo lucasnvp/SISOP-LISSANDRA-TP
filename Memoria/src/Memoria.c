@@ -57,7 +57,11 @@ void journaling(){
         timeJournal.tv_usec = config.RETARDO_JOURNAL;
 
         select(0, NULL, NULL, NULL, &timeJournal);
+        sem_wait(&semaforoDrop);
+        sem_wait(&semaforoInsert);
         funcionJournal(SERVIDOR_FILESYSTEM);
+        sem_post(&semaforoDrop);
+        sem_post(&semaforoInsert);
     }
 }
 
@@ -389,7 +393,8 @@ void memory_console() {
 }
 
 void inicializarSemaforos() {
-
+    sem_init(&semaforoDrop,0,1);
+    sem_init(&semaforoInsert,0,1);
 }
 
 void inicializarHilos() {

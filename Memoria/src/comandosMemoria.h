@@ -11,6 +11,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <time.h>
+#include <semaphore.h>
 
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
@@ -22,6 +23,9 @@
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
 #include "estructuras/paginas.h"
+
+sem_t semaforoDrop;
+sem_t semaforoInsert;
 
 char* funcionSelect(select_tad* select);
 char* solicitarSelectAFileSystem(int socket, select_tad* select);

@@ -101,7 +101,9 @@ char* solicitarSelectAFileSystem(int socket, select_tad* select) {
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
          */
         insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
+        sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false);
+        sem_wait(&semaforoInsert);
         free_insert_tad(insert);
         return value;
     } else {

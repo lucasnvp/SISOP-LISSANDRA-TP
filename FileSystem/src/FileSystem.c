@@ -17,12 +17,22 @@ int main(){
     //Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
+    configFilePathSize = string_length(PATH_CONFIG);
+
+    // Inicializar Queue y Semaforos
+    init_queue_and_sem();
 
     //Config. inicial de FS
-    punto_montaje_setup(config.PUNTO_MONTAJE);
+    punto_montaje_setup(config->PUNTO_MONTAJE);
 
     //Inicializa Memtable
     inicilizar_memtable();
+
+    // Hilo de config
+    pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
+
+    // Hilo de dump
+    pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
 
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
@@ -50,7 +60,7 @@ void server(void* args) {
     FD_ZERO(&read_fds);	// borra los conjuntos temporal
 
     //Creacion del servidor
-    uint32_t SERVIDOR_FILESYSTEM = build_server(config.PUERTO_ESCUCHA, config.CANT_CONEXIONES);
+    uint32_t SERVIDOR_FILESYSTEM = build_server(config->PUERTO_ESCUCHA, config->CANT_CONEXIONES);
 
     //El socket esta listo para escuchar
     if(SERVIDOR_FILESYSTEM > 0) {
@@ -101,7 +111,7 @@ void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
         case NUEVA_CONEXION_MEMORIA_TO_FS: {
             log_info(log_FileSystem, "Se conecto una nueva memoria");
-            serializar_int(socket, config.TAMANO_VALUE);
+            serializar_int(socket, config->TAMANO_VALUE);
             break;
         }
         case COMAND_INSERT: {
@@ -109,7 +119,7 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             insert_tad* insert = deserializar_insert(socket);
 
-            if(string_length(insert->value) > config.TAMANO_VALUE) {
+            if(string_length(insert->value) > config->TAMANO_VALUE) {
                 serializar_int(socket, false);
             }
 
@@ -218,7 +228,7 @@ void consola() {
                 if (comandos->cantArgs == 4) {
                     char* value = comandos->arg[2];
 
-                    if(string_length(value) > config.TAMANO_VALUE) {
+                    if(string_length(value) > config->TAMANO_VALUE) {
                         print_console((void*) log_error, "El tamaño del value es mayor al permitido. \n");
 
                     } else {
@@ -239,7 +249,7 @@ void consola() {
                     if (comandos->cantArgs == 3) {
                         char* value = comandos->arg[2];
 
-                        if(string_length(value) > config.TAMANO_VALUE) {
+                        if(string_length(value) > config->TAMANO_VALUE) {
                             print_console((void *) log_error, "El tamaño del value es mayor al permitido. \n");
 
                         } else {
@@ -309,9 +319,10 @@ void consola() {
                 }
             }
 
-            else if (!strcmp(comandos->comando, "DUMP")) {
-                if (comandos->cantArgs == 0) {
-                    comando_dump();
+            else if (!strcmp(comandos->comando, "COMPACTAR")) {
+                if (comandos->cantArgs == 1) {
+                    char* table = comandos->arg[0];
+                    comando_compactation(table);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
@@ -325,5 +336,59 @@ void consola() {
             free(comandos->comando);
         }
         free(linea);
+    }
+}
+
+void watching_config(){
+    bufferInotifySize = sizeof(struct inotify_event) + configFilePathSize + 1;
+
+    while (true){
+        fd_inotify = inotify_init();
+
+        if (fd_inotify < 0) {
+            log_error(log_FileSystem, "inotify_init");
+        }
+
+        wd_inotify = inotify_add_watch(fd_inotify, PATH_CONFIG, IN_MODIFY);
+
+        struct inotify_event* event = malloc(bufferInotifySize);
+
+        length_inotify = read(fd_inotify, event, bufferInotifySize);
+
+        if (length_inotify < 0) {
+            log_error(log_FileSystem, "Read");
+        }
+
+        if (event->mask == IN_MODIFY) {
+            pthread_mutex_lock(&mutexConfig);
+            free_config(config);
+            config = load_config(PATH_CONFIG);
+            print_config(config, log_FileSystem);
+            pthread_mutex_unlock(&mutexConfig);
+        }
+
+        free(event);
+
+        (void) inotify_rm_watch(fd_inotify, wd_inotify);
+        (void) close(fd_inotify);
+    }
+}
+
+void init_queue_and_sem(){
+    pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
+}
+
+void dump() {
+    struct timeval timeDump;
+
+    while(true){
+
+        timeDump.tv_sec = 0;
+        timeDump.tv_usec = config->TIEMPO_DUMP*1000;
+
+        select(0, NULL, NULL, NULL, &timeDump);
+
+        log_info(log_FileSystem, "Se ejecuta el DUMP");
+        comando_dump();
     }
 }

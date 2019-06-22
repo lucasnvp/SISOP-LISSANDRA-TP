@@ -15,7 +15,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    int currentTime = timestamp;
+    long currentTime = timestamp;
 
     // NOT_TIMESTAMP
     if(timestamp < 0) {
@@ -123,9 +123,9 @@ void comando_select(char* table, int key, int requestOrigin){
     registro_tad* registerFromTemporalC = getValueFromTemporalFile(table, key, ".tmpc");
     finalResult = verifyMaxValue(finalResult, registerFromTemporalC);
 
-    /*uint32_t particion = key % config_get_int_value(metadata, "PARTITIONS");
+    uint32_t particion = key % config_get_int_value(metadata, "PARTITIONS");
     registro_tad* registerFromPartition = getValueFromPartition(table, key, ".bin", particion);
-    finalResult = verifyMaxValue(finalResult, registerFromPartition);*/
+    finalResult = verifyMaxValue(finalResult, registerFromPartition);
 
     if(finalResult == NULL) {
         log_info(log_FileSystem, "FALLO SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON LA KEY <%d> EN LA TABLA <%s>", key, table);
@@ -144,7 +144,7 @@ void comando_select(char* table, int key, int requestOrigin){
 
         log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
     }
-    
+
 }
 
 void comando_describe_all(int requestOrigin){
@@ -228,4 +228,8 @@ void comando_drop(char* table, int requestOrigin){
 void comando_dump(){
     dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
+}
+
+void comando_compactation(char* table) {
+    runCompactation(table);
 }

@@ -11,6 +11,7 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <time.h>
+#include <semaphore.h>
 
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
@@ -23,8 +24,12 @@
 #include "estructuras/marcos.h"
 #include "estructuras/paginas.h"
 
+sem_t semaforoDrop;
+sem_t semaforoInsert;
+
 registro_tad* funcionSelect(select_tad* select);
 registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select);
+
 void funcionInsert(int socket, insert_tad* insert, bool flagModificado);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(uint32_t SERVIDOR_FILESYSTEM);

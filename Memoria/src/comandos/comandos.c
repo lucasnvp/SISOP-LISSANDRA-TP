@@ -47,7 +47,9 @@ void comando_select(select_tad* select, int requestOrigin){
 
 void comando_insert(insert_tad* insert, int requestOrigin){
     print_console((void*) log_info, "Comando insert");
+    sem_wait(&semaforoInsert);
     funcionInsert(requestOrigin, insert, true);
+    sem_post(&semaforoInsert);
 }
 
 void comando_create(create_tad* create, int requestOrigin){
@@ -97,7 +99,9 @@ void comando_describe(char* nombreTabla, int requestOrigin){
 
 void comando_drop(char* nombreTabla, int requestOrigin){
     print_console((void*) log_info, "Comando drop");
+    sem_wait(&semaforoDrop);
     funcionDrop(nombreTabla);
+    sem_post(&semaforoDrop);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
     serializar_string(SERVIDOR_FILESYSTEM, nombreTabla);
     bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
@@ -110,18 +114,9 @@ void comando_drop(char* nombreTabla, int requestOrigin){
 
 void comando_journal(int requestOrigin){
     print_console((void*) log_info, "Comando journal");
+    sem_wait(&semaforoDrop);
+    sem_wait(&semaforoInsert);
     funcionJournal(SERVIDOR_FILESYSTEM);
-
-    if (requestOrigin != CONSOLE_REQUEST) {
-
-        serializar_int(requestOrigin, true);
-
-    }
-        //Esto se deberia quitar
-    /* else {
-
-        serializar_int(requestOrigin, false);
-
-    }
-    */
+    sem_post(&semaforoDrop);
+    sem_post(&semaforoInsert);
 }

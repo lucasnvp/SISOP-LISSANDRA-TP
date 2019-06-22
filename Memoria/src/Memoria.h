@@ -28,8 +28,6 @@
 #include "estructuras/gossip.h"
 #include "comandosMemoria.h"
 
-pthread_mutex_t mutexInsertSelectyJournal;
-pthread_mutex_t mutexJournalyDrop; // Semáforo para el Journal -- Se utiliza mutex para garantizar la EM
 char* PATH_CONFIG;
 Type_Config config;
 

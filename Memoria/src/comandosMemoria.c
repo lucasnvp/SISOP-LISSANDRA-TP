@@ -100,11 +100,14 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
          * uint32_t timestamp = deserializar_int(SERVIDOR_FILESYSTEM);
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
          */
-        insert_tad* insert = new_insert_tad(select->nameTable, select->key, registro->value);
+
+        insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
+        sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false);
+        sem_post(&semaforoInsert);
         // todo Revisar donde hacer el free del insert.
-//        free_insert_tad(insert);
-        return registro;
+ //       free_insert_tad(insert);
+        return value;
     } else {
         return NULL;
     }

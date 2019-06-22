@@ -77,7 +77,6 @@ void api_describe(char* tabla){
     } else {
         serializar_int(socket, COMAND_DESCRIBE);
         serializar_string(socket, tabla);
-        log_info(log_Kernel_api, "DESCRIBE => TABLA: <%s>\t", tabla);
         bool confirm = deserializar_int(socket);
         if (confirm) {
             describe_tad *describe = deserializar_describe(socket);
@@ -113,9 +112,18 @@ void api_drop(char* tabla){
         log_info(log_Kernel_api, "DROP => La tabla: <%s> no existe", tabla);
     } else {
         serializar_int(socket, COMAND_DROP);
-        // todo Envio la info a la memoria
-        // todo Confirmacion de la operacion
+        serializar_string(socket, tabla);
+
         log_info(log_Kernel_api, "DROP => TABLA: <%s>\t", tabla);
+
+        bool confirm = deserializar_int(socket);
+        if (confirm) {
+            // todo Eliminar de la tabla
+            log_info(log_Kernel_api, "DROP => Se elimino la tabla con exito");
+        } else {
+            log_info(log_Kernel_api, "DROP => Fallo el request");
+        }
+
     }
 }
 

@@ -165,6 +165,14 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             break;
         }
+        case COMAND_DROP: {
+            log_info(log_FileSystem, "La memoria envio un drop");
+            char* nameTable = deserializar_string(socket);
+            log_info(log_FileSystem, "Se va a eliminar la tabla: %s", nameTable);
+            // Ejecutar el drop
+            serializar_int(socket, true); // Envio la confirmacion de la operacion
+            break;
+        }
         default:
             log_info(log_FileSystem, "Error al recibir el comando");
     }

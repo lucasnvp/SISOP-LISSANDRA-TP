@@ -16,7 +16,7 @@ uint32_t connect_server(char* IP, uint32_t Port){
 
     //Valido la conexion
     if (connect(cliente, (void*) &direccionServidor, sizeof(direccionServidor)) != 0) {
-        perror("No se pudo conectar");
+//        perror("No se pudo conectar");
         return 1;
     }
 

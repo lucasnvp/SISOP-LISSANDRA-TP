@@ -1,22 +1,32 @@
-//
+﻿//
 // Created by utnso on 06/04/19.
 //
 
 #include "Memoria.h"
 //main
-int main(){
+int main(int argc, char *argv[]){
     system("clear"); /* limpia la pantalla al empezar */
 
     puts("Proceso Memoria");
 
+    //Cargo los argumentos
+    PATH_CONFIG = strdup(argv[1]);
+    if (!ValidarArchivo(PATH_CONFIG)) {
+        puts("Error en el path del archivo de config");
+        return EXIT_FAILURE;
+    }
+
     //Inicializar Log
     init_log(PATH_LOG);
 
-    //Configuracion inicial
+    // Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
 
-    //Conexion al servidor FileSystem
+    // Inicializamos los semáforos
+    inicializarSemaforos();
+
+    // Conexion al servidor FileSystem
     connect_server_FileSystem();
 
     // Se crea el espacio para la memoria principal
@@ -27,60 +37,70 @@ int main(){
 
     primerRegistroDeSegmentos = NULL;
 
-	//TODO Hilo de Gossiping
-
-
-    //Creo el hilo del servidor
-    pthread_create(&thread_server, NULL, (void*) server, "Servidor");
-
-    //Creo el hilo de la consola
-    pthread_create(&thread_consola, NULL, (void*) memory_console, "Consola");
+    // Inicializamos los hilos de journal, gossiping, servidor y consola
+    inicializarHilos();
 
 //    pthread_join(thread_server, (void**) NULL);
     pthread_join(thread_consola, (void**) NULL);
 
 
-    // Se elimina el espacio para la memoria principal
-
-    //desalocar_MemoriaPrincipal(); TODO: Creo que no deberíamos desalocar la memoria en este punto, o en ningún punto
-
     return EXIT_SUCCESS;
 }
 
-/*
- * TODO 08/05
- *
- * Buscar en las páginas de los segmentos si se contiene el key
- * Enviar solicitud a FileSystem para obtener el valor solicitado y luego almacenarlo
- * Comprobar si la memoria está llena
- * Insert Select Drop Describe
- * Journal, Gossiping
- */
 
+void journaling(){
+    struct timeval timeJournal;
+
+    while(true){
+
+        timeJournal.tv_sec = 0;
+        timeJournal.tv_usec = config.RETARDO_JOURNAL;
+
+        select(0, NULL, NULL, NULL, &timeJournal);
+        sem_wait(&semaforoDrop);
+        sem_wait(&semaforoInsert);
+        funcionJournal(SERVIDOR_FILESYSTEM);
+        sem_post(&semaforoDrop);
+        sem_post(&semaforoInsert);
+    }
+}
+
+void gossiping(){
+    struct timeval timeGossip;
+
+    inicializarTablaDeGossiping();
+
+    while(true){
+
+        timeGossip.tv_sec = 0;
+        timeGossip.tv_usec = (config.RETARDO_GOSSIPING * 1000);
+
+        select(0, NULL, NULL, NULL, &timeGossip);
+
+        funcionGossip();
+    }
+
+}
 
 void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
     tamanoValue = deserializar_int(servidorFileSystem);
-    tiempoDump = deserializar_int(servidorFileSystem);
 }
 
 
 registro_tad* alocar_MemoriaPrincipal() {
-    registro_tad* aux = malloc(config.TAM_MEM);
-    log_info(log_Memoria, "Se ha alocado la memoria principal");
     inicializarMarcos(config.TAM_MEM);
+    uint32_t tamanioMemoria = sizeof(registro_tad) * cantidadDeMarcos;
+    registro_tad* aux = malloc(tamanioMemoria);
+    log_info(log_Memoria, "Se ha alocado la memoria principal");
     log_info(log_Memoria, "Se han inicializado los marcos");
     return aux;
-}
-
-void desalocar_MemoriaPrincipal() {
-    log_info(log_Memoria, "Se ha desalocado la memoria principal");
-    free(memoriaPrincipal);
 }
 
 void init_log(char* pathLog){
     mkdir("/home/utnso/Gank-mid/Logs",0755);
     log_Console = log_create(pathLog, "Memoria", true, LOG_LEVEL_INFO);
     log_Memoria = log_create(pathLog, "Memoria", false, LOG_LEVEL_INFO);
+    log_Memoria_gossip = log_Memoria;
 }
 
 void connect_server_FileSystem(){
@@ -156,63 +176,40 @@ void server(void* args) {
 void connection_handler(uint32_t socket, uint32_t command){
     switch (command){
 
-		//TODO aca se reciben los comandos de lo que se conecte a la memoria
-
         case NUEVA_CONEXION_KERNEL_TO_MEMORIA: {
             log_info(log_Memoria, "Se conecto el kernel");
-            serializar_int(socket, config.MEMORY_NUMBER);
+            memory_info_tad* memoryInfo = new_memory_info_tad(config.MEMORY_NUMBER, config.RETARDO_GOSSIPING);
+            serializar_memory_info(socket, memoryInfo);
+            free_memory_info_tad(memoryInfo);
             break;
         }
         case COMAND_INSERT: {
+            log_info(log_Memoria, "El kernel envio un insert");
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
-            funcionInsert(insert->nameTable, insert->key, insert->value);
+            comando_insert(insert, socket);
+            free_insert_tad(insert);
             break;
         }
         case COMAND_SELECT: {
+            log_info(log_Memoria, "El kernel envio un select");
             select_tad* select = deserializar_select(socket);
-            char* value = funcionSelect(SERVIDOR_FILESYSTEM, select->nameTable, select->key);
-
-            if (value == NULL) {
-                serializar_int(socket, false);
-            } else {
-                serializar_int(socket, true);
-                serializar_string(socket, value);
-            }
+            comando_select(select, socket);
+            free_select_tad(select);
             break;
         }
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
             create_tad* create = deserializar_create(socket);
-            log_info(log_Memoria,
-                     "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                     create->nameTable, create->consistencia, create->particiones, create->compactacion);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_CREATE);
-            serializar_create(SERVIDOR_FILESYSTEM, create);
+            comando_create(create, socket);
             free_create_tad(create);
-            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-            serializar_int(socket, confirm);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
             char* tabla = deserializar_string(socket);
-            log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
-            serializar_string(SERVIDOR_FILESYSTEM, tabla);
+            comando_describe(tabla, socket);
             free(tabla);
-            bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
-            if (confirm) {
-                describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
-                log_info(log_Memoria,
-                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-                serializar_int(socket, true);
-                serializar_describe(socket, describe);
-                free_describe_tad(describe);
-            } else {
-                serializar_int(socket, false);
-            }
             break;
         }
         case COMAND_DESCRIBE_ALL: {
@@ -237,9 +234,32 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
-
+            char* tabla = deserializar_string(socket);
+            comando_drop(tabla, socket);
+            free(tabla);
             break;
         }
+
+        case COMAND_JOURNAL: {
+            log_info(log_Memoria, "El kernel envio un journal");
+            comando_journal(socket);
+            break;
+        }
+
+        case COMAND_GOSSIP: {
+            log_info(log_Memoria, "Se solicito la Tabla de Gossiping");
+            comando_gossip(socket);
+            break;
+        }
+
+        case COMAND_GOSSIP_RECEIVED: {
+            log_info(log_Memoria, "Se recibe la Tabla de Gossiping de la otra memoria");
+            t_list* gossipOtherMemory = deserializar_gossip_table(socket);
+            compararTablasGossip(gossipOtherMemory);
+            list_destroy_and_destroy_elements(gossipOtherMemory, free_gossip_tad);
+            break;
+        }
+
         default:
             log_info(log_Memoria, "Error al recibir el comando");
     }
@@ -274,7 +294,7 @@ void memory_console() {
                 i++;
             }
             free(com);
-			//TODO Case con cada uno de los comandos que acepta la consola de memoria
+            //TODO Case con cada uno de los comandos que acepta la consola de memoria
             if (!strcmp(comandos->comando, "exit")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
@@ -285,43 +305,75 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "select")) {
                 if (comandos->cantArgs == 2) {
-                    comando_select(SERVIDOR_FILESYSTEM, comandos->arg[0], atoi(comandos->arg[1]));
+                    select_tad* select = new_select_tad(comandos->arg[0], atoi(comandos->arg[1]));
+                    comando_select(select, CONSOLE_REQUEST);
+                    free_select_tad(select);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "insert")) {
                 if (comandos->cantArgs == 3) {
-
-                    comando_insert(comandos->arg[0],comandos->arg[1],comandos->arg[2]);
+                    insert_tad* insert = new_insert_tad(comandos->arg[0],atoi(comandos->arg[1]),comandos->arg[2]);
+                    comando_insert(insert, CONSOLE_REQUEST);
+                    free_insert_tad(insert);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "create")) {
-                if (comandos->cantArgs == 0) {
-                    comando_create();
+                if (comandos->cantArgs == 4) {
+                    create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], atoi(comandos->arg[2]), atoi(comandos->arg[3]));
+                    comando_create(create, CONSOLE_REQUEST);
+                    free_create_tad(create);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 0) {
-                    comando_describe();
+                if (comandos->cantArgs == 1) {
+                    comando_describe(comandos->arg[0], CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "journal")) {
                 if (comandos->cantArgs == 0) {
-                    comando_journal(SERVIDOR_FILESYSTEM);
+                    comando_journal(CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "drop")) {
                 if (comandos->cantArgs == 1) {
-                    comando_drop(comandos->arg[0]);
+                    comando_drop(comandos->arg[0], CONSOLE_REQUEST);
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "help")) {
+                if (comandos->cantArgs == 0) {
+                    printf("---------------------------------------------------------------------------------------------------------------------------\n");
+                    printf("Comandos posibles\n");
+                    printf("\n");
+                    printf("Comando     Parámetros                                          -> Descripción del comando\n");
+                    printf("\n");
+                    printf("SELECT      <TABLA> <KEY>                                       -> Obtener el valor de una key dentro de una tabla\n");
+                    printf("INSERT      <TABLA> <KEY> <VALUE>                               -> Crear/Actualizar el valor de una key dentro de una tabla\n");
+                    printf("CREATE      <TABLA> <CONSISTENCIA> <PARTICIONES> <COMPACTACION> -> Crear una nueva tabla dentro del FileSystem\n");
+                    printf("DESCRIBE    [<TABLA>]                                           -> Obtener la metadata de una tabla en particular\n");
+                    printf("DROP        <TABLA>                                             -> Eliminar una tabla dentro del FileSystem\n");
+                    printf("JOURNAL     <TABLA>                                             -> Envío de información de Memoria a FileSystem\n");
+                    printf("HELP                                                            -> Lista los comandos existentes\n");
+                    printf("---------------------------------------------------------------------------------------------------------------------------\n");
+                } else {
+                    print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+                }
+            }
+
+            else if (!strcmp(comandos->comando, "printGossip")) {
+                if (comandos->cantArgs == 0) {
+                    printGossip(config.MEMORY_NUMBER);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -336,4 +388,24 @@ void memory_console() {
         }
         free(linea);
     }
+}
+
+void inicializarSemaforos() {
+    sem_init(&semaforoDrop,0,1);
+    sem_init(&semaforoInsert,0,1);
+}
+
+void inicializarHilos() {
+
+    //Hilo de Journal
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+
+    //Hilo de Gossiping
+    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
+
+    //Hilo del Servidor
+    pthread_create(&thread_server, NULL, (void*) server, "Servidor");
+
+    //Hilo de la Consola
+    pthread_create(&thread_consola, NULL, (void*) memory_console, "Consola");
 }

@@ -11,7 +11,6 @@
 #include <commons/collections/list.h>
 
 #include "../Run_Kernel_Tests.h"
-#include "../../src/criterios/criterios.h"
 
 void agregar_tests_criterio();
 int inicializar_criterio();

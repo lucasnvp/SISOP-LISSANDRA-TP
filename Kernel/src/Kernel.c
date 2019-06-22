@@ -2,7 +2,6 @@
 // Created by utnso on 06/04/19.
 //
 
-#include <parser/parser.h>
 #include "Kernel.h"
 
 int main(){
@@ -31,8 +30,8 @@ int main(){
     // Init listado de criterios
     init_METADATA();
 
-    // Conexion al servidor FileSystem
-    connect_server_Memoria();
+    // Connect memory
+    connect_memory(config->IP_MEMORIA, config->PUERTO_MEMORIA);
 
     //Creo el hilo de la consola
     pthread_create(&thread_consola, NULL, (void*) consola, "Consola");
@@ -42,6 +41,9 @@ int main(){
 
     // Hilo de metricas
     pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
+
+    // Hilo de gossiping
+    pthread_create(&thread_metricas, NULL, (void*) gossiping, "Gossiping");
 
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");
@@ -57,23 +59,7 @@ void init_log(char* pathLog){
     log_Console = log_create(pathLog, "Kernel", true, LOG_LEVEL_INFO);
     log_Kernel = log_create(pathLog, "Kernel", false, LOG_LEVEL_INFO);
     log_Kernel_api = log_Kernel;
-}
-
-void connect_server_Memoria(){
-    //Conexion al servidor Memoria
-    SERVIDOR_MEMORIA = connect_server(config->IP_MEMORIA,config->PUERTO_MEMORIA);
-
-    //Si conecto, informo
-    if(SERVIDOR_MEMORIA > 1){
-        log_info(log_Console,"Connected successfully to the Memory");
-        serializar_int(SERVIDOR_MEMORIA, NUEVA_CONEXION_KERNEL_TO_MEMORIA);
-        uint32_t memoryNumber = deserializar_int(SERVIDOR_MEMORIA);
-        add_memory(memoryNumber, config->IP_MEMORIA, config->PUERTO_MEMORIA, SERVIDOR_MEMORIA);
-        log_info(log_Kernel, "Connected Memory Number: %d", memoryNumber);
-    } else{
-        log_info(log_Console, "No se puedo conectar al servidor de Memoria");
-        exit(EXIT_SUCCESS);
-    }
+    log_Kernel_memory = log_Kernel;
 }
 
 void consola() {
@@ -105,7 +91,9 @@ void consola() {
             }
             free(com);
 
-            if (!strcmp(comandos->comando, "exit")) {
+            string_to_upper(comandos->comando);
+
+            if (!strcmp(comandos->comando, "EXIT")) {
                 if (comandos->cantArgs == 0) {
                     KERNEL_READY = false;
                     free(comandos->comando);
@@ -114,24 +102,23 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "select")) {
+            else if (!strcmp(comandos->comando, "SELECT")) {
                 if (comandos->cantArgs == 2) {
-                    comando_select(SERVIDOR_MEMORIA, comandos->arg[0], atoi(comandos->arg[1]));
+                    comando_select(comandos->arg[0], atoi(comandos->arg[1]));
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "insert")) {
+            else if (!strcmp(comandos->comando, "INSERT")) {
                 if (comandos->cantArgs == 3) {
-                    comando_insert(SERVIDOR_MEMORIA, comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
+                    comando_insert(comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "create")) {
+            else if (!strcmp(comandos->comando, "CREATE")) {
                 if (comandos->cantArgs == 4) {
                     comando_create(
-                            SERVIDOR_MEMORIA,
                             comandos->arg[0],
                             comandos->arg[1],
                             atoi(comandos->arg[2]),
@@ -140,32 +127,32 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "describe")) {
+            else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
-                    comando_describe_all(SERVIDOR_MEMORIA);
+                    comando_describe_all();
                 } else {
                     if (comandos->cantArgs == 1) {
-                        comando_describe(SERVIDOR_MEMORIA, comandos->arg[0]);
+                        comando_describe(comandos->arg[0]);
                     }
-                    else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
+                    else print_console((void*) log_error, "Número de parámetros incorrecto.");
                 }
             }
 
-            else if (!strcmp(comandos->comando, "drop")) {
+            else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
-                    comando_drop(SERVIDOR_MEMORIA, comandos->arg[0]);
+                    comando_drop(comandos->arg[0]);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "run")) {
+            else if (!strcmp(comandos->comando, "RUN")) {
                 if (comandos->cantArgs == 1) {
                     comando_run(comandos->arg[0], QUEUE_READY, &SEM_PLANIFICADOR);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "metrics")) {
+            else if (!strcmp(comandos->comando, "METRICS")) {
                 if (comandos->cantArgs == 0) {
                     pthread_mutex_lock(&mutexMetricas);
                     showMetrics(log_Kernel);
@@ -184,6 +171,13 @@ void consola() {
                             print_console((void*) log_info, "Error al asignar una memoria a un criterio");
                         }
                     } else print_console((void*) log_error, "No se encontró la orden - MEMORY or TO");
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "JOURNAL")) {
+                if (comandos->cantArgs == 4) {
+
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -337,17 +331,15 @@ bool parser_line(char * line){
     if(parsed.valido){
         switch(parsed.keyword){
             case SELECT:
-                api_select(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
+                api_select(parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
                 break;
             case INSERT:
-                api_insert(SERVIDOR_MEMORIA,
-                        parsed.argumentos.INSERT.tabla,
+                api_insert(parsed.argumentos.INSERT.tabla,
                         parsed.argumentos.INSERT.key,
                         parsed.argumentos.INSERT.value);
                 break;
             case CREATE:
                 api_create(
-                        SERVIDOR_MEMORIA,
                         parsed.argumentos.CREATE.tabla,
                         parsed.argumentos.CREATE.consistencia,
                         parsed.argumentos.CREATE.particiones,
@@ -355,13 +347,13 @@ bool parser_line(char * line){
                 break;
             case DESCRIBE:
                 if(parsed.argumentos.DESCRIBE.tabla == NULL) {
-                    api_describe_all(SERVIDOR_MEMORIA);
+                    api_describe_all();
                 } else {
-                    api_describe(SERVIDOR_MEMORIA, parsed.argumentos.DESCRIBE.tabla);
+                    api_describe(parsed.argumentos.DESCRIBE.tabla);
                 }
                 break;
             case DROP:
-                api_drop(SERVIDOR_MEMORIA, parsed.argumentos.SELECT.tabla);
+                api_drop(parsed.argumentos.SELECT.tabla);
                 break;
             default:
                 log_info(log_Kernel, "No pude interpretar <%s>", line);
@@ -376,4 +368,19 @@ bool parser_line(char * line){
     }
 
     return linea_valida;
+}
+
+void gossiping(){
+    struct timeval timeGossip;
+
+    while(KERNEL_READY){
+
+        timeGossip.tv_sec = 0;
+        timeGossip.tv_usec = (RETARDO_GOSSIPING * 1000);
+
+        select(0, NULL, NULL, NULL, &timeGossip);
+
+        gossip_memory();
+
+    }
 }

@@ -8,8 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <commons/collections/list.h>
+#include <serializador/estructuras.h>
+#include <memoria/memoria.h>
+#include <metadata/metadata.h>
+
 #include "../Run_Kernel_Tests.h"
-#include "../../src/metadata/metadata.h"
 
 void agregar_tests_metadata();
 int inicializar_metadata();

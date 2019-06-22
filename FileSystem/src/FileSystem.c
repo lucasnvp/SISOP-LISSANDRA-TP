@@ -31,6 +31,9 @@ int main(){
     // Hilo de config
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
+    // Hilo de dump
+    pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
+
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
@@ -380,4 +383,19 @@ void watching_config(){
 
 void init_queue_and_sem(){
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
+}
+
+void dump() {
+    struct timeval timeDump;
+
+    while(true){
+
+        timeDump.tv_sec = 0;
+        timeDump.tv_usec = config->TIEMPO_DUMP*1000;
+
+        select(0, NULL, NULL, NULL, &timeDump);
+
+        log_info(log_FileSystem, "Se ejecuta el DUMP");
+        comando_dump();
+    }
 }

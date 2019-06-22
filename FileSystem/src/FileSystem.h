@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <time.h>
@@ -44,6 +45,7 @@ fd_set master;   	// conjunto maestro de descriptores de fichero
 pthread_t thread_server;
 pthread_t thread_consola;
 pthread_t thread_config;
+pthread_t thread_dump;
 
 // Variables inotify
 uint32_t fd_inotify;
@@ -63,5 +65,6 @@ void connection_handler(uint32_t socket, uint32_t command);
 void consola();
 void watching_config();
 void init_queue_and_sem();
+void dump();
 
 #endif //TP_2019_1C_GANK_MID_FILESYSTEM_H

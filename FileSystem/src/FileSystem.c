@@ -162,18 +162,6 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             break;
         }
-        case COMAND_DROP: {
-
-            log_info(log_FileSystem, "La memoria envio un drop");
-
-            char* tabla = deserializar_string(socket);
-
-            log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
-
-            comando_describe(tabla, socket);
-
-            break;
-        }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_FileSystem, "La memoria envio un describe all");
 
@@ -182,11 +170,15 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case COMAND_DROP: {
+
             log_info(log_FileSystem, "La memoria envio un drop");
-            char* nameTable = deserializar_string(socket);
-            log_info(log_FileSystem, "Se va a eliminar la tabla: %s", nameTable);
-            // Ejecutar el drop
-            serializar_int(socket, true); // Envio la confirmacion de la operacion
+
+            char* tabla = deserializar_string(socket);
+
+            log_info(log_FileSystem, "DROP => TABLA: <%s>\t", tabla);
+
+            comando_drop(tabla, socket);
+
             break;
         }
         default:
@@ -294,18 +286,18 @@ void consola() {
                     char* cantidad_particiones = comandos->arg[2];
                     char* compactacion = comandos->arg[3];
 
-                    comando_create(table, consistencia, cantidad_particiones, compactacion,-1);
+                    comando_create(table, consistencia, cantidad_particiones, compactacion, CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
-                    comando_describe_all(-1);
+                    comando_describe_all(CONSOLE_REQUEST);
                 } else {
                     if (comandos->cantArgs == 1) {
                         char* table = comandos->arg[0];
-                        comando_describe(table,-1);
+                        comando_describe(table, CONSOLE_REQUEST);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
@@ -314,7 +306,7 @@ void consola() {
             else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
                     char* table = comandos->arg[0];
-                    comando_drop(table,-1);
+                    comando_drop(table, CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

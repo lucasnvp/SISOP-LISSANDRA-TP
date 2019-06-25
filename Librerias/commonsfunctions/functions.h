@@ -16,7 +16,7 @@ uint32_t mbToBytes(uint32_t mBytes);
 bool ValidarArchivo(char* path);
 uint32_t sizeArchivo(char* path);
 char* typeArchivo(char* path);
-
+uint64_t getCurrentTime();
 int remove_directory(const char *path);
 
 #endif /* FUNCTIONS_H_ */

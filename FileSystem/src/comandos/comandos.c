@@ -15,7 +15,7 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    long currentTime = timestamp;
+    uint64_t currentTime = timestamp;
 
     // NOT_TIMESTAMP
     if(timestamp < 0) {
@@ -217,18 +217,17 @@ void comando_drop(char* table, int requestOrigin){
         /*Elimino el directorio*/
         uint32_t directorioRemovido = remove_directory(tabla_objetivo);
 
+        log_info(log_FileSystem, "SUCCESS DROP ==> La tabla <%s> se elimino correctamente ", table);
         if(requestOrigin != CONSOLE_REQUEST){
-
-            //TODO Serializar msj por socket
-
-        }else{
-
-            log_info(log_FileSystem, "La tabla %s se elimino correctamente ", table);
+            serializar_int(socket, true);
         }
 
     }else{
 
-        log_info(log_FileSystem, "La tabla %s no existe", table);
+        log_info(log_FileSystem, "FAILED DROP ==> La tabla <%s> no existe", table);
+        if(requestOrigin != CONSOLE_REQUEST){
+            serializar_int(socket, false);
+        }
     }
 }
 

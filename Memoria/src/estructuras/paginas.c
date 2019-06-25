@@ -11,9 +11,22 @@
 
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registro_tad* liberarPagina() {
-    tablaDePaginas* registroMasViejo = obtenerRegistroMasViejo();
-    return reenlazarRegistros(registroMasViejo);
+registro_tad* liberarPagina(int socket) {
+    tablaDePaginas* registroMasViejo;
+    bool seDebeHacerJournal = verificarPaginas();
+    if (socket != CONSOLE_REQUEST) {
+        serializar_int(socket, seDebeHacerJournal);
+    }
+    if (seDebeHacerJournal) {
+        if(socket == CONSOLE_REQUEST){
+            print_console((void*) log_info, "Memory FULL: Se requiere ejecutar JOURNAL para insertar un nuevo registro");
+            return NULL; // lo hacemos en el caso de que realicemos un insert por consola y tengamos la memoria full
+        }
+        registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
+    } else {
+        registroMasViejo = obtenerRegistroMasViejo();
+    }
+    return reenlazarRegistros(socket, registroMasViejo);
 
 }
 
@@ -22,15 +35,13 @@ tablaDePaginas* obtenerRegistroMasViejo() {
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
     // el registro más viejo, es el primero que encuentro
     tablaDePaginas* registroMasViejo = NULL;
-    bool flagJournal = true;
 
     //busco el primer registro de pagina modificable
 
-    while(flagJournal && _tablaDeSegmentos != NULL){
+    while(_tablaDeSegmentos != NULL){
         tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
         while(pagina != NULL){
             if (!pagina->registro.flagModificado){
-                flagJournal = false;
                 registroMasViejo = pagina;
             }
             pagina = pagina->siguienteRegistroPagina;
@@ -41,12 +52,12 @@ tablaDePaginas* obtenerRegistroMasViejo() {
     _tablaDeSegmentos = primerRegistroDeSegmentos;
 
     // en tanto tenga segmentos para iterar y no tenga que hacer journal (no encontre registro modificable)
-    while(!flagJournal && _tablaDeSegmentos != NULL ){
+    while(_tablaDeSegmentos != NULL ){
         tablaDePaginas* pagina = _tablaDeSegmentos->registro.tablaDePaginas;
         // en tanto tenga páginas dentro de mi segmento
         while ( pagina != NULL){
             // compruebo si el último acceso es menor que el registroMasViejo, y de ser así, compruebo si la página contiene el flag de modificado en false
-            if (pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso && !pagina->registro.flagModificado){
+            if ( !pagina->registro.flagModificado && pagina->registro.ultimoAcceso < registroMasViejo->registro.ultimoAcceso){
                 registroMasViejo = pagina;
             }
             pagina = pagina->siguienteRegistroPagina;
@@ -54,22 +65,16 @@ tablaDePaginas* obtenerRegistroMasViejo() {
         _tablaDeSegmentos = _tablaDeSegmentos->siguiente;
     }
 
-    // en este punto no hay ninguna página en ningún segmento que tenga el flag de modificado activado; entonces compruebo el registro más viejo
-    if(flagJournal) {
-        //ejecutar journal -- recordar llamar a reservarMarco dentro del journal
-        log_info(log_Memoria, "La memoria esta FULL. Se procede a realizar un JOURNAL");
-        funcionJournal(SERVIDOR_FILESYSTEM);
-    }
     return registroMasViejo;
 
 
 }
 
 // Reenlaza los registros de páginas
-registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
+registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo) {
 
     if(registroMasViejo == NULL){
-        return reservarMarco();
+        return reservarMarco(socket);
     }
 
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
@@ -114,5 +119,28 @@ void actualizarIdPaginas(tablaDePaginas* registroMasViejo){
         _TablaDePaginas->registro.numeroPagina -= 1;
     }
     return;
+}
+
+bool verificarPaginas() {
+    tablaDeSegmentos* _TablaDeSegmento = primerRegistroDeSegmentos;
+
+    bool seDebeHacerJournal;
+
+    while (_TablaDeSegmento != NULL) {
+        tablaDePaginas* _TablaDePagina = _TablaDeSegmento->registro.tablaDePaginas;
+        while (_TablaDePagina != NULL) {
+            if (!_TablaDePagina->registro.flagModificado) {
+                seDebeHacerJournal = false;
+                return seDebeHacerJournal;
+            }
+            _TablaDePagina = _TablaDePagina->siguienteRegistroPagina;
+        }
+
+        _TablaDeSegmento = _TablaDeSegmento->siguiente;
+    }
+
+    seDebeHacerJournal = true;
+
+    return seDebeHacerJournal;
 }
 

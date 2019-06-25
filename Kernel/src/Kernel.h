@@ -45,6 +45,7 @@ pthread_t thread_metricas;
 pthread_t thread_exec;
 pthread_t thread_config;
 pthread_t thread_planificador;
+pthread_t thread_gossip;
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Kernel/src/config/config.txt";
 Type_Config* config;
@@ -60,7 +61,6 @@ uint32_t wd_inotify;
 uint32_t length_inotify;
 size_t bufferInotifySize;
 
-uint32_t SERVIDOR_MEMORIA;
 bool KERNEL_READY;
 
 typedef struct {
@@ -78,5 +78,6 @@ void execute();
 void watching_config();
 void planificador();
 bool parser_line(char * line);
+void gossiping();
 
 #endif //TP_2019_1C_GANK_MID_KERNEL_H

@@ -10,8 +10,11 @@
 #include <pthread.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <semaphore.h>
+#include <pthread.h>
 
 #include <commons/collections/list.h>
+#include <commonsfunctions/functions.h>
 #include "servidor/servidor.h"
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
@@ -22,9 +25,10 @@
 #include "estructuras/paginas.h"
 #include "estructuras/segmentos.h"
 #include "estructuras/marcos.h"
+#include "estructuras/gossip.h"
 #include "comandosMemoria.h"
 
-char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/Memoria/src/config/config.txt";
+char* PATH_CONFIG;
 Type_Config config;
 
 char* PATH_LOG = "/home/utnso/Gank-mid/Logs/logMemoria.txt";
@@ -33,24 +37,14 @@ t_log* log_Memoria;
 
 uint32_t SERVIDOR_FILESYSTEM;
 
-
-// Estructura de los registros de la tabla de gossiping
-
-typedef struct reg_gossiping{
-    uint32_t idMemoria;
-    char** ipSeeds;
-    char** puertoSeeds;
-
-}reg_gossiping;
-
-
-
 // Variables para el servidor
 fd_set master;   	// conjunto maestro de descriptores de fichero
 
 // Variables hilos
 pthread_t thread_server;
 pthread_t thread_consola;
+pthread_t thread_journaling;
+pthread_t thread_gossiping;
 
 // Dirección de la Memoria Principal
 void* memoriaPrincipal;
@@ -67,13 +61,15 @@ typedef struct {
 
 registro_tad* alocar_MemoriaPrincipal();
 
-void crearRegistroDeSegmento(char* nombreTabla);
+void inicializarSemaforos();
+void inicializarHilos();
 void recibir_valores_FileSystem(uint32_t servidorFileSystem);
-void desalocar_MemoriaPrincipal();
 void init_log(char* pathLog);
 void connect_server_FileSystem();
 void server(void* args);
 void connection_handler(uint32_t socket, uint32_t command);
 void memory_console();
+void journaling();
+void gossiping();
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

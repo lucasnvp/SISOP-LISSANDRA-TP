@@ -48,4 +48,13 @@ describe_tad* deserializar_describe(uint32_t socket);
 void serializar_describe_all(uint32_t socket, t_list* describe_all);
 t_list* deserializar_describe_all(uint32_t socket);
 
+void serializar_memory_info(uint32_t socket, memory_info_tad* memory);
+memory_info_tad* deserializar_memory_info(uint32_t socket);
+
+t_stream* serializar_gossip(gossip_tad* gossip);
+gossip_tad* deserializar_gossip(char* stream, int* size);
+
+void serializar_gossip_table(uint32_t socket, t_list* gossip);
+t_list* deserializar_gossip_table(uint32_t socket);
+
 #endif /* SERIALIZADOR_H_ */

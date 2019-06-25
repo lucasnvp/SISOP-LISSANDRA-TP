@@ -79,7 +79,7 @@ void test_criterio_filter_random () {
     uint32_t p3 = 0;
     printf("\n");
     for (int i = 0; i < 100; ++i) {
-        index = criterio_ramdom_memory("SC");
+        index = criterio_ramdom_memory_by("SC");
         switch (index) {
             case 1:
                 p1++;

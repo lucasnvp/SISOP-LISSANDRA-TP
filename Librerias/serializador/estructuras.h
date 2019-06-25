@@ -35,8 +35,8 @@ void free_select_tad(select_tad* select);
 struct table_tad {
     char* nameTable;
     char* consistencia;
-    u_int32_t particiones;
-    u_int32_t compactacion;
+    uint32_t particiones;
+    uint32_t compactacion;
 };
 
 typedef struct table_tad create_tad;
@@ -46,5 +46,21 @@ void free_create_tad(create_tad* create);
 typedef struct table_tad describe_tad;
 describe_tad* new_describe_tad(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void free_describe_tad(describe_tad* create);
+
+typedef struct memory_info_tad {
+    uint32_t MEMORY_NUMBER;
+    uint32_t RETARDO_GOSSIPING;
+}memory_info_tad;
+
+memory_info_tad* new_memory_info_tad(uint32_t number, uint32_t delayGossip);
+void free_memory_info_tad(memory_info_tad* memoryInfo);
+
+typedef struct gossip_tad{
+    char* IP;
+    uint32_t PORT;
+} gossip_tad;
+
+gossip_tad* new_gossip_tad(char* ip, uint32_t port);
+void free_gossip_tad(gossip_tad* gossip);
 
 #endif /* ESTRUCTURAS_H_ */

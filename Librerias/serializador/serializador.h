@@ -18,6 +18,10 @@ typedef struct {
 
 int i, j;
 
+void serializar_timestamp(uint32_t socket, uint64_t time);
+
+uint64_t deserializar_timestamp(uint64_t socket);
+
 t_stream* stream_create(int size);
 void stream_destroy(t_stream* stream);
 

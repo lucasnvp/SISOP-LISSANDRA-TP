@@ -175,7 +175,7 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
             serializar_int(requestOrigin, DESCRIBE_OK);
             serializar_describe(requestOrigin, describeTad);
 
-            free_describe_tad(describeTad);
+            //free_describe_tad(describeTad);
 
         }else{
 

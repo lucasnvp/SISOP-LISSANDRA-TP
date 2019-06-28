@@ -32,7 +32,7 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de dump
-    pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
+    //pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
 
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");

@@ -5,7 +5,7 @@
 
 #include "comandosMemoria.h"
 
-void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
+void funcionJournal(int requestOrigin) {
     struct tablaDeSegmentos* _TablaDeSegmento = primerRegistroDeSegmentos;
     while(_TablaDeSegmento != NULL){
         struct tablaDePaginas* _tablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
@@ -34,6 +34,11 @@ void funcionJournal(uint32_t SERVIDOR_FILESYSTEM) {
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
         funcionDrop(nombreTabla);
     }
+
+    if(requestOrigin != CONSOLE_REQUEST) {
+        serializar_int(requestOrigin, true);
+    }
+
 }
 
 void funcionDrop(char* nombreDeTabla){
@@ -101,13 +106,13 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
          * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
          */
 
-        insert_tad* insert = new_insert_tad(select->nameTable, select->key, value);
+        insert_tad* insert = new_insert_tad(select->nameTable, registro->key, registro->value);
         sem_wait(&semaforoInsert);
-        funcionInsert(socket, insert, false);
+        funcionInsert(socket, insert, false, registro->timestamp);
         sem_post(&semaforoInsert);
         // todo Revisar donde hacer el free del insert.
  //       free_insert_tad(insert);
-        return value;
+        return registro;
     } else {
         return NULL;
     }
@@ -115,13 +120,15 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void funcionInsert(int socket, insert_tad* insert, bool flagModificado) {
-    uint32_t timestamp;
-    //if(flagModificado){
-        timestamp = time(NULL);
-    //} else {
-   //     timestamp = *el que viene de FS*
-   // }
+void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS) {
+
+    uint64_t timestamp;
+
+    if(flagModificado){
+        timestamp = time(NULL); // TODO poner correctamente el timestamp
+    } else {
+        timestamp = timestampDelFS;
+   }
 
     struct tablaDeSegmentos *_TablaDeSegmento = buscarSegmento(insert->nameTable);
 

@@ -202,14 +202,14 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "El kernel envio un create");
             create_tad* create = deserializar_create(socket);
             comando_create(create, socket);
-            free_create_tad(create);
+            //free_create_tad(create);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
             char* tabla = deserializar_string(socket);
             comando_describe(tabla, socket);
-            free(tabla);
+            //free(tabla);
             break;
         }
         case COMAND_DESCRIBE_ALL: {
@@ -229,14 +229,14 @@ void connection_handler(uint32_t socket, uint32_t command){
             list_iterate(listDummy, print_element_stack);
 
             serializar_describe_all(socket, listDummy);
-            list_destroy(listDummy);
+            //list_destroy(listDummy);
             break;
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
             char* tabla = deserializar_string(socket);
             comando_drop(tabla, socket);
-            free(tabla);
+            //free(tabla);
             break;
         }
 
@@ -398,7 +398,7 @@ void inicializarSemaforos() {
 void inicializarHilos() {
 
     //Hilo de Journal
-    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+    //pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
     //Hilo de Gossiping
     pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");

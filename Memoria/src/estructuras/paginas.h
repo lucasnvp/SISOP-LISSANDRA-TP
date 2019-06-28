@@ -39,7 +39,7 @@ typedef struct reg_tablaDePaginas {
     uint32_t numeroPagina;
     registro_tad* punteroAPagina;
     bool flagModificado;
-    uint32_t ultimoAcceso;
+    uint64_t ultimoAcceso;
 }reg_tablaDePaginas;
 
 // Estructura de la Tabla de Páginas dentro de un Segmento en una Sub-Memoria;

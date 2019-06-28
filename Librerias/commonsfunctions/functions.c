@@ -91,3 +91,9 @@ int remove_directory(const char *path){
 
    return r;
 }
+
+uint64_t getCurrentTime() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return ((((uint64_t)tv.tv_sec) * 1000) + ((uint64_t)tv.tv_usec) / 1000);
+}

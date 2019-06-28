@@ -37,7 +37,9 @@ char* transformAllRegistersToUniqueString(t_list *registros) {
 char* transformRegisterToString(registro_tad *registro) {
 
     char* str_registro = string_new();
-    string_append(&str_registro, string_itoa(registro->timestamp));
+    char buf[256];
+    snprintf(buf, sizeof buf, "%"PRIu64, registro->timestamp);
+    string_append(&str_registro, buf);
     string_append(&str_registro, ";");
     string_append(&str_registro, string_itoa(registro->key));
     string_append(&str_registro, ";");

@@ -7,12 +7,12 @@
 #include <inttypes.h>
 
 typedef struct registro_tad{
-    uint32_t timestamp;
+    uint64_t timestamp;
     uint32_t key;
     char* value;
 }registro_tad;
 
-registro_tad* new_registro_tad(uint32_t timestamp, uint32_t key, char* value);
+registro_tad* new_registro_tad(uint64_t timestamp, uint32_t key, char* value);
 void free_registro_tad(registro_tad* registro);
 
 typedef struct insert_tad{

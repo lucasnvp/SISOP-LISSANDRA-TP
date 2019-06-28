@@ -16,6 +16,19 @@ void serializar_int(uint32_t socket, uint32_t number){
 	send_data(socket, &number, sizeof(uint32_t));
 }
 
+void serializar_timestamp(uint32_t socket, uint64_t time) {
+    send_data(socket, &time, sizeof(uint64_t));
+}
+
+uint64_t deserializar_timestamp(uint64_t socket) {
+    uint64_t aux;
+    uint64_t bytesRecibidos = recive_data(socket,&aux,sizeof(uint64_t));
+    if(bytesRecibidos <= 0){
+        aux = bytesRecibidos;
+    }
+    return aux;
+}
+
 uint32_t deserializar_int(uint32_t socket){
 	uint32_t aux;
 	uint32_t bytesRecibidos = recive_data(socket,&aux,sizeof(uint32_t));

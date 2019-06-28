@@ -84,10 +84,10 @@ void runCompactation(char* table) {
 
             }
 
-            liberarBloques(pathPartition);
-            remove(pathPartition);
-
             if(listFromPartition != NULL) {
+
+                liberarBloques(pathPartition);
+                remove(pathPartition);
 
                 t_list* bloquesParaAsignar = list_create();
 

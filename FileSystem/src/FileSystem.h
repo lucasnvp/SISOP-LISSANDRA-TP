@@ -26,6 +26,7 @@
 #include "comandos/comandos.h"
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
+#include "utils/freeBlocksFromFS.h"
 
 // Semaforos
 pthread_mutex_t mutexConfig;    // Bloqueo el hilo para cambiar la config

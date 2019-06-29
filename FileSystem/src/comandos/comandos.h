@@ -8,6 +8,7 @@
 #include "serializador/estructuras.h"
 #include "serializador/serializador.h"
 #include "stdlib.h"
+#include <math.h>
 #include "string.h"
 #include "commons/log.h"
 #include "commonsfunctions/functions.h"
@@ -23,7 +24,7 @@
 
 // Flags que indican quien ejecuta el comando
 #define CONSOLE_REQUEST	-1
-#define NOT_TIMESTAMP -1
+#define NOT_TIMESTAMP NULL
 
 #define NO_EXISTE_TABLA false
 #define YA_EXISTE_TABLA true
@@ -35,7 +36,7 @@ t_log* log_FileSystem;
 
 void print_console(void (*log_function)(t_log*, const char*), char* message);
 void comando_select(char* table, int key, int requestOrigin);
-void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin);
+void comando_insert(char* table, int key, char* value, uint64_t timestamp, int requestOrigin);
 void comando_create(char* _table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin);
 void comando_describe_all(int requestOrigin);
 void comando_describe(char* nombre_tabla, int requestOrigin);

@@ -29,12 +29,10 @@ registro_tad* getValueFromMemtable(char *table, int key) {
             list_get(listaFiltrada,0);
 
         } else {
-            log_info(log_FileSystem, "No existe en la memtable la key %i", key);
             return NULL;
         }
 
     } else {
-        log_info(log_FileSystem, "No existe la tabla en la memtable");
         return NULL;
     }
 }
@@ -52,6 +50,7 @@ void insertValue(char* table, registro_tad* registroTad) {
     dictionary_put(memtable, table, list);
 }
 
+// DEPRECATED
 t_list* getListOfReg(char* table){
 
     if(containsTable(table)){

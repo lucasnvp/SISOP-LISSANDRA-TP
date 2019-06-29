@@ -9,16 +9,16 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin){
-
+void comando_insert(char* table, int key, char* value, uint64_t timestamp, int requestOrigin){
+    log_info(log_FileSystem, "REQUEST INSERT ==> TABLA <%s>", table);
     string_to_upper(table);
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
     uint64_t currentTime = timestamp;
 
-    // NOT_TIMESTAMP
-    if(timestamp < 0) {
+    // NOT_TIMESTAMP = NULL
+    if(timestamp == NOT_TIMESTAMP) {
         currentTime = getCurrentTime();
     }
 
@@ -50,10 +50,15 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
 void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin) {
     log_info(log_FileSystem, "EXECUTE CREATE ==> TABLA <%s>", table);
 
-    int particiones = atoi(cantidad_particiones);
+    int particiones = fabs(atoi(cantidad_particiones));
 
     string_to_upper(table);
+
+    consistencia = string_duplicate(string_itoa(fabs(atoi(consistencia))));
     string_to_upper(consistencia);
+
+    cantidad_particiones = string_duplicate(string_itoa(fabs(atoi(cantidad_particiones))));
+    string_to_upper(cantidad_particiones);
 
     char* nueva_tabla = strdup(montajeTablas);
     string_append(&nueva_tabla, table);
@@ -71,6 +76,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
     } else {
 
         crear_carpeta(nueva_tabla);
+
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
         log_info(log_FileSystem, "SUCCESS CREATE ==> TABLA <%s>", table);
@@ -79,13 +85,11 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
             serializar_int(requestOrigin, CREATE_OK);
         }
 
-        CANTIDAD_TABLAS++;
-        log_info(log_FileSystem, "CANTIDAD DE TABLAS ACTUALES: %d", CANTIDAD_TABLAS);
     }
 }
 
 void comando_select(char* table, int key, int requestOrigin){
-    log_info(log_FileSystem, "SELECT ==> TABLE <%s> , KEY<%d>", table, key);
+    log_info(log_FileSystem, "REQUEST SELECT ==> TABLE <%s> , KEY<%d>", table, key);
 
     registro_tad* finalResult = NULL;
 
@@ -100,7 +104,7 @@ void comando_select(char* table, int key, int requestOrigin){
             serializar_int(requestOrigin, NO_EXISTE_TABLA);
         }
 
-        log_info(log_FileSystem, "FALLO SELECT ==> LA TABLA <%s> NO EXISTE", table);
+        log_info(log_FileSystem, "FAILED SELECT ==> LA TABLA <%s> NO EXISTE", table);
 
         free(finalResult);
         free(tabla_objetivo);
@@ -128,7 +132,7 @@ void comando_select(char* table, int key, int requestOrigin){
     finalResult = verifyMaxValue(finalResult, registerFromPartition);
 
     if(finalResult == NULL) {
-        log_info(log_FileSystem, "FALLO SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON LA KEY <%d> EN LA TABLA <%s>", key, table);
+        log_info(log_FileSystem, "FAILED SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON LA KEY <%d> EN LA TABLA <%s>", key, table);
 
         if( requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, false);
@@ -141,7 +145,7 @@ void comando_select(char* table, int key, int requestOrigin){
             serializar_registro(requestOrigin, finalResult);
         }
 
-        log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
+        log_info(log_FileSystem, "SUCCES SELECT ==> TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
     }
 
 }

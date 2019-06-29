@@ -202,41 +202,26 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_Memoria, "El kernel envio un create");
             create_tad* create = deserializar_create(socket);
             comando_create(create, socket);
-            //free_create_tad(create);
+            free_create_tad(create);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
             char* tabla = deserializar_string(socket);
             comando_describe(tabla, socket);
-            //free(tabla);
+            free(tabla);
             break;
         }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_Memoria, "El kernel envio un describe all");
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
-
-            t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
-            log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
-
-            void print_element_stack(void* element){
-                describe_tad* describe = element;
-                log_info(log_Memoria,
-                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-            }
-
-            list_iterate(listDummy, print_element_stack);
-
-            serializar_describe_all(socket, listDummy);
-            //list_destroy(listDummy);
+            comando_describe_all(socket);
             break;
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
             char* tabla = deserializar_string(socket);
             comando_drop(tabla, socket);
-            //free(tabla);
+            free(tabla);
             break;
         }
 
@@ -331,9 +316,14 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 1) {
+                if (comandos->cantArgs == 0) {
+                    comando_describe_all(CONSOLE_REQUEST);
+                }
+
+                else if (comandos->cantArgs == 1) {
                     comando_describe(comandos->arg[0], CONSOLE_REQUEST);
                 }
+
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 

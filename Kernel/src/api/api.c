@@ -106,16 +106,16 @@ void api_describe_all () {
         log_info(log_Kernel_api, "DESCRIBE ALL => No se encontro memoria disponible");
     } else {
         serializar_int(socket, COMAND_DESCRIBE_ALL);
-
-        t_list* listDescribe = deserializar_describe_all(socket);
+        t_list* listDescribe = list_create();
+        listDescribe = deserializar_describe_all(socket);
         load_METADATA(listDescribe);
-        list_destroy_and_destroy_elements(listDescribe, free_describe_tad);
+        //list_destroy_and_destroy_elements(listDescribe, free_describe_tad);
         print_metadata(log_Kernel_api);
     }
 }
 
 void api_drop(char* tabla){
-    uint32_t socket = get_memory_socket_from_metadata(tabla);
+    int socket = get_memory_socket_from_metadata(tabla);
 
     if (socket == -1) {
         log_info(log_Kernel_api, "DROP => La tabla: <%s> no existe", tabla);

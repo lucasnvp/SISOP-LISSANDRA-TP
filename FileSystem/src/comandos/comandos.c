@@ -79,6 +79,9 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
+
+        // todo gabe son todos char* en este momento...
+        createThreadCompactation(table, consistencia, atoi(cantidad_particiones), atoi(compactacion));
         log_info(log_FileSystem, "SUCCESS CREATE ==> TABLA <%s>", table);
 
         if(requestOrigin != CONSOLE_REQUEST) {
@@ -213,6 +216,8 @@ void comando_drop(char* table, int requestOrigin){
 
     if( existe == true ) {
 
+        /*Libero la Memtable*/
+//        dictionary_remove(memtable,table);
         /*Libero los bloques de los Tmps y Tmpcs*/
         freeBlocksFromTemps(tabla_objetivo, ".tmp");
         /*Libero los bloques del FS*/

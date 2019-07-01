@@ -19,6 +19,9 @@ int main(){
     print_config(config, log_Console);
     configFilePathSize = string_length(PATH_CONFIG);
 
+    // Inicializar tabla de compactacion
+    init_list_compactation();
+
     // Inicializar Queue y Semaforos
     init_queue_and_sem();
 

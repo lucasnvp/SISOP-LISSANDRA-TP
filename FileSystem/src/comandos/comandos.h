@@ -5,15 +5,17 @@
 #ifndef TP_2019_1C_GANK_MID_COMANDOS_H
 #define TP_2019_1C_GANK_MID_COMANDOS_H
 
+#include "stdlib.h"
+#include "string.h"
+#include <math.h>
+
 #include "serializador/estructuras.h"
 #include "serializador/serializador.h"
-#include "stdlib.h"
-#include <math.h>
-#include "string.h"
 #include "commons/log.h"
 #include "commonsfunctions/functions.h"
 #include "commons/collections/dictionary.h"
 #include "commons/collections/list.h"
+
 #include "../setup/setup.h"
 #include "../utils/utils.h"
 #include "../utils/memtableHanlder.h"

@@ -66,10 +66,12 @@ void funcionDrop(char* nombreDeTabla){
 registro_tad* funcionSelect(select_tad* select){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
+    uint64_t timestampDeAcceso = getCurrentTime();
     if (_TablaDeSegmento != NULL){
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while(_TablaDePaginas != NULL){
             if(_TablaDePaginas->registro.punteroAPagina->key == select->key){
+                _TablaDePaginas->registro.ultimoAcceso = timestampDeAcceso;
                 log_info(log_Memoria, "SELECT EN MEMORIA => TABLA: <%s>\tkey: <%d>\tvalue: <%s>",
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
@@ -123,9 +125,10 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS) {
 
     uint64_t timestamp;
+    uint64_t timestampDeAcceso = getCurrentTime();
 
     if(flagModificado){
-        timestamp = time(NULL); // TODO poner correctamente el timestamp
+        timestamp = timestampDeAcceso; // TODO poner correctamente el timestamp
     } else {
         timestamp = timestampDelFS;
    }
@@ -148,7 +151,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
         }
         nuevoRegistroPagina->siguienteRegistroPagina = NULL;
         nuevoRegistroPagina->registro.flagModificado = flagModificado;
-        nuevoRegistroPagina->registro.ultimoAcceso = timestamp;
+        nuevoRegistroPagina->registro.ultimoAcceso = timestampDeAcceso;
 
 
         _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
@@ -171,6 +174,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
             //comparo timestamps (el actual y el guardado) y actualizo value si corresponde
             if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestamp) {
                 _TablaDePaginas->registro.flagModificado = true; //actualizo el valor y seteo a true el flag de modificado
+                _TablaDePaginas->registro.ultimoAcceso = timestampDeAcceso;
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                        new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
@@ -193,7 +197,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     }
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;
     nuevoRegistroPagina->registro.flagModificado = flagModificado;
-    nuevoRegistroPagina->registro.ultimoAcceso = timestamp;
+    nuevoRegistroPagina->registro.ultimoAcceso = timestampDeAcceso;
 
     _TablaDeSegmento = buscarSegmento(insert->nameTable);
     if(_TablaDeSegmento == NULL){

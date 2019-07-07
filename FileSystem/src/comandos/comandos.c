@@ -54,11 +54,11 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 
     string_to_upper(table);
 
-    consistencia = string_duplicate(string_itoa(fabs(atoi(consistencia))));
+    //consistencia = string_duplicate(string_itoa(fabs(atoi(consistencia))));
     string_to_upper(consistencia);
 
-    cantidad_particiones = string_duplicate(string_itoa(fabs(atoi(cantidad_particiones))));
-    string_to_upper(cantidad_particiones);
+    //cantidad_particiones = string_duplicate(string_itoa(fabs(atoi(cantidad_particiones))));
+    //string_to_upper(cantidad_particiones);
 
     char* nueva_tabla = strdup(montajeTablas);
     string_append(&nueva_tabla, table);
@@ -216,10 +216,15 @@ void comando_drop(char* table, int requestOrigin){
 
     if( existe == true ) {
 
+        /*Eliminamos la tabla de la estructura de compactacion*/
+        dictionary_remove(TABLES_COMPACTATION, table);
+
         /*Libero la Memtable*/
-//        dictionary_remove(memtable,table);
+        dictionary_remove(memtable,table);
+
         /*Libero los bloques de los Tmps y Tmpcs*/
         freeBlocksFromTemps(tabla_objetivo, ".tmp");
+
         /*Libero los bloques del FS*/
         freeBlocksFromFS(tabla_objetivo);
 

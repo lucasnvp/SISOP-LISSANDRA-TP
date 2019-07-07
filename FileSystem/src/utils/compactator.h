@@ -18,10 +18,13 @@
 #include "../utils/getterValuesFromFS.h"
 
 pthread_t thread_compactation;
-t_list * LIST_TABLE_COMPACTATION;
+
+// Deprecated
+// t_list * LIST_TABLE_COMPACTATION;
+
+t_dictionary* TABLES_COMPACTATION;
 
 typedef struct compactation_table_tad {
-    uint32_t numberPthread;
     create_tad* tableInfo;
 } compactation_table_tad;
 
@@ -34,6 +37,6 @@ void liberarBloques(char* path);
 void crearParticionCompactada(char* path, t_list* bloques, int size);
 void eliminarTmpc(char* path);
 void createThreadCompactation(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
-void execCompactation();
+void execCompactation(void* param);
 
 #endif //TP_2019_1C_GANK_MID_COMPACTATOR_H

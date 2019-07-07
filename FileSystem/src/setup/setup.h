@@ -14,6 +14,9 @@
 #include <commons/config.h>
 #include <commons/string.h>
 
+#include "../comandos/comandos.h"
+#include "../setup/setup.h"
+
 static const char* TAMANIO_BLOQUE = "TAMANIO_BLOQUES=64\n";
 static const char* CANTIDAD_BLOQUE = "CANTIDAD_BLOQUES=5192\n";
 static const char* MAGIC_NUMBER = "MAGIC_NUMBER=LISSANDRA\n";
@@ -46,5 +49,6 @@ void new_metadata_setup(char* metadatabin);
 void bitmap_setup(char* bitmapbin);
 void new_bitmap_setup(char* bitmapbin);
 void bloques_setup();
+void setUp_compactation_threads();
 
 #endif //TP_2019_1C_GANK_MID_SETUP_H

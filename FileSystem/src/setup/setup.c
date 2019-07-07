@@ -40,12 +40,16 @@ void setup(){
 
     if(access(bitmapbin, F_OK) != -1){
         bitmap_setup(bitmapbin);
+
     } else{
         //Bloques
         bloques_setup();
         new_bitmap_setup(bitmapbin);
         bitmap_setup(bitmapbin);
     }
+
+    // Creamos los hilos para compactar por cada tabla existente
+    setUp_compactation_threads();
 }
 
 void carpetas_setup(){
@@ -107,3 +111,37 @@ void bloques_setup(){
     }
 }
 
+void setUp_compactation_threads(){
+
+    DIR *d = opendir(montajeTablas);
+
+    if (d) {
+        struct dirent *p;
+
+        while (p=readdir(d)) {
+
+            /* Skip the names "." and ".." as we don't want to recurse on them. */
+            if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+            {
+                continue;
+            }
+
+            char* path = string_duplicate(montajeTablas);
+            string_append(&path, p->d_name);
+            string_append(&path, "/Metadata.bin");
+
+            t_config * metadata = obtener_metadata_table(path);
+
+            createThreadCompactation(p->d_name,
+                    config_get_string_value(metadata, "CONSISTENCY"),
+                    config_get_int_value(metadata, "PARTITIONS"),
+                    config_get_int_value(metadata, "COMPACTATION_TIME"));
+
+            free(path);
+            config_destroy(metadata);
+        }
+
+        closedir(d);
+    }
+
+}

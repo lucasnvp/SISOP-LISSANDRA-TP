@@ -235,9 +235,15 @@ void consola() {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
 
-                    if(isdigit(atoi(key_string))) {
-                        int key = fabs(atoi(key_string));
-                        comando_select(table,key, CONSOLE_REQUEST);
+                    bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                    if(!isInvalidKey) {
+                        int key = atoi(key_string);
+
+                        if(key<0) {
+                            log_info(log_FileSystem, "FAILED SELECT ==> La key ingresada <%s> no es válida", key_string);
+                        } else {
+                            comando_select(table,key, CONSOLE_REQUEST);
+                        }
                     } else {
                         log_info(log_FileSystem, "FAILED SELECT ==> La key ingresada <%s> no es un número", key_string);
                     }
@@ -270,12 +276,22 @@ void consola() {
                             if(isInvalidTime) {
                                 log_info(log_FileSystem, "FAILED INSERT ==> El timestamp ingresado <%s> no es válido", timestamp_string);
                             }
+
                         } else {
-                            int key = fabs(atoi(key_string));
+                            int key = atoi(key_string);
                             uint64_t timestamp = atoll(timestamp_string);
 
-                            string_to_upper(table);
-                            comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                            if(key < 0) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es válida", key_string);
+                            }
+
+                            if(timestamp < 0) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> El timestamp ingresado <%s> no es válido", timestamp_string);
+                            } else {
+                                string_to_upper(table);
+                                comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                            }
+
                         }
 
                     }
@@ -298,10 +314,15 @@ void consola() {
                             if(isInvalidKey) {
                                 log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es un número", key_string);
                             } else {
-                                int key = fabs(atoi(key_string));
-                                string_to_upper(table);
+                                int key = atoi(key_string);
 
-                                comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                                if(key < 0) {
+                                    log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es válida", key_string);
+                                } else {
+                                    string_to_upper(table);
+                                    comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                                }
+
                             }
 
                         }
@@ -318,8 +339,8 @@ void consola() {
                     char* compactacion = comandos->arg[3];
 
                     bool isValidConsitency = string_equals_ignore_case(consistencia, "EC") || string_equals_ignore_case(consistencia, "SC") || string_equals_ignore_case(consistencia, "SHC");
-                    bool isValidPartitions = atoi(cantidad_particiones) != 0;
-                    bool isValidCompactation = atoi(compactacion) != 0;
+                    bool isValidPartitions = atoi(cantidad_particiones) > 0;
+                    bool isValidCompactation = atoi(compactacion) > 0;
 
                     if(isValidConsitency && isValidCompactation && isValidPartitions) {
                         comando_create(table, consistencia, cantidad_particiones, compactacion, CONSOLE_REQUEST);

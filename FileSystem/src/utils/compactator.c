@@ -2,7 +2,6 @@
 
 compactation_table_tad* new_compactation_table_tad(create_tad* tableInfo) {
     compactation_table_tad* compactationTable = malloc(sizeof(compactation_table_tad));
-    compactationTable->numberPthread = 0;
     compactationTable->tableInfo = tableInfo;
     return compactationTable;
 }
@@ -13,7 +12,7 @@ void free_compactation_table_tad(compactation_table_tad* compactationTable) {
 }
 
 void init_list_compactation() {
-    LIST_TABLE_COMPACTATION = list_create();
+    TABLES_COMPACTATION = dictionary_create();
 }
 
 void runCompactation(char* table) {
@@ -261,22 +260,35 @@ void crearParticionCompactada(char* path, t_list* bloques, int size) {
 void createThreadCompactation(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {
     create_tad* tableInfo = new_create_tad(nameTable, consistencia, particiones, compactacion);
     compactation_table_tad* compactationTable = new_compactation_table_tad(tableInfo);
-    list_add(LIST_TABLE_COMPACTATION, compactationTable);
-    uint32_t  pthreadNumber = pthread_create(&thread_compactation, NULL, (void*) execCompactation, "Ejecutar compactacion");
-    compactationTable->numberPthread = pthreadNumber;
+
+    char* toSend = string_duplicate(nameTable);
+
+    dictionary_put(TABLES_COMPACTATION, nameTable, compactationTable);
+    pthread_create(&thread_compactation, NULL, (void*) execCompactation, (void*)toSend);
+
 }
 
-void execCompactation() {
-    while(true) {
-        uint32_t listSize = list_size(LIST_TABLE_COMPACTATION) - 1;
-        compactation_table_tad* compactationTable = list_get(LIST_TABLE_COMPACTATION, listSize);
+void execCompactation(void *param) {
+    char* nameTable = param;
 
-        // todo revisar que el valor sea el correcto, es milisengundos o segundos?
-        log_info(log_FileSystem, "Antes de compactar la tabla: %s", compactationTable->tableInfo->nameTable);
-        usleep(compactationTable->tableInfo->compactacion);
+    compactation_table_tad* compactationTable = dictionary_get(TABLES_COMPACTATION, nameTable);
 
-        // Una vez pasado el tiempo, compactamos
-        log_info(log_FileSystem, "Se va a compactar la tabla: %s", compactationTable->tableInfo->nameTable);
-        runCompactation(compactationTable->tableInfo->nameTable);
+    bool forEverOrKillHim = true;
+    while(forEverOrKillHim) {
+
+        if(dictionary_has_key(TABLES_COMPACTATION, nameTable) == true) {
+            log_info(log_FileSystem, "Antes de compactar la tabla: %s", compactationTable->tableInfo->nameTable);
+            usleep(compactationTable->tableInfo->compactacion*1000);
+
+            // Una vez pasado el tiempo, compactamos
+            log_info(log_FileSystem, "Se va a compactar la tabla: %s", compactationTable->tableInfo->nameTable);
+
+            runCompactation(compactationTable->tableInfo->nameTable);
+        } else {
+            forEverOrKillHim = false;
+        }
+
     }
+
+    pthread_exit(NULL);
 }

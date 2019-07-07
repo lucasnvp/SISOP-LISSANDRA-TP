@@ -17,6 +17,7 @@
 #include "serializador/serializador.h"
 #include "serializador/estructuras.h"
 #include "serializador/handshake.h"
+#include "commonsfunctions/functions.h"
 
 #include "./config/Config_memoria.h"
 #include "./comandos/comandos.h"

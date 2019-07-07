@@ -95,25 +95,19 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_SELECT);
     serializar_select(SERVIDOR_FILESYSTEM, select_FS);
-    // todo revisar que pasa con este free
-//    free_select_tad(select_FS);
+    free_select_tad(select_FS);
 
     uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
     if (confirm) {
 
         registro_tad* registro = deserializar_registro(SERVIDOR_FILESYSTEM);
-        /*
-         * uint32_t timestamp = deserializar_int(SERVIDOR_FILESYSTEM);
-         * ese timestamp tiene que ser enviado por filesystem al solicitarle el select
-         */
-
         insert_tad* insert = new_insert_tad(select->nameTable, registro->key, registro->value);
         sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false, registro->timestamp);
         sem_post(&semaforoInsert);
         // todo Revisar donde hacer el free del insert.
- //       free_insert_tad(insert);
+        free_insert_tad(insert);
         return registro;
     } else {
         return NULL;
@@ -125,10 +119,11 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS) {
 
     uint64_t timestamp;
+    //uint64_t timestampDeAcceso;
     uint64_t timestampDeAcceso = getCurrentTime();
 
     if(flagModificado){
-        timestamp = timestampDeAcceso; // TODO poner correctamente el timestamp
+        timestamp = timestampDeAcceso;
     } else {
         timestamp = timestampDelFS;
    }
@@ -142,6 +137,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
 
         if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
             free(nuevoRegistroPagina);
+            log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");
             return;
         }
 
@@ -155,11 +151,15 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
 
 
         _TablaDeSegmento->registro.tablaDePaginas = nuevoRegistroPagina;
-        nuevoRegistroPagina->registro.numeroPagina = (uint32_t) 1;
+        nuevoRegistroPagina->registro.numeroPagina = (uint32_t) 1; // porque es el primer registro de la página
 
         memcpy(nuevoRegistroPagina->registro.punteroAPagina,
                new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
+        log_info(log_Memoria, "INSERT EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
+                 _TablaDeSegmento->registro.nombreTabla,
+                 nuevoRegistroPagina->registro.punteroAPagina->key,
+                 nuevoRegistroPagina->registro.punteroAPagina->value);
         return;
     }
 
@@ -181,6 +181,10 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
                 if(socket != CONSOLE_REQUEST){
                     serializar_int(socket, false);
                 }
+                log_info(log_Memoria, "UPDATE EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
+                        _TablaDeSegmento->registro.nombreTabla,
+                        _TablaDePaginas->registro.punteroAPagina->key,
+                        _TablaDePaginas->registro.punteroAPagina->value);
                 return;
             }
         }
@@ -193,6 +197,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
     if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
         free(nuevoRegistroPagina);
+        log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");
         return;
     }
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;

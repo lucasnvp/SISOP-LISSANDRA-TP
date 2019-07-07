@@ -19,7 +19,7 @@ void comando_select(select_tad* select, int requestOrigin){
             serializar_int(requestOrigin, false);
         }
     } else {
-        log_info(log_Memoria, "SELECT => TABLA: <%s>\tKEY: <%d>\tVALUE: <%s>\tTIMESTAMP: <%d>",
+        log_info(log_Memoria, "SELECT => TABLA: <%s>\tKEY: <%d>\tVALUE: <%s>\tTIMESTAMP: <%lld>",
             select->nameTable,
             registro->key,
             registro->value,

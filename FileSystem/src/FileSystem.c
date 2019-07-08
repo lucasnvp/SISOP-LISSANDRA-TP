@@ -19,6 +19,9 @@ int main(){
     print_config(config, log_Console);
     configFilePathSize = string_length(PATH_CONFIG);
 
+    // Inicializar tabla de compactacion
+    init_list_compactation();
+
     // Inicializar Queue y Semaforos
     init_queue_and_sem();
 
@@ -32,7 +35,7 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de dump
-    pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
+    //pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
 
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
@@ -50,6 +53,7 @@ void init_log(char* pathLog){
     mkdir("/home/utnso/Gank-mid/Logs",0755);
     log_Console = log_create(pathLog, "FileSystem", true, LOG_LEVEL_INFO);
     log_FileSystem = log_create(pathLog, "FileSystem", false, LOG_LEVEL_INFO);
+    log_FileSystem_Free_Blocks = log_FileSystem;
 }
 
 void server(void* args) {
@@ -120,6 +124,7 @@ void connection_handler(uint32_t socket, uint32_t command){
             insert_tad* insert = deserializar_insert(socket);
 
             if(string_length(insert->value) > config->TAMANO_VALUE) {
+                log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", insert->value, config->TAMANO_VALUE);
                 serializar_int(socket, false);
             }
 
@@ -169,11 +174,15 @@ void connection_handler(uint32_t socket, uint32_t command){
             break;
         }
         case COMAND_DROP: {
+
             log_info(log_FileSystem, "La memoria envio un drop");
-            char* nameTable = deserializar_string(socket);
-            log_info(log_FileSystem, "Se va a eliminar la tabla: %s", nameTable);
-            // Ejecutar el drop
-            serializar_int(socket, true); // Envio la confirmacion de la operacion
+
+            char* tabla = deserializar_string(socket);
+
+            log_info(log_FileSystem, "DROP => TABLA: <%s>\t", tabla);
+
+            comando_drop(tabla, socket);
+
             break;
         }
         default:
@@ -225,8 +234,19 @@ void consola() {
                 if (comandos->cantArgs == 2) {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
-                    int key = atoi(key_string);
-                    comando_select(table,key, CONSOLE_REQUEST);
+
+                    bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                    if(!isInvalidKey) {
+                        int key = atoi(key_string);
+
+                        if(key<0) {
+                            log_info(log_FileSystem, "FAILED SELECT ==> La key ingresada <%s> no es válida", key_string);
+                        } else {
+                            comando_select(table,key, CONSOLE_REQUEST);
+                        }
+                    } else {
+                        log_info(log_FileSystem, "FAILED SELECT ==> La key ingresada <%s> no es un número", key_string);
+                    }
                 }
 
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
@@ -237,7 +257,7 @@ void consola() {
                     char* value = comandos->arg[2];
 
                     if(string_length(value) > config->TAMANO_VALUE) {
-                        print_console((void*) log_error, "El tamaño del value es mayor al permitido. \n");
+                        log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", value, config->TAMANO_VALUE);
 
                     } else {
 
@@ -245,11 +265,35 @@ void consola() {
                         char* key_string = comandos->arg[1];
                         char* timestamp_string = comandos->arg[3];
 
-                        int key = atoi(key_string);
-                        int timestamp = atoi(timestamp_string);
+                        bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                        bool isInvalidTime = atoll(timestamp_string) == 0 && timestamp_string != "0";
 
-                        string_to_upper(table);
-                        comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                        if(isInvalidKey || isInvalidTime) {
+                            if(isInvalidKey) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es un número", key_string);
+                            }
+
+                            if(isInvalidTime) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> El timestamp ingresado <%s> no es válido", timestamp_string);
+                            }
+
+                        } else {
+                            int key = atoi(key_string);
+                            uint64_t timestamp = atoll(timestamp_string);
+
+                            if(key < 0) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es válida", key_string);
+                            }
+
+                            if(timestamp < 0) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> El timestamp ingresado <%s> no es válido", timestamp_string);
+                            } else {
+                                string_to_upper(table);
+                                comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
+                            }
+
+                        }
+
                     }
 
                 } else {
@@ -258,16 +302,29 @@ void consola() {
                         char* value = comandos->arg[2];
 
                         if(string_length(value) > config->TAMANO_VALUE) {
-                            print_console((void *) log_error, "El tamaño del value es mayor al permitido. \n");
+                            log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", value, config->TAMANO_VALUE);
 
                         } else {
 
                             char* table = comandos->arg[0];
                             char* key_string = comandos->arg[1];
-                            int key = atoi(key_string);
-                            string_to_upper(table);
 
-                            comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                            bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+
+                            if(isInvalidKey) {
+                                log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es un número", key_string);
+                            } else {
+                                int key = atoi(key_string);
+
+                                if(key < 0) {
+                                    log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es válida", key_string);
+                                } else {
+                                    string_to_upper(table);
+                                    comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
+                                }
+
+                            }
+
                         }
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
@@ -281,18 +338,37 @@ void consola() {
                     char* cantidad_particiones = comandos->arg[2];
                     char* compactacion = comandos->arg[3];
 
-                    comando_create(table, consistencia, cantidad_particiones, compactacion,-1);
+                    bool isValidConsitency = string_equals_ignore_case(consistencia, "EC") || string_equals_ignore_case(consistencia, "SC") || string_equals_ignore_case(consistencia, "SHC");
+                    bool isValidPartitions = atoi(cantidad_particiones) > 0;
+                    bool isValidCompactation = atoi(compactacion) > 0;
+
+                    if(isValidConsitency && isValidCompactation && isValidPartitions) {
+                        comando_create(table, consistencia, cantidad_particiones, compactacion, CONSOLE_REQUEST);
+                    } else {
+                        if(!isValidCompactation) {
+                            log_info(log_FileSystem, "FAILED CREATE ==> El tiempo de compactación ingresado <%s> no es válido", compactacion);
+                        }
+
+                        if(!isValidConsitency) {
+                            log_info(log_FileSystem, "FAILED INSERT ==> La consitencia ingresada <%s> no es válida.", consistencia);
+                        }
+
+                        if(!isValidPartitions) {
+                            log_info(log_FileSystem, "FAILED INSERT ==> La cantidad de particiones ingresadas <%s> no es válida", cantidad_particiones);
+                        }
+                    }
+
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
-                    comando_describe_all(-1);
+                    comando_describe_all(CONSOLE_REQUEST);
                 } else {
                     if (comandos->cantArgs == 1) {
                         char* table = comandos->arg[0];
-                        comando_describe(table,-1);
+                        comando_describe(table, CONSOLE_REQUEST);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
@@ -301,7 +377,7 @@ void consola() {
             else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
                     char* table = comandos->arg[0];
-                    comando_drop(table,-1);
+                    comando_drop(table, CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

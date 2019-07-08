@@ -132,9 +132,10 @@ char* getRegistersFromBinaryFile(char *pathTmp) {
 
         // TODO: ir calculando cuanto queda por leer
 
-        uint32_t int_size = atoi(size)-1;
-        for (int i = 0; i < bloquesList[i] != NULL; i++) {
+        uint32_t int_size = atoi(size);
+        for (int i = 0; i < bloquesList[i] != NULL && int_size > 0; i++) {
             string_append(&result, leerBloque(bloquesList[i], int_size));
+            int_size -= TAMANIO_BLOQUES;
         }
 
         string_iterate_lines(bloquesList, (void*) free);
@@ -187,7 +188,7 @@ t_list* transformRegistersStrToStructs(char* strRegs) {
             char* registro = registers[i];
             char** tad = string_split(registro, ";");
 
-            list_add(list_registers, new_registro_tad(atoi(tad[0]), atoi(tad[1]), tad[2]));
+            list_add(list_registers, new_registro_tad(atoll(tad[0]), atoi(tad[1]), tad[2]));
 
             free(registro);
             string_iterate_lines(tad, (void*) free);

@@ -80,6 +80,8 @@ void mostrar_metadatas(int requestOrigin) {
 
     t_list* describes = list_create();
 
+    bool existeAlMenosUnaTabla = false;
+
     if (d) {
         struct dirent *p;
 
@@ -101,6 +103,7 @@ void mostrar_metadatas(int requestOrigin) {
                 list_add(describes, crearDescribe(metadata, p->d_name));
             } else {
                 mostrar_metadata_tabla(metadata, p->d_name);
+                existeAlMenosUnaTabla = true;
             }
 
             free(path);
@@ -118,8 +121,8 @@ void mostrar_metadatas(int requestOrigin) {
             serializar_describe_all(requestOrigin, describes);
         };
     } else {
-        if(list_is_empty(describes) == true) {
-            log_info(log_FileSystem, "No hay tablas en el directorio");
+        if(existeAlMenosUnaTabla == false) {
+            log_info(log_FileSystem, "FAILED DESCRIBE ==> No existen tablas en el directorio");
         }
     }
 
@@ -224,10 +227,4 @@ char** get_bloques_array(char* path) {
     char** bloquesarray = config_get_array_value(filetogetbloques, "BLOCKS");
     config_destroy(filetogetbloques);
     return bloquesarray;
-}
-
-double getCurrentTime() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return fabs((tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
 }

@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <readline/history.h>
@@ -26,6 +27,9 @@
 #include "comandos/comandos.h"
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
+#include "utils/freeBlocksFromFS.h"
+
+#include "ctype.h"
 
 // Semaforos
 pthread_mutex_t mutexConfig;    // Bloqueo el hilo para cambiar la config

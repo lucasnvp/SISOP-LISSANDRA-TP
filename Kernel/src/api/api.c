@@ -36,7 +36,7 @@ void api_insert(char* tabla, u_int16_t key, char* value){
         log_info(log_Kernel_api, "INSERT => La tabla: <%s> no existe", tabla);
     } else {
         serializar_int(socket, COMAND_INSERT);
-        insert_tad *insert = new_insert_tad(tabla, key, value);
+        insert_tad * insert = new_insert_tad(tabla, key, value);
         serializar_insert(socket, insert);
 
         bool memoryFull = deserializar_int(socket);
@@ -44,6 +44,11 @@ void api_insert(char* tabla, u_int16_t key, char* value){
             //todo Mandar a todas las memorias journal
             log_info(log_Kernel_api, "JOURNAL => Se envio el request a memoria");
             serializar_int(socket, COMAND_JOURNAL);
+            uint32_t journalFinalizado = deserializar_int(socket);
+            if (journalFinalizado) {
+                serializar_int(socket, COMAND_INSERT);
+                serializar_insert(socket, insert);
+            }
         }
 
         log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
@@ -101,8 +106,8 @@ void api_describe_all () {
         log_info(log_Kernel_api, "DESCRIBE ALL => No se encontro memoria disponible");
     } else {
         serializar_int(socket, COMAND_DESCRIBE_ALL);
-
-        t_list* listDescribe = deserializar_describe_all(socket);
+        t_list* listDescribe = list_create();
+        listDescribe = deserializar_describe_all(socket);
         load_METADATA(listDescribe);
         list_destroy_and_destroy_elements(listDescribe, free_describe_tad);
         print_metadata(log_Kernel_api);
@@ -110,7 +115,7 @@ void api_describe_all () {
 }
 
 void api_drop(char* tabla){
-    uint32_t socket = get_memory_socket_from_metadata(tabla);
+    int socket = get_memory_socket_from_metadata(tabla);
 
     if (socket == -1) {
         log_info(log_Kernel_api, "DROP => La tabla: <%s> no existe", tabla);

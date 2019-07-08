@@ -17,6 +17,7 @@
 #include "../utils/utils.h"
 #include "../utils/memtableHanlder.h"
 #include "../utils/tablesHandler.h"
+#include "../utils/freeBlocksFromFS.h"
 #include "../utils/getterValuesFromFS.h"
 #include "../utils/compactator.h"
 

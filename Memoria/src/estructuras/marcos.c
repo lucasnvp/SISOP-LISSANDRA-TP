@@ -33,7 +33,7 @@ registro_tad* reservarMarco(int socket) {
                 serializar_int(socket, false); // encontramos un marco libre por lo que no tenemos que hacer journal
             }
 
-            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue));
+            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint64_t) + sizeof(uint32_t) + tamanoValue));
         }
 
 
@@ -46,7 +46,7 @@ registro_tad* reservarMarco(int socket) {
 void inicializarMarcos(uint32_t tamanioMemoria){
     //calculo la cantidad de marcos
 
-    cantidadDeMarcos = tamanioMemoria / (sizeof(uint32_t) + sizeof(uint32_t) + tamanoValue);
+    cantidadDeMarcos = tamanioMemoria / (sizeof(uint64_t) + sizeof(uint32_t) + tamanoValue);
     struct tablaDeMarcos* primerRegistroDeMarco = malloc(sizeof(tablaDeMarcos));
     primerRegistroDeMarco->registro.numeroMarco = 0;
     primerRegistroDeMarco->registro.marcoOcupado = false;

@@ -114,9 +114,9 @@ void runCompactation(char* table) {
                 if(hayLugar == true) {
                     crearParticionCompactada(pathPartition, bloquesParaAsignar, string_length(registrosAGuardar));
                     guardarEnBloques(registrosAGuardar, bloquesParaAsignar);
+                } else {
+                    log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay la cantidad de bloques libres necesarios para realizar la transaccion en este momento");
                 }
-
-                //si no hay lugar perdemos los datos
 
                 list_destroy(bloquesParaAsignar);
                 free(registrosAGuardar);

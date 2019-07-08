@@ -172,7 +172,7 @@ void asignar_bloques(char* path) {
             free(bloquesDelArchivo);
         } else{
             // TODO: que hacer si no hay bloques libres? Deberia permitirte crear la tabla igual (como esta ahora?) o debería retornar error?
-            //No hay bloques
+            log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay la cantidad de bloques libres necesarios para realizar la transaccion en este momento");
         }
         fclose(newFD);
     }

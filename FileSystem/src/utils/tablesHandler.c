@@ -18,7 +18,6 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
             guardarEnBloques(registrosADumpear, bloquesParaAsignar);
             list_destroy(registros);
         } else {
-            // TODO: si no hay lugar perdemos los datos
             log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay bloques libres en este momento");
         }
 

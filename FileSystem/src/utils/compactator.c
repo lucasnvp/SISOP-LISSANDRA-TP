@@ -90,7 +90,8 @@ void runCompactation(char* table) {
                         list_add(listFromPartition, registroTad);
                     }
 
-                    // TODO: free registroTadFind
+                    free_registro_tad(registroTadFind);
+
                 } else {
 
                     listFromPartition = list_create();
@@ -113,9 +114,9 @@ void runCompactation(char* table) {
                 if(hayLugar == true) {
                     crearParticionCompactada(pathPartition, bloquesParaAsignar, string_length(registrosAGuardar));
                     guardarEnBloques(registrosAGuardar, bloquesParaAsignar);
-                } else {
-                    // TODO: si no hay lugar perdemos los datos
                 }
+
+                //si no hay lugar perdemos los datos
 
                 list_destroy(bloquesParaAsignar);
                 free(registrosAGuardar);

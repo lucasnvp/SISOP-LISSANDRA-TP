@@ -115,14 +115,12 @@ void mostrar_metadatas(int requestOrigin) {
 
     if(requestOrigin != CONSOLE_REQUEST) {
         if(list_is_empty(describes) == true) {
-            // todo no es necesario enviar un ok
         } else {
-            // todo no es necesario enviar un ok
             serializar_describe_all(requestOrigin, describes);
         };
     } else {
         if(existeAlMenosUnaTabla == false) {
-            log_info(log_FileSystem, "FAILED DESCRIBE ==> No existen tablas en el directorio");
+            log_info(log_FileSystem, "NOT DESCRIBE ==> No existen tablas en el directorio");
         }
     }
 
@@ -133,9 +131,9 @@ void mostrar_metadatas(int requestOrigin) {
 void crear_particiones(char* path, int cantidad_particiones) {
 
     for(int i = 0; i < cantidad_particiones; i++) {
-        char* particion = crear_path_particion(path, i);
+        char* particion = string_duplicate(crear_path_particion(path, i));
         asignar_bloques(particion);
-        //TODO: free(particion) ???
+        free(particion);
     }
 }
 

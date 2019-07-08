@@ -10,7 +10,7 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
 }
 
 void comando_insert(char* table, int key, char* value, uint64_t timestamp, int requestOrigin){
-    log_info(log_FileSystem, "REQUEST INSERT ==> TABLA <%s>", table);
+    log_info(log_FileSystem, "REQUEST INSERT ==> TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>", table, key, value);
     string_to_upper(table);
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
@@ -43,14 +43,14 @@ void comando_insert(char* table, int key, char* value, uint64_t timestamp, int r
         serializar_int(requestOrigin, INSERT_OK);
     }
 
-    log_info(log_FileSystem, "SUCCESS INSERT ==> TABLA <%s> , VALUE <%s>, KEY <%d>", table, value, key);
+    log_info(log_FileSystem, "SUCCESS INSERT ==> TABLA: <%s>\t VALUE: <%s>\t KEY <%d>", table, value, key);
 
 }
 
 void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin) {
-    log_info(log_FileSystem, "EXECUTE CREATE ==> TABLA <%s>", table);
+    log_info(log_FileSystem, "EXECUTE CREATE ==> TABLA: <%s>", table);
 
-    int particiones = fabs(atoi(cantidad_particiones));
+    int particiones = atoi(cantidad_particiones);
 
     string_to_upper(table);
 
@@ -80,7 +80,6 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
 
-        // todo gabe son todos char* en este momento...
         createThreadCompactation(table, consistencia, atoi(cantidad_particiones), atoi(compactacion));
         log_info(log_FileSystem, "SUCCESS CREATE ==> TABLA <%s>", table);
 
@@ -92,7 +91,7 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 }
 
 void comando_select(char* table, int key, int requestOrigin){
-    log_info(log_FileSystem, "REQUEST SELECT ==> TABLE <%s> , KEY<%d>", table, key);
+    log_info(log_FileSystem, "REQUEST SELECT ==> TABLE: <%s>\t KEY: <%d>", table, key);
 
     registro_tad* finalResult = NULL;
 
@@ -190,8 +189,6 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
         }
 
         config_destroy(metadata);
-
-        log_info(log_FileSystem, "SUCCES DESCRIBE ==> TABLA <%s>", nombre_tabla);
 
     } else {
 

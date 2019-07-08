@@ -71,3 +71,16 @@ uint32_t criterio_ramdom_memory_by (char* criterio) {
         return c->MEMORY_NUMBER;
     }
 }
+
+uint32_t criterio_shc (char* table) {
+    t_list* filtered = criterio_search(CRITERIO_SHC);
+    uint32_t listSize = list_size(filtered);
+    if (listSize == 0) {
+        return -1;
+    } else {
+        uint32_t tableLength = string_length(table);
+        uint32_t index = tableLength % listSize;
+        criterio_tad* c = list_get(filtered, index);
+        return c->MEMORY_NUMBER;
+    }
+}

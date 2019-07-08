@@ -101,6 +101,10 @@ uint32_t get_memory_socket_from_metadata (char* table) {
 
     if (auxMetadata == NULL) {
         return -1;
+    } else if (string_equals_ignore_case(auxMetadata->DESCRIBE->consistencia, CRITERIO_SHC)) {
+        uint32_t memoryNumber = criterio_shc(table);
+        memory_tad* memory = search_memory(memoryNumber);
+        return memory->SOCKET;
     } else {
         memory_tad* memory = search_memory(auxMetadata->MEMORY_NUMBER);
         return memory->SOCKET;

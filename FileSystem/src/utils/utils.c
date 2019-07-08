@@ -58,12 +58,12 @@ t_config * obtener_metadata_table(char* metadatabin){
 }
 
 void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
-    puts("--------------------------------------");
-    printf("Metadata de la tabla: %s \n", nombre_tabla);
-    printf("CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
-    printf("PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
-    printf("COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
-    puts("--------------------------------------");
+    log_info(log_FileSystem,"--------------------------------------");
+    log_info(log_FileSystem,"Metadata de la tabla: %s \n", nombre_tabla);
+    log_info(log_FileSystem,"CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
+    log_info(log_FileSystem,"PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
+    log_info(log_FileSystem,"COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
+    log_info(log_FileSystem,"--------------------------------------");
 }
 
 describe_tad* crearDescribe(t_config* metadata, char* nombreTabla) {

@@ -235,7 +235,7 @@ void consola() {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
 
-                    bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                    bool isInvalidKey = atoi(key_string) == 0 && !string_equals_ignore_case(key_string, "0");
                     if(!isInvalidKey) {
                         int key = atoi(key_string);
 
@@ -265,8 +265,8 @@ void consola() {
                         char* key_string = comandos->arg[1];
                         char* timestamp_string = comandos->arg[3];
 
-                        bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
-                        bool isInvalidTime = atoll(timestamp_string) == 0 && timestamp_string != "0";
+                        bool isInvalidKey = atoi(key_string) == 0 && !string_equals_ignore_case(key_string, "0");
+                        bool isInvalidTime = atoll(timestamp_string) == 0 && !string_equals_ignore_case(timestamp_string, "0");
 
                         if(isInvalidKey || isInvalidTime) {
                             if(isInvalidKey) {
@@ -309,7 +309,7 @@ void consola() {
                             char* table = comandos->arg[0];
                             char* key_string = comandos->arg[1];
 
-                            bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                            bool isInvalidKey = atoi(key_string) == 0 && !string_equals_ignore_case(key_string, "0");
 
                             if(isInvalidKey) {
                                 log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es un número", key_string);

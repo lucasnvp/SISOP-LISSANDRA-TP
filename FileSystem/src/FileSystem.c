@@ -35,7 +35,7 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de dump
-    //pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
+    pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
 
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
@@ -401,14 +401,6 @@ void consola() {
                 } else {
                     print_console((void*) log_error, "Número de parámetros incorrecto. \n");
                 }
-            }
-
-            else if (!strcmp(comandos->comando, "COMPACTAR")) {
-                if (comandos->cantArgs == 1) {
-                    char* table = comandos->arg[0];
-                    comando_compactation(table);
-                }
-                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
             }
 
             else print_console((void*) log_error, "Comando incorrecto.\n");

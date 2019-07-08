@@ -2,23 +2,33 @@
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
 
-    t_list* bloquesParaAsignar = list_create();
+    char* path = string_duplicate(montajeTablas);
+    char* table = string_duplicate(nombreTabla);
+    string_append(&path, table);
 
-    char* registrosADumpear = transformAllRegistersToUniqueString(registros);
+    if(ValidarArchivo(path)) {
+        t_list* bloquesParaAsignar = list_create();
 
-    int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosADumpear, bloquesParaAsignar);
+        char* registrosADumpear = transformAllRegistersToUniqueString(registros);
 
-    if(hayLugar == true) {
-        crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
-        guardarEnBloques(registrosADumpear, bloquesParaAsignar);
-        list_destroy(registros);
-    } else {
-        // TODO: si no hay lugar perdemos los datos
-        log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay bloques libres en este momento");
+        int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosADumpear, bloquesParaAsignar);
+
+        if(hayLugar == true) {
+            crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
+            guardarEnBloques(registrosADumpear, bloquesParaAsignar);
+            list_destroy(registros);
+        } else {
+            // TODO: si no hay lugar perdemos los datos
+            log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay bloques libres en este momento");
+        }
+
+        list_destroy(bloquesParaAsignar);
+        free(registrosADumpear);
     }
 
-    list_destroy(bloquesParaAsignar);
-    free(registrosADumpear);
+    free(path);
+    free(table);
+
 }
 
 int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {

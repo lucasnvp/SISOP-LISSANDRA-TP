@@ -133,8 +133,9 @@ char* getRegistersFromBinaryFile(char *pathTmp) {
         // TODO: ir calculando cuanto queda por leer
 
         uint32_t int_size = atoi(size);
-        for (int i = 0; i < bloquesList[i] != NULL; i++) {
+        for (int i = 0; i < bloquesList[i] != NULL && int_size > 0; i++) {
             string_append(&result, leerBloque(bloquesList[i], int_size));
+            int_size -= TAMANIO_BLOQUES;
         }
 
         string_iterate_lines(bloquesList, (void*) free);

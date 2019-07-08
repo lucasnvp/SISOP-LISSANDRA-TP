@@ -1,5 +1,20 @@
 #include "compactator.h"
 
+compactation_table_tad* new_compactation_table_tad(create_tad* tableInfo) {
+    compactation_table_tad* compactationTable = malloc(sizeof(compactation_table_tad));
+    compactationTable->tableInfo = tableInfo;
+    return compactationTable;
+}
+
+void free_compactation_table_tad(compactation_table_tad* compactationTable) {
+    free_create_tad(compactationTable->tableInfo);
+    free(compactationTable);
+}
+
+void init_list_compactation() {
+    TABLES_COMPACTATION = dictionary_create();
+}
+
 void runCompactation(char* table) {
 
     t_list* registers = list_create();
@@ -242,3 +257,38 @@ void crearParticionCompactada(char* path, t_list* bloques, int size) {
 
 }
 
+void createThreadCompactation(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {
+    create_tad* tableInfo = new_create_tad(nameTable, consistencia, particiones, compactacion);
+    compactation_table_tad* compactationTable = new_compactation_table_tad(tableInfo);
+
+    char* toSend = string_duplicate(nameTable);
+
+    dictionary_put(TABLES_COMPACTATION, nameTable, compactationTable);
+    pthread_create(&thread_compactation, NULL, (void*) execCompactation, (void*)toSend);
+
+}
+
+void execCompactation(void *param) {
+    char* nameTable = param;
+
+    compactation_table_tad* compactationTable = dictionary_get(TABLES_COMPACTATION, nameTable);
+
+    bool forEverOrKillHim = true;
+    while(forEverOrKillHim) {
+
+        if(dictionary_has_key(TABLES_COMPACTATION, nameTable) == true) {
+            log_info(log_FileSystem, "Antes de compactar la tabla: %s", compactationTable->tableInfo->nameTable);
+            usleep(compactationTable->tableInfo->compactacion*1000);
+
+            // Una vez pasado el tiempo, compactamos
+            log_info(log_FileSystem, "Se va a compactar la tabla: %s", compactationTable->tableInfo->nameTable);
+
+            runCompactation(compactationTable->tableInfo->nameTable);
+        } else {
+            forEverOrKillHim = false;
+        }
+
+    }
+
+    pthread_exit(NULL);
+}

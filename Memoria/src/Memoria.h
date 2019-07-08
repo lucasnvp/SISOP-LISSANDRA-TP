@@ -55,10 +55,6 @@ typedef struct {
     char * arg[4];
 } t_comandos;
 
-//TODO definir estructura de cada registro de la tabla de gossiping(readme)
-
-
-
 registro_tad* alocar_MemoriaPrincipal();
 
 void inicializarSemaforos();

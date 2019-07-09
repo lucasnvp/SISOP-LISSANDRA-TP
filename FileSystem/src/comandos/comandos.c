@@ -246,8 +246,10 @@ void comando_drop(char* table, int requestOrigin){
 }
 
 void comando_dump(){
+    sem_wait(&SEM_MEMTABLE);
     dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
+    sem_post(&SEM_MEMTABLE);
 }
 
 void comando_compactation(char* table) {

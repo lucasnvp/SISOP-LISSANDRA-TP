@@ -65,16 +65,16 @@ void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_
         log_info(log_Kernel_api,
                  "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
                  tabla, consistencia, particiones, compactacion);
-        create_tad *create = new_create_tad(tabla, consistencia, particiones, compactacion);
+        create_tad* create = new_create_tad(tabla, consistencia, particiones, compactacion);
         serializar_create(socket, create);
-        free_create_tad(create);
         uint32_t confirm = deserializar_int(socket);
         if (confirm) {
-            // todo agregar a la metadata
+            add_create_to_metadata(create);
             log_info(log_Kernel_api, "Se creo la tabla: %s, con exito", tabla);
         } else {
             log_info(log_Kernel_api, "Error al crear la tabla: %s", tabla);
         }
+        free_create_tad(create);
     }
 }
 
@@ -127,7 +127,7 @@ void api_drop(char* tabla){
 
         bool confirm = deserializar_int(socket);
         if (confirm) {
-            // todo Eliminar de la tabla
+            // todo Eliminar de la metadata
             log_info(log_Kernel_api, "DROP => Se elimino la tabla con exito");
         } else {
             log_info(log_Kernel_api, "DROP => Fallo el request");

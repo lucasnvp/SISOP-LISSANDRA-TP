@@ -64,6 +64,20 @@ void create_and_add(t_list* listDescribes, t_list* listToAdd) {
     list_iterate(listDescribes, load_element);
 }
 
+void add_create_to_metadata(create_tad* create) {
+    describe_tad* describe = new_describe_tad(
+            create->nameTable,
+            create->consistencia,
+            create->particiones,
+            create->compactacion);
+    metadata_tad* metadata = new_metadata_tad(describe);
+    if ( string_equals_ignore_case(metadata->DESCRIBE->consistencia, CRITERIO_SC) ) {
+        uint32_t memory_number = criterio_ramdom_memory_by(CRITERIO_SC);
+        update_metadata_memory_number(metadata, memory_number);
+    }
+    list_add(LIST_METADATA, metadata);
+}
+
 void set_previous_memory_number(metadata_tad* metadata) {
     void set_element(void* element) {
         metadata_tad* metadataElement = element;

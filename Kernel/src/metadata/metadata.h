@@ -34,6 +34,7 @@ void free_metadata(metadata_tad* metadata);
 void update_metadata_memory_number(metadata_tad* metadata, uint32_t number);
 void load_METADATA(t_list* listDescribes);
 void create_and_add(t_list* listDescribes, t_list* listToAdd);
+void add_create_to_metadata(create_tad* create);
 void set_previous_memory_number(metadata_tad* metadata);
 void print_metadata(t_log* log);
 metadata_tad* search_table(char* table);

@@ -124,3 +124,11 @@ uint32_t get_memory_socket_from_metadata (char* table) {
         return memory->SOCKET;
     }
 }
+
+void drop_metadata(char* table) {
+    int _is_the_table(metadata_tad* m){
+        return string_equals_ignore_case(m->DESCRIBE->nameTable, table);
+    }
+
+    list_remove_and_destroy_by_condition(LIST_METADATA, (void*) _is_the_table, free_metadata);
+}

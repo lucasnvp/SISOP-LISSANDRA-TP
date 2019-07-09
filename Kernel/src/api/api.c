@@ -127,13 +127,14 @@ void api_drop(char* tabla){
 
         bool confirm = deserializar_int(socket);
         if (confirm) {
-            // todo Eliminar de la metadata
+            drop_metadata(tabla);
             log_info(log_Kernel_api, "DROP => Se elimino la tabla con exito");
         } else {
             log_info(log_Kernel_api, "DROP => Fallo el request");
         }
 
     }
+    // todo revisar free de tabla
 }
 
 void api_journal () {

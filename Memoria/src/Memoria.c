@@ -392,7 +392,7 @@ void inicializarSemaforos() {
 void inicializarHilos() {
 
     //Hilo de Journal
-    //pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
     //Hilo de Gossiping
     pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");

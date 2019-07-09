@@ -10,6 +10,10 @@ int main(int argc, char *argv[]){
     puts("Proceso Memoria");
 
     //Cargo los argumentos
+    if (argv[1] == NULL) {
+        puts("Error, falta el path del archivo de config");
+        return EXIT_FAILURE;
+    }
     PATH_CONFIG = strdup(argv[1]);
     if (!ValidarArchivo(PATH_CONFIG)) {
         puts("Error en el path del archivo de config");

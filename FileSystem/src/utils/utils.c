@@ -58,12 +58,12 @@ t_config * obtener_metadata_table(char* metadatabin){
 }
 
 void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
-    puts("--------------------------------------");
-    printf("Metadata de la tabla: %s \n", nombre_tabla);
-    printf("CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
-    printf("PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
-    printf("COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
-    puts("--------------------------------------");
+    log_info(log_FileSystem,"--------------------------------------");
+    log_info(log_FileSystem,"Metadata de la tabla: %s \n", nombre_tabla);
+    log_info(log_FileSystem,"CONSISTENCY: %s \n", config_get_string_value(metadata, "CONSISTENCY"));
+    log_info(log_FileSystem,"PARTITIONS: %i \n", config_get_int_value(metadata, "PARTITIONS"));
+    log_info(log_FileSystem,"COMPACTATION_TIME: %i \n", config_get_int_value(metadata, "COMPACTATION_TIME"));
+    log_info(log_FileSystem,"--------------------------------------");
 }
 
 describe_tad* crearDescribe(t_config* metadata, char* nombreTabla) {
@@ -115,14 +115,12 @@ void mostrar_metadatas(int requestOrigin) {
 
     if(requestOrigin != CONSOLE_REQUEST) {
         if(list_is_empty(describes) == true) {
-            // todo no es necesario enviar un ok
         } else {
-            // todo no es necesario enviar un ok
             serializar_describe_all(requestOrigin, describes);
         };
     } else {
         if(existeAlMenosUnaTabla == false) {
-            log_info(log_FileSystem, "FAILED DESCRIBE ==> No existen tablas en el directorio");
+            log_info(log_FileSystem, "NOT DESCRIBE ==> No existen tablas en el directorio");
         }
     }
 
@@ -133,9 +131,9 @@ void mostrar_metadatas(int requestOrigin) {
 void crear_particiones(char* path, int cantidad_particiones) {
 
     for(int i = 0; i < cantidad_particiones; i++) {
-        char* particion = crear_path_particion(path, i);
+        char* particion = string_duplicate(crear_path_particion(path, i));
         asignar_bloques(particion);
-        //TODO: free(particion) ???
+        free(particion);
     }
 }
 
@@ -174,7 +172,7 @@ void asignar_bloques(char* path) {
             free(bloquesDelArchivo);
         } else{
             // TODO: que hacer si no hay bloques libres? Deberia permitirte crear la tabla igual (como esta ahora?) o debería retornar error?
-            //No hay bloques
+            log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay la cantidad de bloques libres necesarios para realizar la transaccion en este momento");
         }
         fclose(newFD);
     }

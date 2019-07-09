@@ -90,7 +90,8 @@ void runCompactation(char* table) {
                         list_add(listFromPartition, registroTad);
                     }
 
-                    // TODO: free registroTadFind
+                    free_registro_tad(registroTadFind);
+
                 } else {
 
                     listFromPartition = list_create();
@@ -114,7 +115,7 @@ void runCompactation(char* table) {
                     crearParticionCompactada(pathPartition, bloquesParaAsignar, string_length(registrosAGuardar));
                     guardarEnBloques(registrosAGuardar, bloquesParaAsignar);
                 } else {
-                    // TODO: si no hay lugar perdemos los datos
+                    log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay la cantidad de bloques libres necesarios para realizar la transaccion en este momento");
                 }
 
                 list_destroy(bloquesParaAsignar);
@@ -277,13 +278,11 @@ void execCompactation(void *param) {
     while(forEverOrKillHim) {
 
         if(dictionary_has_key(TABLES_COMPACTATION, nameTable) == true) {
-            log_info(log_FileSystem, "Antes de compactar la tabla: %s", compactationTable->tableInfo->nameTable);
             usleep(compactationTable->tableInfo->compactacion*1000);
 
             // Una vez pasado el tiempo, compactamos
-            log_info(log_FileSystem, "Se va a compactar la tabla: %s", compactationTable->tableInfo->nameTable);
-
             runCompactation(compactationTable->tableInfo->nameTable);
+            log_info(log_FileSystem, "Se compacta la tabla: %s", compactationTable->tableInfo->nameTable);
         } else {
             forEverOrKillHim = false;
         }

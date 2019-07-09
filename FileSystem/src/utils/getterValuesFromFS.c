@@ -53,6 +53,8 @@ t_list* getRegistersFromTemporals(char* table, char* typeFile) {
 
         }
 
+
+
         free(pathTmp);
     }
 

@@ -5,15 +5,19 @@
 #ifndef TP_2019_1C_GANK_MID_MEMTABLEHANLDER_H
 #define TP_2019_1C_GANK_MID_MEMTABLEHANLDER_H
 
-#include "commons/collections/dictionary.h"
-#include "commons/collections/list.h"
 #include "stdbool.h"
-#include "commons/log.h"
-#include "commonsfunctions/functions.h"
-#include "../setup/setup.h"
-#include "../utils/utils.h"
 #include "stdlib.h"
 #include "string.h"
+#include <semaphore.h>
+
+#include "commons/collections/dictionary.h"
+#include "commons/collections/list.h"
+#include "commons/log.h"
+#include "commonsfunctions/functions.h"
+
+#include "../setup/setup.h"
+#include "../utils/utils.h"
+#include "../utils/semaphores.h"
 
 t_dictionary * memtable;
 

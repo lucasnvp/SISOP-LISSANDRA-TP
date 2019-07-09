@@ -58,7 +58,7 @@ void journaling(){
     while(true){
 
         timeJournal.tv_sec = 0;
-        timeJournal.tv_usec = config.RETARDO_JOURNAL;
+        timeJournal.tv_usec = (config.RETARDO_JOURNAL * 1000);
 
         select(0, NULL, NULL, NULL, &timeJournal);
         sem_wait(&semaforoDrop);

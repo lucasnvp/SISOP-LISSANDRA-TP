@@ -463,6 +463,10 @@ void watching_config(){
 void init_queue_and_sem(){
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
     sem_init(&SEM_MEMTABLE,0,1);
+    sem_init(&SEM_TMP,0,1);
+    sem_init(&SEM_TMPC,0,1);
+    sem_init(&SEM_COMPACTACTION,0,1);
+    sem_init(&SEM_PARTITION,0,1);
 }
 
 void dump() {

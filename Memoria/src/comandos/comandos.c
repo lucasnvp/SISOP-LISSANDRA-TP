@@ -6,7 +6,7 @@
 
 
 void comando_select(select_tad* select, int requestOrigin){
-    registro_tad* registro = funcionSelect(select);
+    registro_tad* registro = funcionSelect(select, requestOrigin);
 
     if (registro == NULL) {
       registro = solicitarSelectAFileSystem(requestOrigin, select);

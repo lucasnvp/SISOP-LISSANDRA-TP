@@ -14,7 +14,7 @@
 registro_tad* liberarPagina(int socket, bool flagModificado) {
     tablaDePaginas* registroMasViejo;
     bool seDebeHacerJournal = verificarPaginas();
-    if (socket != CONSOLE_REQUEST && flagModificado) {
+    if (socket != CONSOLE_REQUEST) {
             serializar_int(socket, seDebeHacerJournal);
     }
 

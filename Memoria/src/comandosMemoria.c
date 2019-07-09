@@ -63,7 +63,7 @@ void funcionDrop(char* nombreDeTabla){
 }
 
 
-registro_tad* funcionSelect(select_tad* select){
+registro_tad* funcionSelect(int socket, select_tad* select){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     uint64_t timestampDeAcceso = getCurrentTime();
@@ -76,6 +76,9 @@ registro_tad* funcionSelect(select_tad* select){
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
+                if ( socket != CONSOLE_REQUEST){
+                    serializar_int(socket, false);
+                }
                 return _TablaDePaginas->registro.punteroAPagina;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
@@ -193,7 +196,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                        new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
-                if(socket != CONSOLE_REQUEST && flagModificado){
+                if(socket != CONSOLE_REQUEST){
                     serializar_int(socket, false); // no se debe hacer el journal porq actualizamos el dato
                 }
                 log_info(log_Memoria, "UPDATE EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",

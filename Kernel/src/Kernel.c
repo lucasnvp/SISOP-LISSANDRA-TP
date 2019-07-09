@@ -366,16 +366,8 @@ bool parser_line(char * line){
 }
 
 void gossiping(){
-    struct timeval timeGossip;
-
     while(KERNEL_READY){
-
-        timeGossip.tv_sec = 0;
-        timeGossip.tv_usec = (RETARDO_GOSSIPING * 1000);
-
-        select(0, NULL, NULL, NULL, &timeGossip);
-
+        usleep(RETARDO_GOSSIPING * 1000);
         gossip_memory();
-
     }
 }

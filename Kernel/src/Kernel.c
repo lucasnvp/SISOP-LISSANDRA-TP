@@ -176,8 +176,11 @@ void consola() {
             }
 
             else if (!strcmp(comandos->comando, "JOURNAL")) {
-                if (comandos->cantArgs == 4) {
-
+                if (comandos->cantArgs == 0) {
+                    bool confirm = api_journal();
+                    if (confirm) {
+                        print_console((void*) log_error, "Journal a todas las memorias.");
+                    }
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

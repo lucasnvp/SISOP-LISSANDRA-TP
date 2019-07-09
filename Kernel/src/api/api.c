@@ -38,20 +38,24 @@ void api_insert(char* tabla, u_int16_t key, char* value){
         serializar_int(socket, COMAND_INSERT);
         insert_tad * insert = new_insert_tad(tabla, key, value);
         serializar_insert(socket, insert);
-
-        bool memoryFull = deserializar_int(socket);
-        if (memoryFull) {
-            //todo Mandar a todas las memorias journal
-            log_info(log_Kernel_api, "JOURNAL => Se envio el request a memoria");
-            serializar_int(socket, COMAND_JOURNAL);
-            uint32_t journalFinalizado = deserializar_int(socket);
-            if (journalFinalizado) {
-                serializar_int(socket, COMAND_INSERT);
-                serializar_insert(socket, insert);
+        bool valueSize = deserializar_int(socket);
+        if (valueSize) {
+            bool memoryFull = deserializar_int(socket);
+            if (memoryFull) {
+                bool confirm = api_journal();
+                if (confirm) {
+                    serializar_int(socket, COMAND_INSERT);
+                    serializar_insert(socket, insert);
+                    valueSize = deserializar_int(socket);
+                    memoryFull = deserializar_int(socket);
+                }
             }
+            log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
+        } else {
+            // todo cortar la ejecucion del script
+            log_info(log_Kernel_api, "INSERT => FAILURE, Invalid value, TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
         }
 
-        log_info(log_Kernel_api, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
     }
 }
 
@@ -137,6 +141,6 @@ void api_drop(char* tabla){
     // todo revisar free de tabla
 }
 
-void api_journal () {
-
+bool api_journal () {
+    return send_journal_all();
 }

@@ -128,6 +128,8 @@ void connection_handler(uint32_t socket, uint32_t command){
                 serializar_int(socket, false);
             }
 
+            usleep(config->RETARDO*1000);
+
             comando_insert(insert->nameTable, insert->key, insert->value, NOT_TIMESTAMP, socket);
 
             break;
@@ -148,6 +150,8 @@ void connection_handler(uint32_t socket, uint32_t command){
                      "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
                      create->nameTable, create->consistencia, create->particiones, create->compactacion);
 
+            usleep(config->RETARDO*1000);
+
             comando_create(create->nameTable, create->consistencia, string_itoa(create->particiones), string_itoa(create->compactacion), socket);
 
             free_create_tad(create);
@@ -162,12 +166,16 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
 
+            usleep(config->RETARDO*1000);
+
             comando_describe(tabla, socket);
 
             break;
         }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_FileSystem, "La memoria envio un describe all");
+
+            usleep(config->RETARDO*1000);
 
             comando_describe_all(socket);
 
@@ -180,6 +188,8 @@ void connection_handler(uint32_t socket, uint32_t command){
             char* tabla = deserializar_string(socket);
 
             log_info(log_FileSystem, "DROP => TABLA: <%s>\t", tabla);
+
+            usleep(config->RETARDO*1000);
 
             comando_drop(tabla, socket);
 
@@ -242,6 +252,7 @@ void consola() {
                         if(key<0) {
                             log_info(log_FileSystem, "FAILED SELECT ==> La key ingresada <%s> no es válida", key_string);
                         } else {
+                            usleep(config->RETARDO*1000);
                             comando_select(table,key, CONSOLE_REQUEST);
                         }
                     } else {
@@ -289,6 +300,7 @@ void consola() {
                                 log_info(log_FileSystem, "FAILED INSERT ==> El timestamp ingresado <%s> no es válido", timestamp_string);
                             } else {
                                 string_to_upper(table);
+                                usleep(config->RETARDO*1000);
                                 comando_insert(table, key, value, timestamp, CONSOLE_REQUEST);
                             }
 
@@ -320,6 +332,7 @@ void consola() {
                                     log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es válida", key_string);
                                 } else {
                                     string_to_upper(table);
+                                    usleep(config->RETARDO*1000);
                                     comando_insert(table, key, value, NOT_TIMESTAMP, CONSOLE_REQUEST);
                                 }
 
@@ -343,6 +356,7 @@ void consola() {
                     bool isValidCompactation = atoi(compactacion) > 0;
 
                     if(isValidConsitency && isValidCompactation && isValidPartitions) {
+                        usleep(config->RETARDO*1000);
                         comando_create(table, consistencia, cantidad_particiones, compactacion, CONSOLE_REQUEST);
                     } else {
                         if(!isValidCompactation) {
@@ -368,6 +382,7 @@ void consola() {
                 } else {
                     if (comandos->cantArgs == 1) {
                         char* table = comandos->arg[0];
+                        usleep(config->RETARDO*1000);
                         comando_describe(table, CONSOLE_REQUEST);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
@@ -377,6 +392,7 @@ void consola() {
             else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
                     char* table = comandos->arg[0];
+                    usleep(config->RETARDO*1000);
                     comando_drop(table, CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");

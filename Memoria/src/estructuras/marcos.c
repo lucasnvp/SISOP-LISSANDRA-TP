@@ -22,13 +22,13 @@ void liberarMarco(registro_tad* punteroAPagina){
 
 }
 
-registro_tad* reservarMarco(int socket) {
+registro_tad* reservarMarco(int socket, bool flagModificado) {
     struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
             _tablaDeMarcos->registro.marcoOcupado = true;
 
-            if(socket != CONSOLE_REQUEST){
+            if(socket != CONSOLE_REQUEST && flagModificado){
                 // serializo un "false" para kernel ya que la memoria no esta full
                 serializar_int(socket, false); // encontramos un marco libre por lo que no tenemos que hacer journal
             }
@@ -40,7 +40,7 @@ registro_tad* reservarMarco(int socket) {
         _tablaDeMarcos = _tablaDeMarcos->siguiente;
     }
     // si no se encontró ningun marco libre, se procede a liberar una página
-    return liberarPagina(socket);
+    return liberarPagina(socket, flagModificado);
 }
 
 void inicializarMarcos(uint32_t tamanioMemoria){

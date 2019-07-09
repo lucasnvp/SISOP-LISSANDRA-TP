@@ -70,6 +70,7 @@ void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_
         free_create_tad(create);
         uint32_t confirm = deserializar_int(socket);
         if (confirm) {
+            // todo agregar a la metadata
             log_info(log_Kernel_api, "Se creo la tabla: %s, con exito", tabla);
         } else {
             log_info(log_Kernel_api, "Error al crear la tabla: %s", tabla);
@@ -106,8 +107,7 @@ void api_describe_all () {
         log_info(log_Kernel_api, "DESCRIBE ALL => No se encontro memoria disponible");
     } else {
         serializar_int(socket, COMAND_DESCRIBE_ALL);
-        t_list* listDescribe = list_create();
-        listDescribe = deserializar_describe_all(socket);
+        t_list* listDescribe = deserializar_describe_all(socket);
         load_METADATA(listDescribe);
         list_destroy_and_destroy_elements(listDescribe, free_describe_tad);
         print_metadata(log_Kernel_api);

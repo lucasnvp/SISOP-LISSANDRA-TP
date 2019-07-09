@@ -123,8 +123,7 @@ void comando_describe(char* nombreTabla, int requestOrigin){
 void comando_describe_all(int requestOrigin) {
 
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
-    t_list* listaDescribes = list_create();
-    listaDescribes = deserializar_describe_all(SERVIDOR_FILESYSTEM);
+    t_list* listaDescribes = deserializar_describe_all(SERVIDOR_FILESYSTEM);
     log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
 
     void print_element_stack(void* element){

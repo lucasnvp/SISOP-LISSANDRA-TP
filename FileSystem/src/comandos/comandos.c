@@ -118,6 +118,7 @@ void comando_select(char* table, int key, int requestOrigin){
 
     t_config* metadata = obtener_metadata_table(tabla_objetivo);
 
+
     registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
     if(registerFromMemtable != NULL) {
         finalResult = registerFromMemtable;
@@ -217,7 +218,9 @@ void comando_drop(char* table, int requestOrigin){
         dictionary_remove(TABLES_COMPACTATION, table);
 
         /*Libero la Memtable*/
+        sem_wait(&SEM_MEMTABLE);
         dictionary_remove(memtable,table);
+        sem_post(&SEM_MEMTABLE);
 
         /*Libero los bloques de los Tmps y Tmpcs*/
         freeBlocksFromTemps(tabla_objetivo, ".tmp");

@@ -211,16 +211,8 @@ void init_queue_and_sem(){
 }
 
 void metricas(){
-
-    struct timeval timeMetrics;
-
     while(KERNEL_READY){
-
-        timeMetrics.tv_sec = 30;
-        timeMetrics.tv_usec = 0;
-
-        select(0, NULL, NULL, NULL, &timeMetrics);
-
+        sleep(30);
         pthread_mutex_lock(&mutexMetricas);
         showMetrics(log_Kernel);
         pthread_mutex_unlock(&mutexMetricas);

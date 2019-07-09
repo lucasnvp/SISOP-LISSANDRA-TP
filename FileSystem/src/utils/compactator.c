@@ -278,13 +278,11 @@ void execCompactation(void *param) {
     while(forEverOrKillHim) {
 
         if(dictionary_has_key(TABLES_COMPACTATION, nameTable) == true) {
-            log_info(log_FileSystem, "Antes de compactar la tabla: %s", compactationTable->tableInfo->nameTable);
             usleep(compactationTable->tableInfo->compactacion*1000);
 
             // Una vez pasado el tiempo, compactamos
-            log_info(log_FileSystem, "Se va a compactar la tabla: %s", compactationTable->tableInfo->nameTable);
-
             runCompactation(compactationTable->tableInfo->nameTable);
+            log_info(log_FileSystem, "Se compacta la tabla: %s", compactationTable->tableInfo->nameTable);
         } else {
             forEverOrKillHim = false;
         }

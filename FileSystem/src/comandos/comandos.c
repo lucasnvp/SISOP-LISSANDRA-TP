@@ -124,10 +124,14 @@ void comando_select(char* table, int key, int requestOrigin){
         finalResult = registerFromMemtable;
     }
 
+    sem_wait(&SEM_TMP);
     registro_tad* registerFromTemporal = getValueFromTemporalFile(table, key, ".tmp");
+    sem_post(&SEM_TMP);
     finalResult = verifyMaxValue(finalResult, registerFromTemporal);
 
+    sem_wait(&SEM_TMPC);
     registro_tad* registerFromTemporalC = getValueFromTemporalFile(table, key, ".tmpc");
+    sem_post(&SEM_TMPC);
     finalResult = verifyMaxValue(finalResult, registerFromTemporalC);
 
     uint32_t particion = key % config_get_int_value(metadata, "PARTITIONS");
@@ -223,7 +227,12 @@ void comando_drop(char* table, int requestOrigin){
         sem_post(&SEM_MEMTABLE);
 
         /*Libero los bloques de los Tmps y Tmpcs*/
+        sem_wait(&SEM_TMP);
         freeBlocksFromTemps(tabla_objetivo, ".tmp");
+        sem_post(&SEM_TMP);
+        sem_wait(&SEM_TMPC);
+        freeBlocksFromTemps(tabla_objetivo, ".tmpc");
+        sem_post(&SEM_TMPC);
 
         /*Libero los bloques del FS*/
         freeBlocksFromFS(tabla_objetivo);

@@ -33,7 +33,7 @@ registro_tad* reservarMarco(int socket, bool flagModificado) {
                 serializar_int(socket, false); // encontramos un marco libre por lo que no tenemos que hacer journal
             }
 
-            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint64_t) + sizeof(uint32_t) + sizeof(char*)));
+            return (registro_tad*)(memoriaPrincipal + _tablaDeMarcos->registro.numeroMarco * (sizeof(uint64_t) + sizeof(uint32_t) + tamanoValue));
         }
 
 

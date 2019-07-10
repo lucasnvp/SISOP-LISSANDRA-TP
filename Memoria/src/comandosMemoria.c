@@ -63,7 +63,7 @@ void funcionDrop(char* nombreDeTabla){
 }
 
 
-registro_tad* funcionSelect(select_tad* select){
+registro_tad* funcionSelect(int socket, select_tad* select){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(select->nameTable);
     struct tablaDePaginas* _TablaDePaginas = NULL;
     uint64_t timestampDeAcceso = getCurrentTime();
@@ -76,6 +76,9 @@ registro_tad* funcionSelect(select_tad* select){
                          _TablaDeSegmento->registro.nombreTabla,
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
+                if ( socket != CONSOLE_REQUEST){
+                    serializar_int(socket, false);// mando un memory full en false
+                }
                 return _TablaDePaginas->registro.punteroAPagina;
             }
             _TablaDePaginas= _TablaDePaginas->siguienteRegistroPagina;
@@ -107,8 +110,6 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
         sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false, registro->timestamp);
         sem_post(&semaforoInsert);
-        // todo Revisar donde hacer el free del insert.
-
         free_insert_tad(insert);
         return registro;
     } else {
@@ -122,12 +123,12 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
 
     if(strlen(insert->value) <= tamanoValue){
 
-        if(socket != CONSOLE_REQUEST){
+        if(socket != CONSOLE_REQUEST && flagModificado){
             serializar_int(socket, true); //envio la confirmacion que el insert se puede realizar siendo el tamano valido del value
         }
 
     } else {
-        if(socket != CONSOLE_REQUEST){
+        if(socket != CONSOLE_REQUEST && flagModificado){
             serializar_int(socket, false);  // envio un false porque tamano de value excede el limite
         }
         log_error(log_Memoria, "Value excede el tamanio de value maximo");
@@ -148,7 +149,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     // si la tabla de segmentos es nula, lo agrego y agrego la primera
     if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
         struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
-        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
+        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket, flagModificado);
 
         if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
             free(nuevoRegistroPagina);
@@ -194,7 +195,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
                        new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
                 if(socket != CONSOLE_REQUEST){
-                    serializar_int(socket, false);
+                    serializar_int(socket, false); // no se debe hacer el journal porq actualizamos el dato
                 }
                 log_info(log_Memoria, "UPDATE EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
                         _TablaDeSegmento->registro.nombreTabla,
@@ -209,7 +210,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     //si no la encuentro la agrego junto a su registro de pagina
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
 
-    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket, flagModificado);
     if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
         free(nuevoRegistroPagina);
         log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");

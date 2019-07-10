@@ -22,7 +22,7 @@ void liberarMarco(registro_tad* punteroAPagina){
 
 }
 
-registro_tad* reservarMarco(int socket) {
+registro_tad* reservarMarco(int socket, bool flagModificado) {
     struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
     while(_tablaDeMarcos != NULL){
         if(_tablaDeMarcos->registro.marcoOcupado == false) {
@@ -40,7 +40,7 @@ registro_tad* reservarMarco(int socket) {
         _tablaDeMarcos = _tablaDeMarcos->siguiente;
     }
     // si no se encontró ningun marco libre, se procede a liberar una página
-    return liberarPagina(socket);
+    return liberarPagina(socket, flagModificado);
 }
 
 void inicializarMarcos(uint32_t tamanioMemoria){

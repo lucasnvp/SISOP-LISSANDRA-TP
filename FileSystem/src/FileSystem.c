@@ -35,7 +35,7 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de dump
-    //pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
+    pthread_create(&thread_dump, NULL, (void*) dump, "Dump");
 
     //Creo el hilo del servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
@@ -128,6 +128,8 @@ void connection_handler(uint32_t socket, uint32_t command){
                 serializar_int(socket, false);
             }
 
+            usleep(config->RETARDO*1000);
+
             comando_insert(insert->nameTable, insert->key, insert->value, NOT_TIMESTAMP, socket);
 
             break;
@@ -148,6 +150,8 @@ void connection_handler(uint32_t socket, uint32_t command){
                      "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
                      create->nameTable, create->consistencia, create->particiones, create->compactacion);
 
+            usleep(config->RETARDO*1000);
+
             comando_create(create->nameTable, create->consistencia, string_itoa(create->particiones), string_itoa(create->compactacion), socket);
 
             free_create_tad(create);
@@ -162,12 +166,16 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
 
+            usleep(config->RETARDO*1000);
+
             comando_describe(tabla, socket);
 
             break;
         }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_FileSystem, "La memoria envio un describe all");
+
+            usleep(config->RETARDO*1000);
 
             comando_describe_all(socket);
 
@@ -180,6 +188,8 @@ void connection_handler(uint32_t socket, uint32_t command){
             char* tabla = deserializar_string(socket);
 
             log_info(log_FileSystem, "DROP => TABLA: <%s>\t", tabla);
+
+            usleep(config->RETARDO*1000);
 
             comando_drop(tabla, socket);
 
@@ -235,7 +245,7 @@ void consola() {
                     char* table = comandos->arg[0];
                     char* key_string = comandos->arg[1];
 
-                    bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                    bool isInvalidKey = atoi(key_string) == 0 && !string_equals_ignore_case(key_string, "0");
                     if(!isInvalidKey) {
                         int key = atoi(key_string);
 
@@ -265,8 +275,8 @@ void consola() {
                         char* key_string = comandos->arg[1];
                         char* timestamp_string = comandos->arg[3];
 
-                        bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
-                        bool isInvalidTime = atoll(timestamp_string) == 0 && timestamp_string != "0";
+                        bool isInvalidKey = atoi(key_string) == 0 && !string_equals_ignore_case(key_string, "0");
+                        bool isInvalidTime = atoll(timestamp_string) == 0 && !string_equals_ignore_case(timestamp_string, "0");
 
                         if(isInvalidKey || isInvalidTime) {
                             if(isInvalidKey) {
@@ -309,7 +319,7 @@ void consola() {
                             char* table = comandos->arg[0];
                             char* key_string = comandos->arg[1];
 
-                            bool isInvalidKey = atoi(key_string) == 0 && key_string != "0";
+                            bool isInvalidKey = atoi(key_string) == 0 && !string_equals_ignore_case(key_string, "0");
 
                             if(isInvalidKey) {
                                 log_info(log_FileSystem, "FAILED INSERT ==> La key ingresada <%s> no es un número", key_string);
@@ -403,14 +413,6 @@ void consola() {
                 }
             }
 
-            else if (!strcmp(comandos->comando, "COMPACTAR")) {
-                if (comandos->cantArgs == 1) {
-                    char* table = comandos->arg[0];
-                    comando_compactation(table);
-                }
-                else print_console((void*) log_error, "Número de parámetros incorrecto. \n");
-            }
-
             else print_console((void*) log_error, "Comando incorrecto.\n");
 
             // Libero toda la memoria
@@ -460,6 +462,11 @@ void watching_config(){
 
 void init_queue_and_sem(){
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
+    sem_init(&SEM_MEMTABLE,0,1);
+    sem_init(&SEM_TMP,0,1);
+    sem_init(&SEM_TMPC,0,1);
+    sem_init(&SEM_COMPACTACTION,0,1);
+    sem_init(&SEM_PARTITION,0,1);
 }
 
 void dump() {

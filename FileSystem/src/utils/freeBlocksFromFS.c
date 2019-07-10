@@ -54,8 +54,6 @@ void* limpiarYLiberarBloque(char* path){
         if(ValidarArchivo(pathBloques)== true){
 
             bitarray_clean_bit(bitarray,atoi(bloquesList[i]));
-                /*TODO: Probar crear 3 tablas y borrar la segunda.
-                 * Crear una tercera con varias particiones y ver si asigna en los bloques de la segunda y los que siguen a la tercera*/
         }
     }
 

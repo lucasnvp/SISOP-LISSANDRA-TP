@@ -5,22 +5,15 @@
 #include "comandos.h"
 
 
-void print_console(void (*log_function)(t_log*, const char*), char* message) {
-    log_function(log_Memoria, message);
-    printf("%s", message);
-}
-
-
-void comando_gossip(uint32_t requestOrigin) {
-    sendGossipingTable(requestOrigin);
-}
-
 void comando_select(select_tad* select, int requestOrigin){
-    print_console((void*) log_info, "Comando select");
-    registro_tad* registro = funcionSelect(select);
+    registro_tad* registro = funcionSelect(select, requestOrigin);
 
     if (registro == NULL) {
       registro = solicitarSelectAFileSystem(requestOrigin, select);
+    } else {
+        if(requestOrigin != CONSOLE_REQUEST){
+            serializar_int(requestOrigin, false);
+        }
     }
 
     // vuelvo a preguntar si es null para enviar la señal serializada (por si no existe la key solicitada en FS)
@@ -30,7 +23,7 @@ void comando_select(select_tad* select, int requestOrigin){
             serializar_int(requestOrigin, false);
         }
     } else {
-        log_info(log_Memoria, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%d>",
+        log_info(log_Memoria, "SELECT => TABLA: <%s>\tKEY: <%d>\tVALUE: <%s>\tTIMESTAMP: <%lld>",
             select->nameTable,
             registro->key,
             registro->value,
@@ -45,16 +38,23 @@ void comando_select(select_tad* select, int requestOrigin){
 
 }
 
+
 void comando_insert(insert_tad* insert, int requestOrigin){
-    print_console((void*) log_info, "Comando insert");
     sem_wait(&semaforoInsert);
-    funcionInsert(requestOrigin, insert, true);
+    funcionInsert(requestOrigin, insert, true, 0);
+    sem_post(&semaforoInsert);
+}
+
+void comando_journal(int requestOrigin){
+    sem_wait(&semaforoDrop);
+    sem_wait(&semaforoInsert);
+    funcionJournal(requestOrigin);
+    sem_post(&semaforoDrop);
     sem_post(&semaforoInsert);
 }
 
 void comando_create(create_tad* create, int requestOrigin){
     string_to_upper(create->nameTable);
-    print_console((void*) log_info, "Comando create");
     log_info(log_Memoria,
              "CREATE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
              create->nameTable, create->consistencia, create->particiones, create->compactacion);
@@ -67,12 +67,37 @@ void comando_create(create_tad* create, int requestOrigin){
     }
 }
 
+void comando_drop(char* nombreTabla, int requestOrigin){
+
+    char* tabla = string_duplicate(nombreTabla);
+    sem_wait(&semaforoDrop);
+    funcionDrop(tabla);
+    sem_post(&semaforoDrop);
+    log_info(log_Memoria,
+             "DROP EN MEMORIA => TABLA: <%s>\t",
+             tabla);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
+    serializar_string(SERVIDOR_FILESYSTEM, tabla);
+    bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+
+    if (requestOrigin != CONSOLE_REQUEST) {
+
+       serializar_int(requestOrigin, confirm);
+    }
+
+    free(tabla);
+}
+
+void comando_gossip(uint32_t socket) {
+    sendGossipingTable(socket);
+}
+
 void comando_describe(char* nombreTabla, int requestOrigin){
-    print_console((void*) log_info, "Comando describe");
-    string_to_upper(nombreTabla);
-    log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", nombreTabla);
+    char* tabla = string_duplicate(nombreTabla);
+    string_to_upper(tabla);
+    log_info(log_Memoria, "DESCRIBE => TABLA: <%s>\t", tabla);
     serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE);
-    serializar_string(SERVIDOR_FILESYSTEM, nombreTabla);
+    serializar_string(SERVIDOR_FILESYSTEM, tabla);
     bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
     if (confirm) {
         describe_tad* describe = deserializar_describe(SERVIDOR_FILESYSTEM);
@@ -95,28 +120,32 @@ void comando_describe(char* nombreTabla, int requestOrigin){
         }
     }
 
+    free(tabla);
 }
 
-void comando_drop(char* nombreTabla, int requestOrigin){
-    print_console((void*) log_info, "Comando drop");
-    sem_wait(&semaforoDrop);
-    funcionDrop(nombreTabla);
-    sem_post(&semaforoDrop);
-    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
-    serializar_string(SERVIDOR_FILESYSTEM, nombreTabla);
-    bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
-    if (requestOrigin != CONSOLE_REQUEST) {
+void comando_describe_all(int requestOrigin) {
 
-       serializar_int(requestOrigin, confirm);
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
+    t_list* listaDescribes = deserializar_describe_all(SERVIDOR_FILESYSTEM);
+    log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
+
+    void print_element_stack(void* element){
+        describe_tad* describe = element;
+        log_info(log_Memoria,
+                 "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
+                 describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
     }
+
+    list_iterate(listaDescribes, print_element_stack);
+    if (requestOrigin != CONSOLE_REQUEST) {
+        serializar_describe_all(requestOrigin, listaDescribes);
+    }
+    list_destroy(listaDescribes);
+
 }
 
-void comando_journal(int requestOrigin){
-    print_console((void*) log_info, "Comando journal");
-    sem_wait(&semaforoDrop);
-    sem_wait(&semaforoInsert);
-    funcionJournal(SERVIDOR_FILESYSTEM);
-    sem_post(&semaforoDrop);
-    sem_post(&semaforoInsert);
+void print_console(void (*log_function)(t_log*, const char*), char* message) {
+    log_function(log_Memoria, message);
+    printf("%s", message);
 }

@@ -39,7 +39,7 @@ typedef struct reg_tablaDePaginas {
     uint32_t numeroPagina;
     registro_tad* punteroAPagina;
     bool flagModificado;
-    uint32_t ultimoAcceso;
+    uint64_t ultimoAcceso;
 }reg_tablaDePaginas;
 
 // Estructura de la Tabla de Páginas dentro de un Segmento en una Sub-Memoria;
@@ -55,8 +55,8 @@ void* memoriaPrincipal;
 
 // Dirección de la Memoria Principal
 tablaDePaginas* obtenerRegistroMasViejo();
-registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo);
-registro_tad* liberarPagina(int socket);
+registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo, bool flagModificado);
+registro_tad* liberarPagina(int socket, bool flagModificado);
 void actualizarIdPaginas(tablaDePaginas* registroEliminado);
 bool verificarPaginas();
 

@@ -9,16 +9,16 @@ void print_console(void (*log_function)(t_log*, const char*), char* message) {
     printf("%s", message);
 }
 
-void comando_insert(char* table, int key, char* value, int timestamp, int requestOrigin){
-
+void comando_insert(char* table, int key, char* value, uint64_t timestamp, int requestOrigin){
+    log_info(log_FileSystem, "REQUEST INSERT ==> TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>", table, key, value);
     string_to_upper(table);
     char* tabla_objetivo = string_duplicate(montajeTablas);
     string_append(&tabla_objetivo, table);
 
-    long currentTime = timestamp;
+    uint64_t currentTime = timestamp;
 
-    // NOT_TIMESTAMP
-    if(timestamp < 0) {
+    // NOT_TIMESTAMP = NULL
+    if(timestamp == NOT_TIMESTAMP) {
         currentTime = getCurrentTime();
     }
 
@@ -43,17 +43,22 @@ void comando_insert(char* table, int key, char* value, int timestamp, int reques
         serializar_int(requestOrigin, INSERT_OK);
     }
 
-    log_info(log_FileSystem, "SUCCESS INSERT ==> TABLA <%s> , VALUE <%s>, KEY <%d>", table, value, key);
+    log_info(log_FileSystem, "SUCCESS INSERT ==> TABLA: <%s>\t VALUE: <%s>\t KEY <%d>", table, value, key);
 
 }
 
 void comando_create(char* table, char* consistencia, char* cantidad_particiones, char* compactacion, int requestOrigin) {
-    log_info(log_FileSystem, "EXECUTE CREATE ==> TABLA <%s>", table);
+    log_info(log_FileSystem, "EXECUTE CREATE ==> TABLA: <%s>", table);
 
     int particiones = atoi(cantidad_particiones);
 
     string_to_upper(table);
+
+    //consistencia = string_duplicate(string_itoa(fabs(atoi(consistencia))));
     string_to_upper(consistencia);
+
+    //cantidad_particiones = string_duplicate(string_itoa(fabs(atoi(cantidad_particiones))));
+    //string_to_upper(cantidad_particiones);
 
     char* nueva_tabla = strdup(montajeTablas);
     string_append(&nueva_tabla, table);
@@ -71,21 +76,22 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
     } else {
 
         crear_carpeta(nueva_tabla);
+
         crear_metadata_table(nueva_tabla, consistencia, cantidad_particiones, compactacion);
         crear_particiones(nueva_tabla, particiones);
+
+        createThreadCompactation(table, consistencia, atoi(cantidad_particiones), atoi(compactacion));
         log_info(log_FileSystem, "SUCCESS CREATE ==> TABLA <%s>", table);
 
         if(requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, CREATE_OK);
         }
 
-        CANTIDAD_TABLAS++;
-        log_info(log_FileSystem, "CANTIDAD DE TABLAS ACTUALES: %d", CANTIDAD_TABLAS);
     }
 }
 
 void comando_select(char* table, int key, int requestOrigin){
-    log_info(log_FileSystem, "SELECT ==> TABLE <%s> , KEY<%d>", table, key);
+    log_info(log_FileSystem, "REQUEST SELECT ==> TABLE: <%s>\t KEY: <%d>", table, key);
 
     registro_tad* finalResult = NULL;
 
@@ -100,7 +106,7 @@ void comando_select(char* table, int key, int requestOrigin){
             serializar_int(requestOrigin, NO_EXISTE_TABLA);
         }
 
-        log_info(log_FileSystem, "FALLO SELECT ==> LA TABLA <%s> NO EXISTE", table);
+        log_info(log_FileSystem, "FAILED SELECT ==> LA TABLA <%s> NO EXISTE", table);
 
         free(finalResult);
         free(tabla_objetivo);
@@ -112,15 +118,20 @@ void comando_select(char* table, int key, int requestOrigin){
 
     t_config* metadata = obtener_metadata_table(tabla_objetivo);
 
+
     registro_tad* registerFromMemtable = getValueFromMemtable(table, key);
     if(registerFromMemtable != NULL) {
         finalResult = registerFromMemtable;
     }
 
+    sem_wait(&SEM_TMP);
     registro_tad* registerFromTemporal = getValueFromTemporalFile(table, key, ".tmp");
+    sem_post(&SEM_TMP);
     finalResult = verifyMaxValue(finalResult, registerFromTemporal);
 
+    sem_wait(&SEM_TMPC);
     registro_tad* registerFromTemporalC = getValueFromTemporalFile(table, key, ".tmpc");
+    sem_post(&SEM_TMPC);
     finalResult = verifyMaxValue(finalResult, registerFromTemporalC);
 
     uint32_t particion = key % config_get_int_value(metadata, "PARTITIONS");
@@ -128,7 +139,7 @@ void comando_select(char* table, int key, int requestOrigin){
     finalResult = verifyMaxValue(finalResult, registerFromPartition);
 
     if(finalResult == NULL) {
-        log_info(log_FileSystem, "FALLO SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON LA KEY <%d> EN LA TABLA <%s>", key, table);
+        log_info(log_FileSystem, "FAILED SELECT ==> NO SE ENCONTRO NINGUN REGISTRO CON LA KEY <%d> EN LA TABLA <%s>", key, table);
 
         if( requestOrigin != CONSOLE_REQUEST) {
             serializar_int(requestOrigin, false);
@@ -141,7 +152,7 @@ void comando_select(char* table, int key, int requestOrigin){
             serializar_registro(requestOrigin, finalResult);
         }
 
-        log_info(log_FileSystem, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
+        log_info(log_FileSystem, "SUCCES SELECT ==> TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
     }
 
 }
@@ -184,8 +195,6 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
         config_destroy(metadata);
 
-        log_info(log_FileSystem, "SUCCES DESCRIBE ==> TABLA <%s>", nombre_tabla);
-
     } else {
 
         if(requestOrigin != CONSOLE_REQUEST) {
@@ -197,36 +206,59 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 }
 
 void comando_drop(char* table, int requestOrigin){
+
     log_info(log_FileSystem, "EXECUTE DROP");
 
     string_to_upper(table);
 
     char* tabla_objetivo = strdup(montajeTablas);
     string_append(&tabla_objetivo, table);
-    string_append(&tabla_objetivo, "/0.bin");
 
     int existe = ValidarArchivo(tabla_objetivo);
 
-    // TODO: recorrer directorio de la tabla para liberar los bloques usados
-    // TODO: usar la funcion para elmiminar un directorio entero de las commonsFunctions
     if( existe == true ) {
 
-        borrar_particion(tabla_objetivo);
+        /*Eliminamos la tabla de la estructura de compactacion*/
+        dictionary_remove(TABLES_COMPACTATION, table);
 
+        /*Libero la Memtable*/
+        sem_wait(&SEM_MEMTABLE);
+        dictionary_remove(memtable,table);
+        sem_post(&SEM_MEMTABLE);
+
+        /*Libero los bloques de los Tmps y Tmpcs*/
+        sem_wait(&SEM_TMP);
+        freeBlocksFromTemps(tabla_objetivo, ".tmp");
+        sem_post(&SEM_TMP);
+        sem_wait(&SEM_TMPC);
+        freeBlocksFromTemps(tabla_objetivo, ".tmpc");
+        sem_post(&SEM_TMPC);
+
+        /*Libero los bloques del FS*/
+        freeBlocksFromFS(tabla_objetivo);
+
+        /*Elimino el directorio*/
+        uint32_t directorioRemovido = remove_directory(tabla_objetivo);
+
+        log_info(log_FileSystem, "SUCCESS DROP ==> La tabla <%s> se elimino correctamente ", table);
         if(requestOrigin != CONSOLE_REQUEST){
-
-            //TODO Serializar msj por socket
-        }else{
-
-            log_info(log_FileSystem, "La tabla %s se elimino correctamente ", table);
+            serializar_int(socket, true);
         }
 
+    }else{
+
+        log_info(log_FileSystem, "FAILED DROP ==> La tabla <%s> no existe", table);
+        if(requestOrigin != CONSOLE_REQUEST){
+            serializar_int(socket, false);
+        }
     }
 }
 
 void comando_dump(){
+    sem_wait(&SEM_MEMTABLE);
     dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
+    sem_post(&SEM_MEMTABLE);
 }
 
 void comando_compactation(char* table) {

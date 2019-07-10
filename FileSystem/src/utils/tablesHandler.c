@@ -2,22 +2,32 @@
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
 
-    t_list* bloquesParaAsignar = list_create();
+    char* path = string_duplicate(montajeTablas);
+    char* table = string_duplicate(nombreTabla);
+    string_append(&path, table);
 
-    char* registrosADumpear = transformAllRegistersToUniqueString(registros);
+    if(ValidarArchivo(path)) {
+        t_list* bloquesParaAsignar = list_create();
 
-    int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosADumpear, bloquesParaAsignar);
+        char* registrosADumpear = transformAllRegistersToUniqueString(registros);
 
-    if(hayLugar == true) {
-        crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
-        guardarEnBloques(registrosADumpear, bloquesParaAsignar);
-        list_destroy(registros);
-    } else {
-        // TODO: si no hay lugar perdemos los datos
+        int hayLugar = getBloquesNecesariosParaEscribirRegistros(registrosADumpear, bloquesParaAsignar);
+
+        if(hayLugar == true) {
+            crearArchivoTemporal(nombreTabla, bloquesParaAsignar, string_length(registrosADumpear));
+            guardarEnBloques(registrosADumpear, bloquesParaAsignar);
+            list_destroy(registros);
+        } else {
+            log_info(log_FileSystem, "FILE SYSTEM FULL ==> No hay bloques libres en este momento");
+        }
+
+        list_destroy(bloquesParaAsignar);
+        free(registrosADumpear);
     }
 
-    list_destroy(bloquesParaAsignar);
-    free(registrosADumpear);
+    free(path);
+    free(table);
+
 }
 
 int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {
@@ -31,13 +41,19 @@ char* transformAllRegistersToUniqueString(t_list *registros) {
 
     t_list* str_registros = list_map(registros, (void *) transformRegisterToString);
 
-    return (char*) list_fold(str_registros, string_new(), (void*) _concatenarRegistros);
+    char* value = (char*) list_fold(str_registros, string_new(), (void*) _concatenarRegistros);
+
+    list_destroy(str_registros);
+
+    return value;
 }
 
 char* transformRegisterToString(registro_tad *registro) {
 
     char* str_registro = string_new();
-    string_append(&str_registro, string_itoa(registro->timestamp));
+    char buf[256];
+    snprintf(buf, sizeof buf, "%"PRIu64, registro->timestamp);
+    string_append(&str_registro, buf);
     string_append(&str_registro, ";");
     string_append(&str_registro, string_itoa(registro->key));
     string_append(&str_registro, ";");
@@ -49,9 +65,16 @@ char* transformRegisterToString(registro_tad *registro) {
 
 char* _concatenarRegistros(char* seed, char* registro) {
 
-    string_append(&seed, registro);
+    char* concat = string_new();
+    concat = string_duplicate(seed);
 
-    return seed;
+    free(seed);
+
+    string_append(&concat, registro);
+
+    free(registro);
+
+    return concat;
 }
 
 int cuantosBloquesOcupa(char* value) {

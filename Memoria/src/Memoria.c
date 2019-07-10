@@ -10,6 +10,10 @@ int main(int argc, char *argv[]){
     puts("Proceso Memoria");
 
     //Cargo los argumentos
+    if (argv[1] == NULL) {
+        puts("Error, falta el path del archivo de config");
+        return EXIT_FAILURE;
+    }
     PATH_CONFIG = strdup(argv[1]);
     if (!ValidarArchivo(PATH_CONFIG)) {
         puts("Error en el path del archivo de config");
@@ -54,7 +58,7 @@ void journaling(){
     while(true){
 
         timeJournal.tv_sec = 0;
-        timeJournal.tv_usec = config.RETARDO_JOURNAL;
+        timeJournal.tv_usec = (config.RETARDO_JOURNAL * 1000);
 
         select(0, NULL, NULL, NULL, &timeJournal);
         sem_wait(&semaforoDrop);
@@ -214,22 +218,7 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_Memoria, "El kernel envio un describe all");
-            serializar_int(SERVIDOR_FILESYSTEM, COMAND_DESCRIBE_ALL);
-
-            t_list* listDummy = deserializar_describe_all(SERVIDOR_FILESYSTEM);
-            log_info(log_Memoria, "Se recibio del FS el describe all, se envia al Kernel");
-
-            void print_element_stack(void* element){
-                describe_tad* describe = element;
-                log_info(log_Memoria,
-                         "DESCRIBE => TABLA: <%s>\tCONSISTENCIA: <%s>\tPARTICIONES: <%d>\tCOMPACTACION: <%d>",
-                         describe->nameTable, describe->consistencia, describe->particiones, describe->compactacion);
-            }
-
-            list_iterate(listDummy, print_element_stack);
-
-            serializar_describe_all(socket, listDummy);
-            list_destroy(listDummy);
+            comando_describe_all(socket);
             break;
         }
         case COMAND_DROP: {
@@ -331,9 +320,14 @@ void memory_console() {
             }
 
             else if (!strcmp(comandos->comando, "describe")) {
-                if (comandos->cantArgs == 1) {
+                if (comandos->cantArgs == 0) {
+                    comando_describe_all(CONSOLE_REQUEST);
+                }
+
+                else if (comandos->cantArgs == 1) {
                     comando_describe(comandos->arg[0], CONSOLE_REQUEST);
                 }
+
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 

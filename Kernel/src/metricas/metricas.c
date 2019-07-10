@@ -35,6 +35,12 @@ void metric_insert(uint32_t memoryNumber) {
 }
 
 void showMetrics (t_log* log_Kernel) {
+    void log_memories(void* element) {
+        metric_tad* m = element;
+        log_info(log_Kernel, "Memory <%d> | Read <%d> / <%d>", m->MEMORY_NUMBER, m->SELECTS, TOTAL_SELECTS);
+        log_info(log_Kernel, "Memory <%d> | Write <%d> / <%d>", m->MEMORY_NUMBER, m->INSERTS, TOTAL_INSERTS);
+    }
+
     log_info(log_Kernel, "--------------------------------");
     log_info(log_Kernel, "Metricas");
     log_info(log_Kernel, "Read Latency");
@@ -42,6 +48,7 @@ void showMetrics (t_log* log_Kernel) {
     log_info(log_Kernel, "Read <%d>", TOTAL_SELECTS);
     log_info(log_Kernel, "Write <%d>", TOTAL_INSERTS);
     log_info(log_Kernel, "Memory Load");
+    list_iterate(LIST_METRICS, (void*) log_memories);
     log_info(log_Kernel, "--------------------------------");
     if (list_size(LIST_METRICS) != 0) {
         list_destroy_and_destroy_elements(LIST_METRICS, free_metric_value);

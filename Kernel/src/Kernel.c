@@ -30,6 +30,9 @@ int main(){
     // Init listado de criterios
     init_METADATA();
 
+    // Init listado de metricas
+    init_metrics();
+
     // Connect memory
     connect_memory(config->IP_MEMORIA, config->PUERTO_MEMORIA);
 

@@ -6,6 +6,7 @@
 
 void api_select (char* tabla, u_int16_t key) {
     uint32_t socket = get_memory_socket_from_metadata(tabla);
+    metric_select(1);
 
     if (socket == -1) {
         log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
@@ -31,6 +32,7 @@ void api_select (char* tabla, u_int16_t key) {
 
 void api_insert(char* tabla, u_int16_t key, char* value){
     uint32_t socket = get_memory_socket_from_metadata(tabla);
+    metric_insert(1);
 
     if (socket == -1) {
         log_info(log_Kernel_api, "INSERT => La tabla: <%s> no existe", tabla);

@@ -11,7 +11,7 @@
 
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registro_tad* liberarPagina(int socket, bool flagModificado) {
+registro_tad* liberarPagina(int socket) {
     tablaDePaginas* registroMasViejo;
     bool seDebeHacerJournal = verificarPaginas();
     if (socket != CONSOLE_REQUEST) {
@@ -24,7 +24,7 @@ registro_tad* liberarPagina(int socket, bool flagModificado) {
             print_console((void*) log_info, "Memory FULL: Se requiere ejecutar JOURNAL para insertar un nuevo registro");
         }
         registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
-        return NULL; 
+        return NULL;
     } else {
         registroMasViejo = obtenerRegistroMasViejo();
     }

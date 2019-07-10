@@ -28,11 +28,14 @@
 #include "utils/utils.h"
 #include "utils/memtableHanlder.h"
 #include "utils/freeBlocksFromFS.h"
+#include "utils/semaphores.h"
 
 #include "ctype.h"
 
 // Semaforos
 pthread_mutex_t mutexConfig;    // Bloqueo el hilo para cambiar la config
+
+//sem_t SEM_MEMTABLE;
 
 char* PATH_CONFIG = "/home/utnso/Gank-mid/tp-2019-1c-Gank-mid/FileSystem/src/config/config.txt";
 Type_Config* config;

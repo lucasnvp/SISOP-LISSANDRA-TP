@@ -14,10 +14,20 @@ void api_select (char* tabla, u_int16_t key) {
         select_tad* select = new_select_tad(tabla, key);
         serializar_select(socket, select);
 
+        bool memoryFull = deserializar_int(socket);
+
+        if (memoryFull) {
+            bool confirm = api_journal();
+            if (confirm) {
+                log_info(log_Kernel_api, "Journal a todas las memorias.");
+
+            }
+        }
+
         uint32_t confirm = deserializar_int(socket);
         if (confirm) {
             registro_tad* registro = deserializar_registro(socket);
-            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%d>",
+            log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%lld>",
                     tabla,
                     registro->key,
                     registro->value,

@@ -123,12 +123,12 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
 
     if(strlen(insert->value) <= tamanoValue){
 
-        if(socket != CONSOLE_REQUEST && flagModificado){
+        if(socket != CONSOLE_REQUEST){
             serializar_int(socket, true); //envio la confirmacion que el insert se puede realizar siendo el tamano valido del value
         }
 
     } else {
-        if(socket != CONSOLE_REQUEST && flagModificado){
+        if(socket != CONSOLE_REQUEST){
             serializar_int(socket, false);  // envio un false porque tamano de value excede el limite
         }
         log_error(log_Memoria, "Value excede el tamanio de value maximo");
@@ -149,7 +149,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     // si la tabla de segmentos es nula, lo agrego y agrego la primera
     if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
         struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
-        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket, flagModificado);
+        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
 
         if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
             free(nuevoRegistroPagina);
@@ -210,7 +210,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     //si no la encuentro la agrego junto a su registro de pagina
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
 
-    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket, flagModificado);
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
     if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
         free(nuevoRegistroPagina);
         log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");

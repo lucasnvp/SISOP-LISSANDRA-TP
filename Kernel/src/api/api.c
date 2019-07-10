@@ -16,14 +16,6 @@ void api_select (char* tabla, u_int16_t key) {
 
         bool memoryFull = deserializar_int(socket);
 
-        if (memoryFull) {
-            bool confirm = api_journal();
-            if (confirm) {
-                log_info(log_Kernel_api, "Journal a todas las memorias.");
-            }
-        }
-
-
         uint32_t confirm = deserializar_int(socket);
         //nico, frena la ejecucion aca, y mira el valor de confirm
         if (confirm) {
@@ -36,6 +28,13 @@ void api_select (char* tabla, u_int16_t key) {
             free_registro_tad(registro);
         } else {
             log_info(log_Kernel_api, "Error al recibir el SELECT");
+        }
+
+        if (memoryFull) {
+            bool confirm = api_journal();
+            if (confirm) {
+                log_info(log_Kernel_api, "Journal a todas las memorias.");
+            }
         }
     }
 }

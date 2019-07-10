@@ -113,6 +113,9 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
         free_insert_tad(insert);
         return registro;
     } else {
+        if (socket != CONSOLE_REQUEST) {
+            serializar_int(socket, false); // no existe el dato por lo que no hay que hacer journal
+        }
         return NULL;
     }
 }

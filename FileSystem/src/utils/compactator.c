@@ -85,12 +85,13 @@ void runCompactation(char* table) {
                             list_add(listFromPartition, registroTad);
                         }
 
+                        // TODO
+                        // free_registro_tad(registroTadFind);
+
                     } else {
 
                         list_add(listFromPartition, registroTad);
                     }
-
-                    free_registro_tad(registroTadFind);
 
                 } else {
 

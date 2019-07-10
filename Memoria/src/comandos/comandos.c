@@ -6,6 +6,7 @@
 
 
 void comando_select(select_tad* select, int requestOrigin){
+    string_to_upper(select->nameTable);
     registro_tad* registro = funcionSelect(requestOrigin, select);
 
     if (registro == NULL) {
@@ -36,6 +37,7 @@ void comando_select(select_tad* select, int requestOrigin){
 
 
 void comando_insert(insert_tad* insert, int requestOrigin){
+    string_to_upper(insert->nameTable);
     sem_wait(&semaforoInsert);
     funcionInsert(requestOrigin, insert, true, 0);
     sem_post(&semaforoInsert);

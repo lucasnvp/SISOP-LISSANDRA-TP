@@ -17,7 +17,6 @@ void api_select (char* tabla, u_int16_t key) {
         bool memoryFull = deserializar_int(socket);
 
         uint32_t confirm = deserializar_int(socket);
-        //nico, frena la ejecucion aca, y mira el valor de confirm
         if (confirm) {
             registro_tad* registro = deserializar_registro(socket);
             log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%lld>",
@@ -29,7 +28,7 @@ void api_select (char* tabla, u_int16_t key) {
         } else {
             log_info(log_Kernel_api, "Error al recibir el SELECT");
         }
-
+        // movimos el if de memory full hacia abajo lucas, para que se dispare el journal una vez que termina el select
         if (memoryFull) {
             bool confirm = api_journal();
             if (confirm) {

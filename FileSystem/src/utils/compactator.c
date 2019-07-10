@@ -87,10 +87,12 @@ void runCompactation(char* table) {
 
                     } else {
 
+                        free_registro_tad(registroTadFind);
                         list_add(listFromPartition, registroTad);
                     }
 
-                    free_registro_tad(registroTadFind);
+                    if(registroTadFind != NULL) {
+                    }
 
                 } else {
 

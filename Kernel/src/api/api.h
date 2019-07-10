@@ -17,6 +17,7 @@
 
 #include "../metadata/metadata.h"
 #include "../criterios/criterios.h"
+#include "../metricas/metricas.h"
 
 t_log* log_Kernel_api;
 

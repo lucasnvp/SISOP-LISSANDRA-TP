@@ -123,12 +123,12 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
 
     if(strlen(insert->value) <= tamanoValue){
 
-        if(socket != CONSOLE_REQUEST){
+        if(socket != CONSOLE_REQUEST && flagModificado){
             serializar_int(socket, true); //envio la confirmacion que el insert se puede realizar siendo el tamano valido del value
         }
 
     } else {
-        if(socket != CONSOLE_REQUEST){
+        if(socket != CONSOLE_REQUEST && flagModificado){
             serializar_int(socket, false);  // envio un false porque tamano de value excede el limite
         }
         log_error(log_Memoria, "Value excede el tamanio de value maximo");

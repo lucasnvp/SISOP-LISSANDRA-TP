@@ -20,11 +20,12 @@ void api_select (char* tabla, u_int16_t key) {
             bool confirm = api_journal();
             if (confirm) {
                 log_info(log_Kernel_api, "Journal a todas las memorias.");
-
             }
         }
 
+
         uint32_t confirm = deserializar_int(socket);
+        //nico, frena la ejecucion aca, y mira el valor de confirm
         if (confirm) {
             registro_tad* registro = deserializar_registro(socket);
             log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%lld>",

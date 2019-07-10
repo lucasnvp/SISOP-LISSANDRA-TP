@@ -6,14 +6,10 @@
 
 
 void comando_select(select_tad* select, int requestOrigin){
-    registro_tad* registro = funcionSelect(select, requestOrigin);
+    registro_tad* registro = funcionSelect(requestOrigin, select);
 
     if (registro == NULL) {
       registro = solicitarSelectAFileSystem(requestOrigin, select);
-    } else {
-        if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(requestOrigin, false);
-        }
     }
 
     // vuelvo a preguntar si es null para enviar la señal serializada (por si no existe la key solicitada en FS)

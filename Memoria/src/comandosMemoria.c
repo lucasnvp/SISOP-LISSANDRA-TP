@@ -77,7 +77,7 @@ registro_tad* funcionSelect(int socket, select_tad* select){
                          _TablaDePaginas->registro.punteroAPagina->key,
                          _TablaDePaginas->registro.punteroAPagina->value);
                 if ( socket != CONSOLE_REQUEST){
-                    serializar_int(socket, false);
+                    serializar_int(socket, false);// mando un memory full en false
                 }
                 return _TablaDePaginas->registro.punteroAPagina;
             }
@@ -110,11 +110,12 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
         sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false, registro->timestamp);
         sem_post(&semaforoInsert);
-        // todo Revisar donde hacer el free del insert.
-
         free_insert_tad(insert);
         return registro;
     } else {
+        if (socket != CONSOLE_REQUEST) {
+            serializar_int(socket, false); // no existe el dato por lo que no hay que hacer journal
+        }
         return NULL;
     }
 }
@@ -151,7 +152,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     // si la tabla de segmentos es nula, lo agrego y agrego la primera
     if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
         struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
-        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket, flagModificado);
+        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
 
         if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
             free(nuevoRegistroPagina);
@@ -212,7 +213,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     //si no la encuentro la agrego junto a su registro de pagina
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
 
-    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket, flagModificado);
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
     if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
         free(nuevoRegistroPagina);
         log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");

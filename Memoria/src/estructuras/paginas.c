@@ -11,23 +11,24 @@
 
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registro_tad* liberarPagina(int socket, bool flagModificado) {
+registro_tad* liberarPagina(int socket) {
     tablaDePaginas* registroMasViejo;
     bool seDebeHacerJournal = verificarPaginas();
     if (socket != CONSOLE_REQUEST) {
             serializar_int(socket, seDebeHacerJournal);
-    }
 
+    }
     if (seDebeHacerJournal) {
         if(socket == CONSOLE_REQUEST){
+            // lo hacemos en el caso de que realicemos un insert por consola y tengamos la memoria full
             print_console((void*) log_info, "Memory FULL: Se requiere ejecutar JOURNAL para insertar un nuevo registro");
         }
         registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
-        return NULL; // lo hacemos en el caso de que realicemos un insert por consola y tengamos la memoria full
+        return NULL;
     } else {
         registroMasViejo = obtenerRegistroMasViejo();
     }
-    return reenlazarRegistros(socket, registroMasViejo, flagModificado);
+    return reenlazarRegistros(socket, registroMasViejo);
 
 }
 
@@ -72,10 +73,10 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 }
 
 // Reenlaza los registros de páginas
-registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo, bool flagModificado) {
+registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo) {
 
     if(registroMasViejo == NULL){
-        return reservarMarco(socket, flagModificado);
+        return reservarMarco(socket);
     }
 
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;

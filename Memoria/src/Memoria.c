@@ -169,6 +169,7 @@ void server(void* args) {
                         close(i); // Close conexion
                         FD_CLR(i, &master); // eliminar del conjunto maestro
                     } else {
+                        usleep(config.RETARDO_MEM*1000);
                         connection_handler(i, command);
                     }
                 }

@@ -113,13 +113,17 @@ time_metric_tad* start_time_write_metric() {
 }
 
 double average_time(t_list* list) {
-    double sumDif = 0;
+    if (list_size(list) == 0 ) {
+        return 0;
+    } else {
+        double sumDif = 0;
 
-    void _sum_dif(time_metric_tad value) {
-        sumDif += value.difTime;
+        void _sum_dif(time_metric_tad value) {
+            sumDif += value.difTime;
+        }
+
+        list_iterate(list, (void*) _sum_dif);
+
+        return (sumDif / list_size(list));
     }
-
-    list_iterate(list, (void*) _sum_dif);
-
-    return (sumDif / list_size(list));
 }

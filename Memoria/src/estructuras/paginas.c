@@ -11,24 +11,15 @@
 
 
 // Obtiene el registro más viejo y reenlaza la lista (libera la página)
-registro_tad* liberarPagina(int socket) {
+registro_tad* liberarPagina() {
     tablaDePaginas* registroMasViejo;
-    bool seDebeHacerJournal = verificarPaginas();
-    if (socket != CONSOLE_REQUEST) {
-            serializar_int(socket, seDebeHacerJournal);
-
-    }
+    uint32_t seDebeHacerJournal = verificarPaginas();
     if (seDebeHacerJournal) {
-        if(socket == CONSOLE_REQUEST){
-            // lo hacemos en el caso de que realicemos un insert por consola y tengamos la memoria full
-            print_console((void*) log_info, "Memory FULL: Se requiere ejecutar JOURNAL para insertar un nuevo registro");
-        }
-        registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
         return NULL;
     } else {
         registroMasViejo = obtenerRegistroMasViejo();
     }
-    return reenlazarRegistros(socket, registroMasViejo);
+    return reenlazarRegistros(registroMasViejo);
 
 }
 
@@ -73,11 +64,7 @@ tablaDePaginas* obtenerRegistroMasViejo() {
 }
 
 // Reenlaza los registros de páginas
-registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo) {
-
-    if(registroMasViejo == NULL){
-        return reservarMarco(socket);
-    }
+registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo) {
 
     struct tablaDeSegmentos* _tablaDeSegmentos = primerRegistroDeSegmentos;
 
@@ -123,26 +110,21 @@ void actualizarIdPaginas(tablaDePaginas* registroMasViejo){
     return;
 }
 
-bool verificarPaginas() {
+uint32_t verificarPaginas() {
     tablaDeSegmentos* _TablaDeSegmento = primerRegistroDeSegmentos;
 
-    bool seDebeHacerJournal;
 
     while (_TablaDeSegmento != NULL) {
         tablaDePaginas* _TablaDePagina = _TablaDeSegmento->registro.tablaDePaginas;
         while (_TablaDePagina != NULL) {
             if (!_TablaDePagina->registro.flagModificado) {
-                seDebeHacerJournal = false;
-                return seDebeHacerJournal;
+                return 0;
             }
             _TablaDePagina = _TablaDePagina->siguienteRegistroPagina;
         }
 
         _TablaDeSegmento = _TablaDeSegmento->siguiente;
     }
-
-    seDebeHacerJournal = true;
-
-    return seDebeHacerJournal;
+    return 1;
 }
 

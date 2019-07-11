@@ -122,45 +122,43 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
 // Agrega un registro de Página a la Tabla de Páginas
 // --- registo_tad es la página
-void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS) {
+void funcionInsert(int requestOrigin, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS) {
 
-    if(strlen(insert->value) <= tamanoValue){
+    uint64_t timestamp = establecerTimestamp(timestampDelFS, flagModificado);
+    uint64_t timestampDeAcceso = getCurrentTime();
 
-        if(socket != CONSOLE_REQUEST && flagModificado){
-            serializar_int(socket, true); //envio la confirmacion que el insert se puede realizar siendo el tamano valido del value
-        }
+    uint32_t memoryFull = verificarJournal(insert, timestamp);
 
-    } else {
-        if(socket != CONSOLE_REQUEST && flagModificado){
+    if (requestOrigin != CONSOLE_REQUEST) {
+        serializar_int(socket, memoryFull);
+    }
+
+
+    if(requestOrigin != CONSOLE_REQUEST && flagModificado) {
+
+        if(strlen(insert->value) <= tamanoValue){
+            serializar_int(requestOrigin, true); //envio la confirmacion que el insert se puede realizar siendo el tamano valido del value
+        } else {
             serializar_int(socket, false);  // envio un false porque tamano de value excede el limite
+            log_error(log_Memoria, "Value excede el tamanio de value maximo");
+            return;
         }
-        log_error(log_Memoria, "Value excede el tamanio de value maximo");
+    }
+
+    if(memoryFull) {
         return;
     }
 
-    uint64_t timestamp;
-    uint64_t timestampDeAcceso = getCurrentTime();
-
-    if(flagModificado){
-        timestamp = timestampDeAcceso;
-    } else {
-        timestamp = timestampDelFS;
-   }
-
-    struct tablaDeSegmentos *_TablaDeSegmento = buscarSegmento(insert->nameTable);
+    struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(insert->nameTable);
 
     // si la tabla de segmentos es nula, lo agrego y agrego la primera
     if (_TablaDeSegmento == NULL || _TablaDeSegmento->registro.tablaDePaginas == NULL) {
-        struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
-        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
 
-        if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
-            free(nuevoRegistroPagina);
-            log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");
-            return;
-        }
+        struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
+        nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
 
         _TablaDeSegmento = buscarSegmento(insert->nameTable);
+
         if(_TablaDeSegmento == NULL ){
             _TablaDeSegmento = agregarSegmento(insert->nameTable);
         }
@@ -197,9 +195,6 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
                 memcpy(_TablaDePaginas->registro.punteroAPagina,
                        new_registro_tad(timestamp, insert->key, insert->value),sizeof(registro_tad));
 
-                if(socket != CONSOLE_REQUEST){
-                    serializar_int(socket, false); // no se debe hacer el journal porq actualizamos el dato
-                }
                 log_info(log_Memoria, "UPDATE EN MEMORIA => TABLA: <%s>\t KEY: <%d>\t VALUE: <%s>",
                         _TablaDeSegmento->registro.nombreTabla,
                         _TablaDePaginas->registro.punteroAPagina->key,
@@ -213,12 +208,7 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
     //si no la encuentro la agrego junto a su registro de pagina
     struct tablaDePaginas* nuevoRegistroPagina = malloc(sizeof(tablaDePaginas));
 
-    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco(socket);
-    if(nuevoRegistroPagina->registro.punteroAPagina == NULL){
-        free(nuevoRegistroPagina);
-        log_error(log_Memoria, "Error al ejectuar INSERT: No hay páginas disponibles");
-        return;
-    }
+    nuevoRegistroPagina->registro.punteroAPagina = reservarMarco();
     nuevoRegistroPagina->siguienteRegistroPagina = NULL;
     nuevoRegistroPagina->registro.flagModificado = flagModificado;
     nuevoRegistroPagina->registro.ultimoAcceso = timestampDeAcceso;
@@ -241,4 +231,44 @@ void funcionInsert(int socket, insert_tad* insert, bool flagModificado, uint64_t
              nuevoRegistroPagina->registro.punteroAPagina->key,
              nuevoRegistroPagina->registro.punteroAPagina->value);
     return;
+}
+
+uint64_t establecerTimestamp(uint64_t timestampFS, bool flagModificado) {
+
+    uint64_t timestampDeAcceso = getCurrentTime();
+
+    if(flagModificado){
+        return timestampDeAcceso;
+    } else {
+        return timestampFS;
+    }
+}
+
+uint32_t verificarJournal(insert_tad* insert, uint64_t timestamp) {
+
+    struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(insert->nameTable);
+
+    if(_TablaDeSegmento != NULL) {
+        struct tablaDePaginas* _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
+        while(_TablaDePaginas != NULL) {
+            if (_TablaDePaginas->registro.punteroAPagina->key == insert->key) {
+                if (_TablaDePaginas->registro.punteroAPagina->timestamp < timestamp) {
+                    return 0;
+                }
+            }
+            _TablaDePaginas = _TablaDePaginas->siguienteRegistroPagina;
+        }
+    }
+
+    struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
+    while(_tablaDeMarcos != NULL){
+        if(_tablaDeMarcos->registro.marcoOcupado == false) {
+            return 0;
+        }
+        _tablaDeMarcos = _tablaDeMarcos->siguiente;
+    }
+
+    return verificarPaginas();
+
+
 }

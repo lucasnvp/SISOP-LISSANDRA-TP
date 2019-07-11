@@ -34,5 +34,7 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select);
 void funcionInsert(int requestOrigin, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS);
 void funcionDrop(char* nombreDeTabla);
 void funcionJournal(int requestOrigin);
+uint64_t establecerTimestamp(uint64_t timestampFS, bool flagModificado);
+uint32_t verificarJournal(insert_tad* insert, uint64_t timestamp);
 
 #endif //TP_2019_1C_GANK_MID_COMANDOSMEMORIA_H

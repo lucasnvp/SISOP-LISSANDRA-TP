@@ -55,10 +55,10 @@ void* memoriaPrincipal;
 
 // Dirección de la Memoria Principal
 tablaDePaginas* obtenerRegistroMasViejo();
-registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo);
-registro_tad* liberarPagina(int socket);
+registro_tad* reenlazarRegistros(tablaDePaginas* registroMasViejo);
+registro_tad* liberarPagina();
 void actualizarIdPaginas(tablaDePaginas* registroEliminado);
-bool verificarPaginas();
+uint32_t verificarPaginas();
 
 #endif //TP_2019_1C_GANK_MID_PAGINAS_H
 

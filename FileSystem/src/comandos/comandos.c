@@ -91,6 +91,9 @@ void comando_create(char* table, char* consistencia, char* cantidad_particiones,
 }
 
 void comando_select(char* table, int key, int requestOrigin){
+
+    lock_read_table(table);
+
     log_info(log_FileSystem, "REQUEST SELECT ==> TABLE: <%s>\t KEY: <%d>", table, key);
 
     registro_tad* finalResult = NULL;
@@ -151,6 +154,7 @@ void comando_select(char* table, int key, int requestOrigin){
         log_info(log_FileSystem, "SUCCES SELECT ==> TABLA: <%s>\tkey: <%d>\tvalue: <%s>", table, key, finalResult->value);
     }
 
+    unlock_rw_table(table);
 }
 
 void comando_describe_all(int requestOrigin){
@@ -162,6 +166,8 @@ void comando_describe_all(int requestOrigin){
 }
 
 void comando_describe(char* nombre_tabla, int requestOrigin){
+    lock_read_table(nombre_tabla);
+
     log_info(log_FileSystem, "EXECUTE DESCRIBE ==> TABLA <%s>", nombre_tabla);
 
     string_to_upper(nombre_tabla);
@@ -199,9 +205,15 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
         log_info(log_FileSystem, "FAILED DESCRIBE ==> TABLA <%s>", nombre_tabla);
     }
+
+    unlock_rw_table(nombre_tabla);
 }
 
 void comando_drop(char* table, int requestOrigin){
+
+    pthread_mutex_lock(&SEM_MEMTABLE);
+    lock_mx_drop(table);
+    pthread_mutex_unlock(table);
 
     log_info(log_FileSystem, "EXECUTE DROP");
 
@@ -214,13 +226,8 @@ void comando_drop(char* table, int requestOrigin){
 
     if( existe == true ) {
 
-        /*Eliminamos la tabla de la estructura de compactacion*/
-        dictionary_remove(TABLES_COMPACTATION, table);
-
         /*Libero la Memtable*/
-        sem_wait(&SEM_MEMTABLE);
         dictionary_remove(memtable,table);
-        sem_post(&SEM_MEMTABLE);
 
         /*Libero los bloques de los Tmps y Tmpcs*/
         freeBlocksFromTemps(tabla_objetivo, ".tmp");
@@ -244,15 +251,25 @@ void comando_drop(char* table, int requestOrigin){
             serializar_int(socket, false);
         }
     }
+
+    unlock_rw_table(table);
+    unlock_mx_drop(table);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
+
+    /*Eliminamos la tabla de la estructura de compactacion*/
+    pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
+    dictionary_remove(TABLES_COMPACTATION, table);
+    pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
 }
 
 void comando_dump(){
-    sem_wait(&SEM_MEMTABLE);
+
     dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
-    sem_post(&SEM_MEMTABLE);
+
 }
 
 void comando_compactation(char* table) {
+
     runCompactation(table);
 }

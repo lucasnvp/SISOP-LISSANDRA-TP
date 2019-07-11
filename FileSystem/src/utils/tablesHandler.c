@@ -2,6 +2,10 @@
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
 
+    pthread_mutex_lock(&SEM_MEMTABLE);
+    lock_mx_drop(nombreTabla);
+    lock_write_table(nombreTabla);
+
     char* path = string_duplicate(montajeTablas);
     char* table = string_duplicate(nombreTabla);
     string_append(&path, table);
@@ -28,6 +32,9 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
     free(path);
     free(table);
 
+    unlock_rw_table(nombreTabla);
+    unlock_mx_drop(nombreTabla);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
 }
 
 int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {

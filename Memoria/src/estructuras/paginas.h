@@ -55,8 +55,8 @@ void* memoriaPrincipal;
 
 // Dirección de la Memoria Principal
 tablaDePaginas* obtenerRegistroMasViejo();
-registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo, bool flagModificado);
-registro_tad* liberarPagina(int socket, bool flagModificado);
+registro_tad* reenlazarRegistros(int socket, tablaDePaginas* registroMasViejo);
+registro_tad* liberarPagina(int socket);
 void actualizarIdPaginas(tablaDePaginas* registroEliminado);
 bool verificarPaginas();
 

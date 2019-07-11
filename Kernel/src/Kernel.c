@@ -30,6 +30,9 @@ int main(){
     // Init listado de criterios
     init_METADATA();
 
+    // Init listado de metricas
+    init_metrics();
+
     // Connect memory
     connect_memory(config->IP_MEMORIA, config->PUERTO_MEMORIA);
 
@@ -211,16 +214,8 @@ void init_queue_and_sem(){
 }
 
 void metricas(){
-
-    struct timeval timeMetrics;
-
     while(KERNEL_READY){
-
-        timeMetrics.tv_sec = 30;
-        timeMetrics.tv_usec = 0;
-
-        select(0, NULL, NULL, NULL, &timeMetrics);
-
+        sleep(30);
         pthread_mutex_lock(&mutexMetricas);
         showMetrics(log_Kernel);
         pthread_mutex_unlock(&mutexMetricas);
@@ -374,16 +369,8 @@ bool parser_line(char * line){
 }
 
 void gossiping(){
-    struct timeval timeGossip;
-
     while(KERNEL_READY){
-
-        timeGossip.tv_sec = 0;
-        timeGossip.tv_usec = (RETARDO_GOSSIPING * 1000);
-
-        select(0, NULL, NULL, NULL, &timeGossip);
-
+        usleep(RETARDO_GOSSIPING * 1000);
         gossip_memory();
-
     }
 }

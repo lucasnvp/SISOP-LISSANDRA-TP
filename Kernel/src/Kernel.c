@@ -43,10 +43,10 @@ int main(){
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de metricas
-    pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
+    //pthread_create(&thread_metricas, NULL, (void*) metricas, "Metricas");
 
     // Hilo de gossiping
-    pthread_create(&thread_metricas, NULL, (void*) gossiping, "Gossiping");
+    //pthread_create(&thread_metricas, NULL, (void*) gossiping, "Gossiping");
 
     // Hilo de Planificacion
     pthread_create(&thread_planificador, NULL, (void*) planificador, "Planificador");

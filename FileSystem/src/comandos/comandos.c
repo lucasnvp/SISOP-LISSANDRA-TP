@@ -240,6 +240,11 @@ void comando_drop(char* table, int requestOrigin){
         /*Elimino el directorio*/
         uint32_t directorioRemovido = remove_directory(tabla_objetivo);
 
+        /*Eliminamos la tabla de la estructura de compactacion*/
+        pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
+        dictionary_remove(TABLES_COMPACTATION, table);
+        pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
+
         log_info(log_FileSystem, "SUCCESS DROP ==> La tabla <%s> se elimino correctamente ", table);
         if(requestOrigin != CONSOLE_REQUEST){
             serializar_int(socket, true);
@@ -257,9 +262,9 @@ void comando_drop(char* table, int requestOrigin){
     unlock_mx_drop(table);
 
     /*Eliminamos la tabla de la estructura de compactacion*/
-    pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
-    dictionary_remove(TABLES_COMPACTATION, table);
-    pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
+    pthread_mutex_lock(&MX_LIST_SEM);
+    dictionary_remove(LIST_SEM_TABLES, table);
+    pthread_mutex_unlock(&MX_LIST_SEM);
 }
 
 void comando_dump(){

@@ -23,6 +23,7 @@ pthread_t thread_compactation;
 // t_list * LIST_TABLE_COMPACTATION;
 
 t_dictionary* TABLES_COMPACTATION;
+t_dictionary* LIST_SEM_TABLES;
 
 typedef struct compactation_table_tad {
     create_tad* tableInfo;

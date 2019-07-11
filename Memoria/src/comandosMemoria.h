@@ -28,7 +28,7 @@
 sem_t semaforoDrop;
 sem_t semaforoInsert;
 
-registro_tad* funcionSelect(select_tad* select);
+registro_tad* funcionSelect(int socket,select_tad* select);
 registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select);
 
 void funcionInsert(int requestOrigin, insert_tad* insert, bool flagModificado, uint64_t timestampDelFS);

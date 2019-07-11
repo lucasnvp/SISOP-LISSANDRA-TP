@@ -10,6 +10,10 @@ int main(int argc, char *argv[]){
     puts("Proceso Memoria");
 
     //Cargo los argumentos
+    if (argv[1] == NULL) {
+        puts("Error, falta el path del archivo de config");
+        return EXIT_FAILURE;
+    }
     PATH_CONFIG = strdup(argv[1]);
     if (!ValidarArchivo(PATH_CONFIG)) {
         puts("Error en el path del archivo de config");
@@ -54,7 +58,7 @@ void journaling(){
     while(true){
 
         timeJournal.tv_sec = 0;
-        timeJournal.tv_usec = config.RETARDO_JOURNAL;
+        timeJournal.tv_usec = (config.RETARDO_JOURNAL * 1000);
 
         select(0, NULL, NULL, NULL, &timeJournal);
         sem_wait(&semaforoDrop);
@@ -165,6 +169,7 @@ void server(void* args) {
                         close(i); // Close conexion
                         FD_CLR(i, &master); // eliminar del conjunto maestro
                     } else {
+                        usleep(config.RETARDO_MEM*1000);
                         connection_handler(i, command);
                     }
                 }
@@ -388,7 +393,7 @@ void inicializarSemaforos() {
 void inicializarHilos() {
 
     //Hilo de Journal
-    //pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
     //Hilo de Gossiping
     pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");

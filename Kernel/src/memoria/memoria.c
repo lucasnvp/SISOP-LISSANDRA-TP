@@ -98,3 +98,16 @@ void compareGossipWithListMemory(gossip_tad* gossip) {
         connect_memory(gossip->IP, gossip->PORT);
     }
 }
+
+bool send_journal_all() {
+    void sendJournal(void* element) {
+        memory_tad* memory = element;
+        serializar_int(memory->SOCKET, COMAND_JOURNAL);
+        bool journalFinalizado = deserializar_int(memory->SOCKET);
+        if (journalFinalizado) {
+            log_info(log_Kernel_memory, "Se realizo el journal de la memoria <%d>", memory->MEMORY_NUMBER);
+        }
+    }
+    list_iterate(LIST_MEMORIES, sendJournal);
+    return true;
+}

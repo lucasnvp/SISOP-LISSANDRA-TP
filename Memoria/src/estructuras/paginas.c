@@ -16,16 +16,15 @@ registro_tad* liberarPagina(int socket) {
     bool seDebeHacerJournal = verificarPaginas();
     if (socket != CONSOLE_REQUEST) {
             serializar_int(socket, seDebeHacerJournal);
-            if (seDebeHacerJournal) {
-                return NULL;
-            }
+
     }
     if (seDebeHacerJournal) {
         if(socket == CONSOLE_REQUEST){
+            // lo hacemos en el caso de que realicemos un insert por consola y tengamos la memoria full
             print_console((void*) log_info, "Memory FULL: Se requiere ejecutar JOURNAL para insertar un nuevo registro");
-            return NULL; // lo hacemos en el caso de que realicemos un insert por consola y tengamos la memoria full
         }
         registroMasViejo = NULL; // asi activa reservarMarco() en reenlazar registro
+        return NULL;
     } else {
         registroMasViejo = obtenerRegistroMasViejo();
     }

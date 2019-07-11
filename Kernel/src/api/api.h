@@ -17,6 +17,7 @@
 
 #include "../metadata/metadata.h"
 #include "../criterios/criterios.h"
+#include "../metricas/metricas.h"
 
 t_log* log_Kernel_api;
 
@@ -26,6 +27,6 @@ void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_
 void api_describe(char* tabla);
 void api_describe_all();
 void api_drop(char* tabla);
-void api_journal();
+bool api_journal();
 
 #endif //TP_2019_1C_GANK_MID_API_H

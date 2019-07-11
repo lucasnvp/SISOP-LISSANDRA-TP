@@ -1,11 +1,12 @@
-Kernel> ADD MEMORY 8 TO SC
-Criterio asignado a la memoria
-Kernel> create BARCA SC 1 1000
-Comando create
-Kernel> describe BARCA
-Comando describe
-Kernel> describe
-Comando describe all
-Kernel> describe BARCA
-Comando describe
-Kernel> describe
+PUERTO_ESCUCHA=8001
+CANT_CONEXIONES=10
+IP_FS=127.0.0.1
+PUERTO_FS=5003
+IP_SEEDS=[127.0.0.1]
+PUERTO_SEEDS=[8001]
+RETARDO_MEM=400
+RETARDO_FS=400
+TAM_MEM=12800
+RETARDO_JOURNAL=60000
+RETARDO_GOSSIPING=30000
+MEMORY_NUMBER=1

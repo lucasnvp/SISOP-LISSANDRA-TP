@@ -96,7 +96,7 @@ metric_tad* search_memory_metrics(uint32_t number) {
 }
 
 void finish_time_metric(time_metric_tad* value) {
-    time(value->end);
+    time(&value->end);
     value->difTime = difftime(value->end, value->start);
 }
 
@@ -121,5 +121,5 @@ double average_time(t_list* list) {
 
     list_iterate(list, (void*) _sum_dif);
 
-    return sumDif / list_size(list);
+    return (sumDif / list_size(list));
 }

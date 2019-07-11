@@ -9,7 +9,7 @@
 
 void liberarMarco(registro_tad* punteroAPagina){
 
-    uint32_t numeroDeMarco = (uint32_t) ((punteroAPagina - (registro_tad*) memoriaPrincipal) );
+    uint32_t numeroDeMarco = (uint32_t) ((punteroAPagina - (registro_tad*) memoriaPrincipal));
 
     struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
     while(_tablaDeMarcos != NULL){
@@ -61,4 +61,16 @@ void inicializarMarcos(uint32_t tamanioMemoria){
     }
     aux->siguiente = NULL;
     return;
+}
+
+void reinicializarRegistros(){
+
+    struct tablaDeMarcos* _tablaDeMarcos = primerRegistroDeMarcos;
+
+    while(_tablaDeMarcos != NULL){
+
+        _tablaDeMarcos->registro.marcoOcupado = false;
+
+        _tablaDeMarcos = _tablaDeMarcos->siguiente;
+    }
 }

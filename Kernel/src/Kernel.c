@@ -182,7 +182,7 @@ void consola() {
                 if (comandos->cantArgs == 0) {
                     bool confirm = api_journal();
                     if (confirm) {
-                        print_console((void*) log_error, "Journal a todas las memorias.");
+                        print_console((void*) log_info, "Journal ejecutado correctamente");
                     }
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");

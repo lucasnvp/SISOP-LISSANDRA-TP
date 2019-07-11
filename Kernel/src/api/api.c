@@ -5,6 +5,7 @@
 #include "api.h"
 
 void api_select (char* tabla, u_int16_t key) {
+    time_metric_tad* time_metric = start_time_read_metric();
     uint32_t socket = get_memory_socket_from_metadata(tabla);
     metric_select(1);
 
@@ -29,7 +30,7 @@ void api_select (char* tabla, u_int16_t key) {
         } else {
             log_info(log_Kernel_api, "Error al recibir el SELECT");
         }
-        // movimos el if de memory full hacia abajo lucas, para que se dispare el journal una vez que termina el select
+
         if (memoryFull) {
             bool confirm = api_journal();
             if (confirm) {
@@ -37,9 +38,12 @@ void api_select (char* tabla, u_int16_t key) {
             }
         }
     }
+    // Termina el tiempo para las metricas
+    finish_time_metric(time_metric);
 }
 
 void api_insert(char* tabla, u_int16_t key, char* value){
+    time_metric_tad* time_metric = start_time_write_metric();
     uint32_t socket = get_memory_socket_from_metadata(tabla);
     metric_insert(1);
 
@@ -66,8 +70,9 @@ void api_insert(char* tabla, u_int16_t key, char* value){
             // todo cortar la ejecucion del script
             log_info(log_Kernel_api, "INSERT => FAILURE, Invalid value, TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
         }
-
     }
+    // Termina el tiempo para las metricas
+    finish_time_metric(time_metric);
 }
 
 void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {

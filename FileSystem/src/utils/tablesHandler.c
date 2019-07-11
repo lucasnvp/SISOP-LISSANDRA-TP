@@ -6,6 +6,8 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
     lock_mx_drop(nombreTabla);
     lock_write_table(nombreTabla);
 
+    uint64_t initTime = getCurrentTime();
+
     char* path = string_duplicate(montajeTablas);
     char* table = string_duplicate(nombreTabla);
     string_append(&path, table);
@@ -28,6 +30,11 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
         list_destroy(bloquesParaAsignar);
         free(registrosADumpear);
     }
+
+    uint64_t finalTime = getCurrentTime();
+    uint64_t diff = finalTime - initTime;
+
+    log_info(log_FileSystem, "DUMP => Tabla <%s> tardo: <%lld>", nombreTabla, diff);
 
     free(path);
     free(table);

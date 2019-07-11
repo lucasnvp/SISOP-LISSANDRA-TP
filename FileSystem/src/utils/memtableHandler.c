@@ -5,16 +5,21 @@
 #include "memtableHanlder.h"
 
 bool containsTable(char* nameKey) {
-    return dictionary_has_key(memtable, nameKey);
+    pthread_mutex_lock(&SEM_MEMTABLE);
+    bool exist = dictionary_has_key(memtable, nameKey);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
+
+    return exist;
 }
 
 registro_tad* getValueFromMemtable(char *table, int key) {
 
-    pthread_mutex_lock(&SEM_MEMTABLE);
+
     bool contains = containsTable(table);
 
     if(contains == true) {
 
+        pthread_mutex_lock(&SEM_MEMTABLE);
         t_list* list = dictionary_get(memtable, table);
         pthread_mutex_unlock(&SEM_MEMTABLE);
 
@@ -38,7 +43,6 @@ registro_tad* getValueFromMemtable(char *table, int key) {
         }
 
     } else {
-        pthread_mutex_unlock(&SEM_MEMTABLE);
         return NULL;
     }
 }

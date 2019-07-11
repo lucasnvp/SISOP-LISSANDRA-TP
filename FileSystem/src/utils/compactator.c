@@ -35,6 +35,7 @@ void runCompactation(char* table) {
 
     if(ValidarArchivo(path) != true) {
         log_info(log_FileSystem, "NO EXISTE LA TABLA %s", table);
+        unlock_mx_drop(table);
         return;
     }
 
@@ -49,12 +50,13 @@ void runCompactation(char* table) {
     if(ok) {
         list_add_all(registers, getRegistersFromTemporals(table, ".tmpc"));
     } else {
+        unlock_mx_drop(table);
         return;
     }
 
-    // Bloqueamos tablas, porque empezamos a modificar las particiones y tempc
     bool mientrasExistanParticiones = true;
 
+    // Bloqueamos tablas, porque empezamos a modificar las particiones y tempc
     lock_write_table(table);
     while (mientrasExistanParticiones == true) {
 
@@ -158,8 +160,8 @@ void runCompactation(char* table) {
 
     free(path);
 
-    unlock_rw_table(table);
     unlock_mx_drop(table);
+    unlock_rw_table(table);
 }
 
 void eliminarTmpc(char* path) {
@@ -302,7 +304,9 @@ void execCompactation(void *param) {
 
         if(exist == true) {
 
+            pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
             compactation_table_tad* compactationTable = dictionary_get(TABLES_COMPACTATION, nameTable);
+            pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
 
             bool forEverOrKillHim = true;
             while(forEverOrKillHim) {
@@ -338,9 +342,9 @@ void lock_mx_drop(char* tableName) {
 }
 
 void unlock_mx_drop(char* tableName) {
-    sem_wait(&SEM_MX_MAP_COMPACTACTION);
+    pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
     compactation_table_tad* compactationTable = dictionary_get(TABLES_COMPACTATION, tableName);
-    sem_post(&SEM_MX_MAP_COMPACTACTION);
+    pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
 
     pthread_mutex_unlock(&compactationTable->mx_drop);
 }

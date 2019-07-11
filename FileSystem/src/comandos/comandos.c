@@ -211,9 +211,8 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
 void comando_drop(char* table, int requestOrigin){
 
-    pthread_mutex_lock(&SEM_MEMTABLE);
     lock_mx_drop(table);
-    pthread_mutex_unlock(table);
+    lock_write_table(table);
 
     log_info(log_FileSystem, "EXECUTE DROP");
 
@@ -227,7 +226,9 @@ void comando_drop(char* table, int requestOrigin){
     if( existe == true ) {
 
         /*Libero la Memtable*/
+        pthread_mutex_lock(&SEM_MEMTABLE);
         dictionary_remove(memtable,table);
+        pthread_mutex_unlock(&SEM_MEMTABLE);
 
         /*Libero los bloques de los Tmps y Tmpcs*/
         freeBlocksFromTemps(tabla_objetivo, ".tmp");
@@ -254,7 +255,6 @@ void comando_drop(char* table, int requestOrigin){
 
     unlock_rw_table(table);
     unlock_mx_drop(table);
-    pthread_mutex_unlock(&SEM_MEMTABLE);
 
     /*Eliminamos la tabla de la estructura de compactacion*/
     pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
@@ -265,7 +265,10 @@ void comando_drop(char* table, int requestOrigin){
 void comando_dump(){
 
     dictionary_iterator(memtable, (void *) _dumpearTabla);
+
+    pthread_mutex_lock(&SEM_MEMTABLE);
     dictionary_clean(memtable);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
 
 }
 

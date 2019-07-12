@@ -190,10 +190,9 @@ void comando_describe(char* nombre_tabla, int requestOrigin){
 
             free_describe_tad(describeTad);
 
-        }else{
-
-            mostrar_metadata_tabla(metadata, nombre_tabla);
         }
+
+        mostrar_metadata_tabla(metadata, nombre_tabla);
 
         config_destroy(metadata);
 

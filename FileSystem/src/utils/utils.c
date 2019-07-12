@@ -101,12 +101,13 @@ void mostrar_metadatas(int requestOrigin) {
 
             t_config * metadata = obtener_metadata_table(path);
 
-           if(requestOrigin != CONSOLE_REQUEST) {
+            if(requestOrigin != CONSOLE_REQUEST) {
                 list_add(describes, crearDescribe(metadata, p->d_name));
             } else {
-                mostrar_metadata_tabla(metadata, p->d_name);
                 existeAlMenosUnaTabla = true;
             }
+
+            mostrar_metadata_tabla(metadata, p->d_name);
 
             free(path);
             config_destroy(metadata);

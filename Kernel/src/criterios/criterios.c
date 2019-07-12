@@ -48,19 +48,28 @@ t_list* criterio_search (char* criterio) {
     return listFilter;
 }
 
-uint32_t criterio_ramdom_memory_socket () {
-    uint32_t listSize = list_size(LIST_CRITERIOS);
-    if (listSize == 0) {
+int32_t criterio_ramdom_memory_socket () {
+    memory_tad* memory = criterio_ramdom_memory();
+    if (memory == NULL) {
         return -1;
     } else {
-        uint32_t index = rand() % listSize;
-        criterio_tad* c = list_get(LIST_CRITERIOS, index);
-        memory_tad* memory = search_memory(c->MEMORY_NUMBER);
         return memory->SOCKET;
     }
 }
 
-uint32_t criterio_ramdom_memory_by (char* criterio) {
+memory_tad* criterio_ramdom_memory () {
+    uint32_t listSize = list_size(LIST_CRITERIOS);
+    if (listSize == 0) {
+        return NULL;
+    } else {
+        uint32_t index = rand() % listSize;
+        criterio_tad* c = list_get(LIST_CRITERIOS, index);
+        memory_tad* memory = search_memory(c->MEMORY_NUMBER);
+        return memory;
+    }
+}
+
+int32_t criterio_ramdom_memory_by (char* criterio) {
     t_list* filtered = criterio_search(criterio);
     uint32_t listSize = list_size(filtered);
     if (listSize == 0) {
@@ -72,7 +81,7 @@ uint32_t criterio_ramdom_memory_by (char* criterio) {
     }
 }
 
-uint32_t criterio_shc (char* table) {
+int32_t criterio_shc (char* table) {
     t_list* filtered = criterio_search(CRITERIO_SHC);
     uint32_t listSize = list_size(filtered);
     if (listSize == 0) {

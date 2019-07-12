@@ -42,5 +42,6 @@ void gossip_memory();
 void gossip_memory_connect(t_list* gossip_table);
 void compareGossipWithListMemory(gossip_tad* gossip);
 bool send_journal_all();
+void print_memories();
 
 #endif //TP_2019_1C_GANK_MID_MEMORIA_H

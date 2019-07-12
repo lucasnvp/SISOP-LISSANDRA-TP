@@ -5,13 +5,14 @@
 #include "api.h"
 
 void api_select (char* tabla, u_int16_t key) {
-    time_metric_tad* time_metric = start_time_read_metric();
-    uint32_t socket = get_memory_socket_from_metadata(tabla);
-    metric_select(1);
-
-    if (socket == -1) {
-        log_info(log_Kernel_api, "SELECT => La tabla: <%s> no existe", tabla);
+    memory_tad* memory = get_memory_from_metadata(tabla);
+    if (memory == NULL) {
+        log_info(log_Kernel_api, "SELECT => Error no se encontro en la metadata. Tabla: <%s>", tabla);
     } else {
+        time_metric_tad* time_metric = start_time_read_metric();
+        int32_t socket = memory->SOCKET;
+        metric_select(memory->MEMORY_NUMBER);
+
         serializar_int(socket, COMAND_SELECT);
         select_tad* select = new_select_tad(tabla, key);
         serializar_select(socket, select);
@@ -22,10 +23,10 @@ void api_select (char* tabla, u_int16_t key) {
         if (confirm) {
             registro_tad* registro = deserializar_registro(socket);
             log_info(log_Kernel_api, "SELECT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>\ttimestamp: <%lld>",
-                    tabla,
-                    registro->key,
-                    registro->value,
-                    registro->timestamp);
+                     tabla,
+                     registro->key,
+                     registro->value,
+                     registro->timestamp);
             free_registro_tad(registro);
         } else {
             log_info(log_Kernel_api, "Error al recibir el SELECT");
@@ -37,19 +38,20 @@ void api_select (char* tabla, u_int16_t key) {
                 log_info(log_Kernel_api, "Journal a todas las memorias.");
             }
         }
+        // Termina el tiempo para las metricas
+        finish_time_metric(time_metric);
     }
-    // Termina el tiempo para las metricas
-    finish_time_metric(time_metric);
 }
 
 void api_insert(char* tabla, u_int16_t key, char* value){
-    time_metric_tad* time_metric = start_time_write_metric();
-    uint32_t socket = get_memory_socket_from_metadata(tabla);
-    metric_insert(1);
-
-    if (socket == -1) {
-        log_info(log_Kernel_api, "INSERT => La tabla: <%s> no existe", tabla);
+    memory_tad* memory = get_memory_from_metadata(tabla);
+    if (memory == NULL) {
+        log_info(log_Kernel_api, "INSERT => Error no se encontro en la metadata. Tabla: <%s>", tabla);
     } else {
+        time_metric_tad* time_metric = start_time_write_metric();
+        int32_t socket = memory->SOCKET;
+        metric_insert(memory->MEMORY_NUMBER);
+
         serializar_int(socket, COMAND_INSERT);
         insert_tad * insert = new_insert_tad(tabla, key, value);
         serializar_insert(socket, insert);
@@ -70,13 +72,13 @@ void api_insert(char* tabla, u_int16_t key, char* value){
             // todo cortar la ejecucion del script
             log_info(log_Kernel_api, "INSERT => FAILURE, Invalid value, TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
         }
+        // Termina el tiempo para las metricas
+        finish_time_metric(time_metric);
     }
-    // Termina el tiempo para las metricas
-    finish_time_metric(time_metric);
 }
 
 void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {
-    uint32_t socket = criterio_ramdom_memory_socket();
+    int32_t socket = criterio_ramdom_memory_socket();
 
     if (socket == -1) {
         log_info(log_Kernel_api, "CREATE => No se encontro memoria disponible");
@@ -99,7 +101,7 @@ void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_
 }
 
 void api_describe(char* tabla){
-    uint32_t socket = criterio_ramdom_memory_socket();
+    int32_t socket = criterio_ramdom_memory_socket();
 
     if (socket == -1) {
         log_info(log_Kernel_api, "DESCRIBE => No se encontro memoria disponible");
@@ -121,7 +123,7 @@ void api_describe(char* tabla){
 }
 
 void api_describe_all () {
-    uint32_t socket = criterio_ramdom_memory_socket();
+    int32_t socket = criterio_ramdom_memory_socket();
 
     if (socket == -1) {
         log_info(log_Kernel_api, "DESCRIBE ALL => No se encontro memoria disponible");
@@ -135,7 +137,7 @@ void api_describe_all () {
 }
 
 void api_drop(char* tabla){
-    int socket = get_memory_socket_from_metadata(tabla);
+    int32_t socket = get_memory_socket_from_metadata(tabla);
 
     if (socket == -1) {
         log_info(log_Kernel_api, "DROP => La tabla: <%s> no existe", tabla);

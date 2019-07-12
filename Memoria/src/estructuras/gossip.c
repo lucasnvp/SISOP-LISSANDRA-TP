@@ -67,8 +67,6 @@ void compararElementoEnTabla(gossip_tad* memoria) {
         gossip_tad* newGossip = new_gossip_tad(memoria->IP, memoria->PORT);
         list_add(LIST_GOSSIP, newGossip);
         log_info(log_Memoria_gossip, "GOSSIP => Se agrego la memoria <%s:%d>", newGossip->IP, newGossip->PORT);
-    } else {
-        log_info(log_Memoria_gossip, "GOSSIP => La memoria <%s:%d> ya se encuentra agregada", memoria->IP, memoria->PORT);
     }
 }
 

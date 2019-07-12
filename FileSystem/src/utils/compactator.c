@@ -20,8 +20,6 @@ void init_list_compactation() {
 
 void runCompactation(char* table) {
 
-
-
     t_list* registers = list_create();
 
     char* path = string_duplicate(montajeTablas);
@@ -318,7 +316,6 @@ void execCompactation(void *param) {
                 pthread_mutex_lock(&MX_LIST_SEM);
                 pthread_mutex_unlock(&MX_LIST_SEM);
 
-                lock_mx_drop(nameTable);
 
                 pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
                 bool existKey = dictionary_has_key(TABLES_COMPACTATION, nameTable);
@@ -328,13 +325,14 @@ void execCompactation(void *param) {
                     usleep(compactationTable->tableInfo->compactacion*1000);
 
                     // Una vez pasado el tiempo, compactamos
+                    lock_mx_drop(nameTable);
                     runCompactation(compactationTable->tableInfo->nameTable);
+                    unlock_mx_drop(nameTable);
                     log_info(log_FileSystem, "Se compacto la tabla: %s", compactationTable->tableInfo->nameTable);
                 } else {
                     forEverOrKillHim = false;
                 }
 
-                unlock_mx_drop(nameTable);
 
             }
         }

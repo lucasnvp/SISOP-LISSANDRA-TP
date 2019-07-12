@@ -42,5 +42,6 @@ __uint32_t cantidadDeMarcos;
 void liberarMarco(registro_tad* punteroAPagina);
 registro_tad* reservarMarco(int socket); // reserva un marco
 void inicializarMarcos(__uint32_t tamanioMemoria);
+void reinicializarRegistros();
 
 #endif //TP_2019_1C_GANK_MID_MARCOS_H

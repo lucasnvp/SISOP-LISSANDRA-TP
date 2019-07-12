@@ -26,6 +26,7 @@ int main(int argc, char *argv[]){
     // Configuracion inicial
     config = load_config(PATH_CONFIG);
     print_config(config, log_Console);
+    configFilePathSize = string_length(PATH_CONFIG);
 
     // Inicializamos los semáforos
     inicializarSemaforos();
@@ -36,9 +37,10 @@ int main(int argc, char *argv[]){
     // Se crea el espacio para la memoria principal
     memoriaPrincipal = alocar_MemoriaPrincipal();
 
+    // Memory ready
+    MEMORY_READY = true;
 
     // Inicializamos la tabla de segmentos
-
     primerRegistroDeSegmentos = NULL;
 
     // Inicializamos los hilos de journal, gossiping, servidor y consola
@@ -53,14 +55,8 @@ int main(int argc, char *argv[]){
 
 
 void journaling(){
-    struct timeval timeJournal;
-
-    while(true){
-
-        timeJournal.tv_sec = 0;
-        timeJournal.tv_usec = (config.RETARDO_JOURNAL * 1000);
-
-        select(0, NULL, NULL, NULL, &timeJournal);
+    while(MEMORY_READY){
+        usleep(config->RETARDO_JOURNAL * 1000);
         sem_wait(&semaforoDrop);
         sem_wait(&semaforoInsert);
         funcionJournal(SERVIDOR_FILESYSTEM);
@@ -70,17 +66,10 @@ void journaling(){
 }
 
 void gossiping(){
-    struct timeval timeGossip;
-
     inicializarTablaDeGossiping();
 
-    while(true){
-
-        timeGossip.tv_sec = 0;
-        timeGossip.tv_usec = (config.RETARDO_GOSSIPING * 1000);
-
-        select(0, NULL, NULL, NULL, &timeGossip);
-
+    while(MEMORY_READY){
+        usleep(config->RETARDO_GOSSIPING * 1000);
         funcionGossip();
     }
 
@@ -92,7 +81,7 @@ void recibir_valores_FileSystem(uint32_t servidorFileSystem) {
 
 
 registro_tad* alocar_MemoriaPrincipal() {
-    inicializarMarcos(config.TAM_MEM);
+    inicializarMarcos(config->TAM_MEM);
     uint32_t tamanioMemoria = sizeof(registro_tad) * cantidadDeMarcos;
     registro_tad* aux = malloc(tamanioMemoria);
     log_info(log_Memoria, "Se ha alocado la memoria principal");
@@ -109,7 +98,7 @@ void init_log(char* pathLog){
 
 void connect_server_FileSystem(){
     //Conexion al servidor FileSystem
-    SERVIDOR_FILESYSTEM = connect_server(config.IP_FS,config.PUERTO_FS);
+    SERVIDOR_FILESYSTEM = connect_server(config->IP_FS,config->PUERTO_FS);
 
     //Si conecto, informo
     if(SERVIDOR_FILESYSTEM > 1){
@@ -130,7 +119,7 @@ void server(void* args) {
     FD_ZERO(&read_fds);	// borra los conjuntos temporal
 
     //Creacion del servidor
-    uint32_t SERVIDOR_MEMORIA = build_server(config.PUERTO_ESCUCHA, config.CANT_CONEXIONES);
+    uint32_t SERVIDOR_MEMORIA = build_server(config->PUERTO_ESCUCHA, config->CANT_CONEXIONES);
 
     //El socket esta listo para escuchar
     if(SERVIDOR_MEMORIA > 0) {
@@ -169,7 +158,7 @@ void server(void* args) {
                         close(i); // Close conexion
                         FD_CLR(i, &master); // eliminar del conjunto maestro
                     } else {
-                        usleep(config.RETARDO_MEM*1000);
+                        usleep(config->RETARDO_MEM*1000);
                         connection_handler(i, command);
                     }
                 }
@@ -183,7 +172,7 @@ void connection_handler(uint32_t socket, uint32_t command){
 
         case NUEVA_CONEXION_KERNEL_TO_MEMORIA: {
             log_info(log_Memoria, "Se conecto el kernel");
-            memory_info_tad* memoryInfo = new_memory_info_tad(config.MEMORY_NUMBER, config.RETARDO_GOSSIPING);
+            memory_info_tad* memoryInfo = new_memory_info_tad(config->MEMORY_NUMBER, config->RETARDO_GOSSIPING);
             serializar_memory_info(socket, memoryInfo);
             free_memory_info_tad(memoryInfo);
             break;
@@ -277,8 +266,7 @@ void memory_console() {
             com = strtok(NULL, " ");
             uint32_t i = 0;
             while (i < 4 && com) {
-                comandos->arg[i] = (char*) malloc (sizeof(char) * strlen(com));
-                strcpy(comandos->arg[i], com);
+                comandos->arg[i] = strdup(com);
                 comandos->cantArgs++;
                 com = strtok(NULL, " ");
                 i++;
@@ -368,7 +356,7 @@ void memory_console() {
 
             else if (!strcmp(comandos->comando, "printGossip")) {
                 if (comandos->cantArgs == 0) {
-                    printGossip(config.MEMORY_NUMBER);
+                    printGossip(config->MEMORY_NUMBER);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -386,21 +374,59 @@ void memory_console() {
 }
 
 void inicializarSemaforos() {
+    pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
     sem_init(&semaforoDrop,0,1);
     sem_init(&semaforoInsert,0,1);
 }
 
 void inicializarHilos() {
-
-    //Hilo de Journal
-    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
-
-    //Hilo de Gossiping
-    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
-
-    //Hilo del Servidor
+    // Hilo del Servidor
     pthread_create(&thread_server, NULL, (void*) server, "Servidor");
 
-    //Hilo de la Consola
+    // Hilo de la Consola
     pthread_create(&thread_consola, NULL, (void*) memory_console, "Consola");
+
+    // Hilo de config
+    pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
+
+    // Hilo de Journal
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+
+    // Hilo de Gossiping
+    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
+}
+
+void watching_config(){
+    bufferInotifySize = sizeof(struct inotify_event) + configFilePathSize + 1;
+
+    while (MEMORY_READY){
+        fd_inotify = inotify_init();
+
+        if (fd_inotify < 0) {
+            log_error(log_Memoria, "inotify_init");
+        }
+
+        wd_inotify = inotify_add_watch(fd_inotify, PATH_CONFIG, IN_MODIFY);
+
+        struct inotify_event* event = malloc(bufferInotifySize);
+
+        length_inotify = read(fd_inotify, event, bufferInotifySize);
+
+        if (length_inotify < 0) {
+            log_error(log_Memoria, "Read");
+        }
+
+        if (event->mask == IN_MODIFY) {
+            pthread_mutex_lock(&mutexConfig);
+            free_config(config);
+            config = load_config(PATH_CONFIG);
+            print_config(config, log_Memoria);
+            pthread_mutex_unlock(&mutexConfig);
+        }
+
+        free(event);
+
+        (void) inotify_rm_watch(fd_inotify, wd_inotify);
+        (void) close(fd_inotify);
+    }
 }

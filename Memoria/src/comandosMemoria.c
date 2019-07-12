@@ -35,6 +35,8 @@ void funcionJournal(int requestOrigin) {
         funcionDrop(nombreTabla);
     }
 
+    reinicializarRegistros();
+
     if(requestOrigin != CONSOLE_REQUEST) {
         serializar_int(requestOrigin, true); // enivo a kernel que la memoria termino el journal
     }

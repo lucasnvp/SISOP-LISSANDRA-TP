@@ -20,7 +20,7 @@
 #define CRITERIO_EC "EC"
 
 typedef struct {
-    uint32_t MEMORY_NUMBER;
+    int32_t MEMORY_NUMBER;
     char* CRITERIO;
 } criterio_tad;
 

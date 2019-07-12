@@ -29,6 +29,6 @@ void compararTablasGossip(t_list* listaGossip);
 void compararElementoEnTabla(gossip_tad* memoria);
 void printGossip(uint32_t memoryNumber);
 
-Type_Config config;
+Type_Config* config;
 
 #endif //TP_2019_1C_GANK_MID_GOSSIP_H

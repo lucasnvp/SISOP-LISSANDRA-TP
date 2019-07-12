@@ -8,8 +8,8 @@ void inicializarTablaDeGossiping(){
     LIST_GOSSIP = list_create();
 
     uint32_t index = 0;
-    while(config.IP_SEEDS[index] != NULL){
-        gossip_tad* gossip = new_gossip_tad(config.IP_SEEDS[index], atoi(config.PUERTO_SEEDS[index]));
+    while(config->IP_SEEDS[index] != NULL){
+        gossip_tad* gossip = new_gossip_tad(config->IP_SEEDS[index], atoi(config->PUERTO_SEEDS[index]));
         list_add(LIST_GOSSIP, gossip);
         index++;
     }
@@ -67,8 +67,6 @@ void compararElementoEnTabla(gossip_tad* memoria) {
         gossip_tad* newGossip = new_gossip_tad(memoria->IP, memoria->PORT);
         list_add(LIST_GOSSIP, newGossip);
         log_info(log_Memoria_gossip, "GOSSIP => Se agrego la memoria <%s:%d>", newGossip->IP, newGossip->PORT);
-    } else {
-        log_info(log_Memoria_gossip, "GOSSIP => La memoria <%s:%d> ya se encuentra agregada", memoria->IP, memoria->PORT);
     }
 }
 

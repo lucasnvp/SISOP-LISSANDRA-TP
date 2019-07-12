@@ -86,8 +86,7 @@ void consola() {
             com = strtok(NULL, " ");
             uint32_t i = 0;
             while (i < 4 && com) {
-                comandos->arg[i] = (char*) malloc (sizeof(char) * strlen(com));
-                strcpy(comandos->arg[i], com);
+                comandos->arg[i] = strdup(com);
                 comandos->cantArgs++;
                 com = strtok(NULL, " ");
                 i++;
@@ -107,35 +106,45 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "SELECT")) {
                 if (comandos->cantArgs == 2) {
+                    pthread_mutex_lock(&mutexGossip);
                     comando_select(comandos->arg[0], atoi(comandos->arg[1]));
+                    pthread_mutex_unlock(&mutexGossip);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "INSERT")) {
                 if (comandos->cantArgs == 3) {
+                    pthread_mutex_lock(&mutexGossip);
                     comando_insert(comandos->arg[0], atoi(comandos->arg[1]), comandos->arg[2]);
+                    pthread_mutex_unlock(&mutexGossip);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "CREATE")) {
                 if (comandos->cantArgs == 4) {
+                    pthread_mutex_lock(&mutexGossip);
                     comando_create(
                             comandos->arg[0],
                             comandos->arg[1],
                             atoi(comandos->arg[2]),
                             atoi(comandos->arg[3]));
+                    pthread_mutex_unlock(&mutexGossip);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
+                    pthread_mutex_lock(&mutexGossip);
                     comando_describe_all();
+                    pthread_mutex_unlock(&mutexGossip);
                 } else {
                     if (comandos->cantArgs == 1) {
+                        pthread_mutex_lock(&mutexGossip);
                         comando_describe(comandos->arg[0]);
+                        pthread_mutex_unlock(&mutexGossip);
                     }
                     else print_console((void*) log_error, "Número de parámetros incorrecto.");
                 }
@@ -143,23 +152,25 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
+                    pthread_mutex_lock(&mutexGossip);
                     comando_drop(comandos->arg[0]);
+                    pthread_mutex_unlock(&mutexGossip);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "RUN")) {
                 if (comandos->cantArgs == 1) {
-                    comando_run(comandos->arg[0], QUEUE_READY, &SEM_PLANIFICADOR);
+                    char* path = string_duplicate(comandos->arg[0]);
+                    comando_run(path, QUEUE_READY, &SEM_PLANIFICADOR);
+                    free(path);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
             else if (!strcmp(comandos->comando, "METRICS")) {
                 if (comandos->cantArgs == 0) {
-                    pthread_mutex_lock(&mutexMetricas);
                     showMetrics(log_Kernel);
-                    pthread_mutex_unlock(&mutexMetricas);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -180,10 +191,19 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "JOURNAL")) {
                 if (comandos->cantArgs == 0) {
+                    pthread_mutex_lock(&mutexGossip);
                     bool confirm = api_journal();
+                    pthread_mutex_unlock(&mutexGossip);
                     if (confirm) {
                         print_console((void*) log_info, "Journal ejecutado correctamente");
                     }
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
+            else if (!strcmp(comandos->comando, "PRINT_MEMORIES")) {
+                if (comandos->cantArgs == 0) {
+                    print_memories();
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -206,8 +226,9 @@ void init_queue_and_sem(){
     QUEUE_EXIT = queue_create();
     QUEUE_EXEC = queue_create();
 
-    pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
+    pthread_mutex_init(&mutexMetrics, NULL);   // Inicializo el mutex de metricas
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
+    pthread_mutex_init(&mutexGossip, NULL);     // Inicializo el mutex de gossip
 
     sem_init(&SEM_PLANIFICADOR,0,0);	    // Hay procesos para Planificar
     sem_init(&SEM_MULTIPROGRAMACION,0,config->MULTIPROCESAMIENTO);	// Controlo la multiprogramacion
@@ -216,9 +237,7 @@ void init_queue_and_sem(){
 void metricas(){
     while(KERNEL_READY){
         sleep(30);
-        pthread_mutex_lock(&mutexMetricas);
         showMetrics(log_Kernel);
-        pthread_mutex_unlock(&mutexMetricas);
     }
 }
 
@@ -329,29 +348,41 @@ bool parser_line(char * line){
     if(parsed.valido){
         switch(parsed.keyword){
             case SELECT:
+                pthread_mutex_lock(&mutexGossip);
                 api_select(parsed.argumentos.SELECT.tabla, parsed.argumentos.SELECT.key);
+                pthread_mutex_unlock(&mutexGossip);
                 break;
             case INSERT:
+                pthread_mutex_lock(&mutexGossip);
                 api_insert(parsed.argumentos.INSERT.tabla,
                         parsed.argumentos.INSERT.key,
                         parsed.argumentos.INSERT.value);
+                pthread_mutex_unlock(&mutexGossip);
                 break;
             case CREATE:
+                pthread_mutex_lock(&mutexGossip);
                 api_create(
                         parsed.argumentos.CREATE.tabla,
                         parsed.argumentos.CREATE.consistencia,
                         parsed.argumentos.CREATE.particiones,
                         parsed.argumentos.CREATE.compactacion);
+                pthread_mutex_unlock(&mutexGossip);
                 break;
             case DESCRIBE:
                 if(parsed.argumentos.DESCRIBE.tabla == NULL) {
+                    pthread_mutex_lock(&mutexGossip);
                     api_describe_all();
+                    pthread_mutex_unlock(&mutexGossip);
                 } else {
+                    pthread_mutex_lock(&mutexGossip);
                     api_describe(parsed.argumentos.DESCRIBE.tabla);
+                    pthread_mutex_unlock(&mutexGossip);
                 }
                 break;
             case DROP:
+                pthread_mutex_lock(&mutexGossip);
                 api_drop(parsed.argumentos.SELECT.tabla);
+                pthread_mutex_unlock(&mutexGossip);
                 break;
             default:
                 log_info(log_Kernel, "No pude interpretar <%s>", line);
@@ -371,6 +402,8 @@ bool parser_line(char * line){
 void gossiping(){
     while(KERNEL_READY){
         usleep(RETARDO_GOSSIPING * 1000);
+        pthread_mutex_lock(&mutexGossip);
         gossip_memory();
+        pthread_mutex_unlock(&mutexGossip);
     }
 }

@@ -60,6 +60,8 @@ uint32_t wd_inotify;
 uint32_t length_inotify;
 size_t bufferInotifySize;
 
+bool FILESYSTEM_READY;
+
 typedef struct {
     uint32_t cantArgs;
     char * comando;

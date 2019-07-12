@@ -31,6 +31,9 @@ int main(){
     //Inicializa Memtable
     inicilizar_memtable();
 
+    //Filesystem ready
+    FILESYSTEM_READY = true;
+
     // Hilo de config
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
@@ -427,7 +430,7 @@ void consola() {
 void watching_config(){
     bufferInotifySize = sizeof(struct inotify_event) + configFilePathSize + 1;
 
-    while (true){
+    while (FILESYSTEM_READY){
         fd_inotify = inotify_init();
 
         if (fd_inotify < 0) {
@@ -467,15 +470,8 @@ void init_queue_and_sem(){
 }
 
 void dump() {
-    struct timeval timeDump;
-
-    while(true){
-
-        timeDump.tv_sec = 0;
-        timeDump.tv_usec = config->TIEMPO_DUMP*1000;
-
-        select(0, NULL, NULL, NULL, &timeDump);
-
+    while(FILESYSTEM_READY){
+        usleep(config->TIEMPO_DUMP * 1000);
         log_info(log_FileSystem, "Se ejecuta el DUMP");
         comando_dump();
     }

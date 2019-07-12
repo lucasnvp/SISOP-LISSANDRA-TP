@@ -464,7 +464,7 @@ void init_queue_and_sem(){
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
     pthread_mutex_init(&SEM_MEMTABLE, NULL);     // Inicializo el mutex de memtable
     pthread_mutex_init(&SEM_MX_MAP_COMPACTACTION, NULL);     // Inicializo el mutex de tablas en compactacion
-    pthread_mutex_init(&LIST_SEM_TABLES, NULL);     // Inicializo el mutex de listas de semaforos por tabla
+    pthread_mutex_init(&MX_LIST_SEM, NULL);     // Inicializo el mutex de listas de semaforos por tabla
 }
 
 void dump() {

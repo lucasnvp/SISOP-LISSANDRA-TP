@@ -115,8 +115,8 @@ void setUp_compactation_threads(){
 
     DIR *d = opendir(montajeTablas);
 
-    TABLES_COMPACTATION = dictionary_create();
-    LIST_SEM_TABLES = dictionary_create();
+    //TABLES_COMPACTATION = dictionary_create();
+    //LIST_SEM_TABLES = dictionary_create();
 
     if (d) {
         struct dirent *p;

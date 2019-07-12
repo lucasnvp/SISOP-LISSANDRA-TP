@@ -261,10 +261,6 @@ void comando_drop(char* table, int requestOrigin){
     unlock_rw_table(table);
     unlock_mx_drop(table);
 
-    /*Eliminamos la tabla de la estructura de compactacion*/
-    pthread_mutex_lock(&MX_LIST_SEM);
-    dictionary_remove(LIST_SEM_TABLES, table);
-    pthread_mutex_unlock(&MX_LIST_SEM);
 }
 
 void comando_dump(){

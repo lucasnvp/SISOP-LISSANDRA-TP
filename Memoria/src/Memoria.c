@@ -279,8 +279,7 @@ void memory_console() {
             com = strtok(NULL, " ");
             uint32_t i = 0;
             while (i < 4 && com) {
-                comandos->arg[i] = (char*) malloc (sizeof(char) * strlen(com));
-                strcpy(comandos->arg[i], com);
+                comandos->arg[i] = strdup(com);
                 comandos->cantArgs++;
                 com = strtok(NULL, " ");
                 i++;

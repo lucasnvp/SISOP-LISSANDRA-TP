@@ -86,8 +86,7 @@ void consola() {
             com = strtok(NULL, " ");
             uint32_t i = 0;
             while (i < 4 && com) {
-                comandos->arg[i] = (char*) malloc (sizeof(char) * strlen(com));
-                strcpy(comandos->arg[i], com);
+                comandos->arg[i] = strdup(com);
                 comandos->cantArgs++;
                 com = strtok(NULL, " ");
                 i++;
@@ -150,7 +149,9 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "RUN")) {
                 if (comandos->cantArgs == 1) {
-                    comando_run(comandos->arg[0], QUEUE_READY, &SEM_PLANIFICADOR);
+                    char* path = string_duplicate(comandos->arg[0]);
+                    comando_run(path, QUEUE_READY, &SEM_PLANIFICADOR);
+                    free(path);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }

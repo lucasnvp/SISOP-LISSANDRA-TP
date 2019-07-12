@@ -201,6 +201,13 @@ void consola() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
+            else if (!strcmp(comandos->comando, "PRINT_MEMORIES")) {
+                if (comandos->cantArgs == 0) {
+                    print_memories();
+                }
+                else print_console((void*) log_error, "Número de parámetros incorrecto.");
+            }
+
             else print_console((void*) log_error, "Comando incorrecto.");
 
             // Libero toda la memoria

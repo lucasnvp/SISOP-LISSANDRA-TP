@@ -111,3 +111,11 @@ bool send_journal_all() {
     list_iterate(LIST_MEMORIES, sendJournal);
     return true;
 }
+
+void print_memories() {
+    void _print_memory(void* element) {
+        memory_tad* m = element;
+        log_info(log_Kernel_memory, "Memoria numero <%d> | <%s>:<%d>", m->MEMORY_NUMBER, m->IP_MEMORIA, m->PUERTO_MEMORIA);
+    }
+    list_iterate(LIST_MEMORIES, (void*)_print_memory);
+}

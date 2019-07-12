@@ -5,18 +5,23 @@
 #include "memtableHanlder.h"
 
 bool containsTable(char* nameKey) {
-    return dictionary_has_key(memtable, nameKey);
+    pthread_mutex_lock(&SEM_MEMTABLE);
+    bool exist = dictionary_has_key(memtable, nameKey);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
+
+    return exist;
 }
 
 registro_tad* getValueFromMemtable(char *table, int key) {
 
-    sem_wait(&SEM_MEMTABLE);
+
     bool contains = containsTable(table);
 
     if(contains == true) {
 
+        pthread_mutex_lock(&SEM_MEMTABLE);
         t_list* list = dictionary_get(memtable, table);
-        sem_post(&SEM_MEMTABLE);
+        pthread_mutex_unlock(&SEM_MEMTABLE);
 
         bool _mismaKey(registro_tad* registro) {
             return registro->key == key;
@@ -38,7 +43,6 @@ registro_tad* getValueFromMemtable(char *table, int key) {
         }
 
     } else {
-        sem_post(&SEM_MEMTABLE);
         return NULL;
     }
 }
@@ -46,7 +50,7 @@ registro_tad* getValueFromMemtable(char *table, int key) {
 void insertValue(char* table, registro_tad* registroTad) {
     t_list * list;
 
-    sem_wait(&SEM_MEMTABLE);
+    pthread_mutex_lock(&SEM_MEMTABLE);
     if(!dictionary_has_key(memtable, table)) {
         list = list_create();
     } else {
@@ -55,7 +59,7 @@ void insertValue(char* table, registro_tad* registroTad) {
 
     list_add(list, registroTad);
     dictionary_put(memtable, table, list);
-    sem_post(&SEM_MEMTABLE);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
 }
 
 // DEPRECATED

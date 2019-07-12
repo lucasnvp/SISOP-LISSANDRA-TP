@@ -1,10 +1,8 @@
 #ifndef TP_2019_1C_GANK_MID_SEMAPHORES_H
 #define TP_2019_1C_GANK_MID_SEMAPHORES_H
 
-sem_t SEM_MEMTABLE;
-sem_t SEM_TMP;
-sem_t SEM_TMPC;
-sem_t SEM_COMPACTACTION;
-sem_t SEM_PARTITION;
+pthread_mutex_t SEM_MEMTABLE;
+pthread_mutex_t SEM_MX_MAP_COMPACTACTION;
+pthread_mutex_t MX_LIST_SEM;
 
 #endif //TP_2019_1C_GANK_MID_SEMAPHORES_H

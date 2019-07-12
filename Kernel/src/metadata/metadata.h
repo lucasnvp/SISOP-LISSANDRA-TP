@@ -23,7 +23,7 @@
 
 typedef struct {
     describe_tad* DESCRIBE;
-    uint32_t MEMORY_NUMBER;
+    int32_t MEMORY_NUMBER;
 } metadata_tad;
 
 t_list * LIST_METADATA;

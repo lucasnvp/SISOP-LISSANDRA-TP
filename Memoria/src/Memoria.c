@@ -59,7 +59,9 @@ void journaling(){
         usleep(config->RETARDO_JOURNAL * 1000);
         sem_wait(&semaforoDrop);
         sem_wait(&semaforoInsert);
+        pthread_mutex_lock(&mutexLock);
         funcionJournal(SERVIDOR_FILESYSTEM);
+        pthread_mutex_unlock(&mutexLock);
         sem_post(&semaforoDrop);
         sem_post(&semaforoInsert);
     }
@@ -70,7 +72,9 @@ void gossiping(){
 
     while(MEMORY_READY){
         usleep(config->RETARDO_GOSSIPING * 1000);
+        pthread_mutex_lock(&mutexLock);
         funcionGossip();
+        pthread_mutex_unlock(&mutexLock);
     }
 
 }
@@ -179,62 +183,80 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_INSERT: {
             log_info(log_Memoria, "El kernel envio un insert");
+            pthread_mutex_lock(&mutexLock);
             insert_tad* insert = deserializar_insert(socket);
             log_info(log_Memoria, "INSERT => TABLA: <%s>\tkey: <%d>\tvalue: <%s>", insert->nameTable, insert->key, insert->value);
             comando_insert(insert, socket);
+            pthread_mutex_unlock(&mutexLock);
             free_insert_tad(insert);
             break;
         }
         case COMAND_SELECT: {
             log_info(log_Memoria, "El kernel envio un select");
+            pthread_mutex_lock(&mutexLock);
             select_tad* select = deserializar_select(socket);
             comando_select(select, socket);
+            pthread_mutex_unlock(&mutexLock);
             free_select_tad(select);
             break;
         }
         case COMAND_CREATE: {
             log_info(log_Memoria, "El kernel envio un create");
+            pthread_mutex_lock(&mutexLock);
             create_tad* create = deserializar_create(socket);
             comando_create(create, socket);
+            pthread_mutex_unlock(&mutexLock);
             free_create_tad(create);
             break;
         }
         case COMAND_DESCRIBE: {
             log_info(log_Memoria, "El kernel envio un describe");
+            pthread_mutex_lock(&mutexLock);
             char* tabla = deserializar_string(socket);
             comando_describe(tabla, socket);
+            pthread_mutex_unlock(&mutexLock);
             free(tabla);
             break;
         }
         case COMAND_DESCRIBE_ALL: {
             log_info(log_Memoria, "El kernel envio un describe all");
+            pthread_mutex_lock(&mutexLock);
             comando_describe_all(socket);
+            pthread_mutex_unlock(&mutexLock);
             break;
         }
         case COMAND_DROP: {
             log_info(log_Memoria, "El kernel envio un drop");
+            pthread_mutex_lock(&mutexLock);
             char* tabla = deserializar_string(socket);
             comando_drop(tabla, socket);
+            pthread_mutex_unlock(&mutexLock);
             free(tabla);
             break;
         }
 
         case COMAND_JOURNAL: {
             log_info(log_Memoria, "El kernel envio un journal");
+            pthread_mutex_lock(&mutexLock);
             comando_journal(socket);
+            pthread_mutex_unlock(&mutexLock);
             break;
         }
 
         case COMAND_GOSSIP: {
             log_info(log_Memoria, "Se solicito la Tabla de Gossiping");
+            pthread_mutex_lock(&mutexLock);
             comando_gossip(socket);
+            pthread_mutex_unlock(&mutexLock);
             break;
         }
 
         case COMAND_GOSSIP_RECEIVED: {
             log_info(log_Memoria, "Se recibe la Tabla de Gossiping de la otra memoria");
+            pthread_mutex_lock(&mutexLock);
             t_list* gossipOtherMemory = deserializar_gossip_table(socket);
             compararTablasGossip(gossipOtherMemory);
+            pthread_mutex_unlock(&mutexLock);
             list_destroy_and_destroy_elements(gossipOtherMemory, free_gossip_tad);
             break;
         }
@@ -374,7 +396,8 @@ void memory_console() {
 }
 
 void inicializarSemaforos() {
-    pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
+    pthread_mutex_init(&mutexConfig, NULL); // Inicializo el mutex de config
+    pthread_mutex_init(&mutexLock, NULL);   // Inicializo el mutex de lock
     sem_init(&semaforoDrop,0,1);
     sem_init(&semaforoInsert,0,1);
 }

@@ -43,7 +43,8 @@ void api_select (char* tabla, u_int16_t key) {
     }
 }
 
-void api_insert(char* tabla, u_int16_t key, char* value){
+bool api_insert(char* tabla, u_int16_t key, char* value){
+    bool valid = true;
     memory_tad* memory = get_memory_from_metadata(tabla);
     if (memory == NULL) {
         log_info(log_Kernel_api, "INSERT => Error no se encontro en la metadata. Tabla: <%s>", tabla);
@@ -71,10 +72,12 @@ void api_insert(char* tabla, u_int16_t key, char* value){
         } else {
             // todo cortar la ejecucion del script
             log_info(log_Kernel_api, "INSERT => FAILURE, Invalid value, TABLA: <%s>\tkey: <%d>\tvalue: <%s>", tabla, key, value);
+            valid = false;
         }
         // Termina el tiempo para las metricas
         finish_time_metric(time_metric);
     }
+    return valid;
 }
 
 void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {

@@ -68,15 +68,17 @@ void comando_create(create_tad* create, int requestOrigin){
 void comando_drop(char* nombreTabla, int requestOrigin){
 
     char* tabla = string_duplicate(nombreTabla);
+
+    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
+    serializar_string(SERVIDOR_FILESYSTEM, tabla);
+    bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
+
 //    sem_wait(&semaforoDrop);
     funcionDrop(tabla);
 //    sem_post(&semaforoDrop);
     log_info(log_Memoria,
              "DROP EN MEMORIA => TABLA: <%s>\t",
              tabla);
-    serializar_int(SERVIDOR_FILESYSTEM, COMAND_DROP);
-    serializar_string(SERVIDOR_FILESYSTEM, tabla);
-    bool confirm = deserializar_int(SERVIDOR_FILESYSTEM);
 
     if (requestOrigin != CONSOLE_REQUEST) {
 

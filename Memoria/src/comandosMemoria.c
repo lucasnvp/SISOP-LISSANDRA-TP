@@ -96,7 +96,7 @@ registro_tad* funcionSelect(int socket, select_tad* select){
 
 registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
-    log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
+    log_info(log_Memoria, "SELECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
 
     select_tad* select_FS = new_select_tad(select->nameTable, select->key);

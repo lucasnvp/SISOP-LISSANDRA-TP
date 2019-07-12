@@ -12,10 +12,13 @@ void funcionJournal(int requestOrigin) {
         while(_tablaDePaginas != NULL){
             if(_tablaDePaginas->registro.flagModificado){
                 serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
-                insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
+                registro_tad* registro = new_registro_tad(_tablaDePaginas->registro.punteroAPagina->timestamp,
                                                     _tablaDePaginas->registro.punteroAPagina->key,
                                                     _tablaDePaginas->registro.punteroAPagina->value);
-                serializar_insert(SERVIDOR_FILESYSTEM, insert);
+                serializar_string(SERVIDOR_FILESYSTEM, _TablaDeSegmento->registro.nombreTabla);
+                serializar_registro(SERVIDOR_FILESYSTEM, registro);
+
+                free_registro_tad(registro);
     
                 uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
     

@@ -264,9 +264,8 @@ void comando_drop(char* table, int requestOrigin){
 
 void comando_dump(){
 
-    dictionary_iterator(memtable, (void *) _dumpearTabla);
-
     pthread_mutex_lock(&SEM_MEMTABLE);
+    dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
     pthread_mutex_unlock(&SEM_MEMTABLE);
 

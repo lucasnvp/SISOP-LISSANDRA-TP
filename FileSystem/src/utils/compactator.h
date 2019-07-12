@@ -23,9 +23,12 @@ pthread_t thread_compactation;
 // t_list * LIST_TABLE_COMPACTATION;
 
 t_dictionary* TABLES_COMPACTATION;
+t_dictionary* LIST_SEM_TABLES;
 
 typedef struct compactation_table_tad {
     create_tad* tableInfo;
+    pthread_rwlock_t rw_sem_table;
+    pthread_mutex_t mx_drop;
 } compactation_table_tad;
 
 compactation_table_tad* new_compactation_table_tad(create_tad* tableInfo);
@@ -38,5 +41,10 @@ void crearParticionCompactada(char* path, t_list* bloques, int size);
 void eliminarTmpc(char* path);
 void createThreadCompactation(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void execCompactation(void* param);
+void unlock_rw_table(char* tableName);
+void lock_read_table(char *tableName);
+void unlock_mx_drop(char* tableName);
+void lock_mx_drop(char* tableName);
+void lock_write_table(char *tableName);
 
 #endif //TP_2019_1C_GANK_MID_COMPACTATOR_H

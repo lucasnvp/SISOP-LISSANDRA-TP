@@ -68,6 +68,7 @@ void mostrar_metadata_tabla(t_config * metadata, char* nombre_tabla) {
 
 describe_tad* crearDescribe(t_config* metadata, char* nombreTabla) {
 
+
     return new_describe_tad(nombreTabla,
             config_get_string_value(metadata, "CONSISTENCY"),
             config_get_int_value(metadata, "PARTITIONS"),
@@ -93,6 +94,7 @@ void mostrar_metadatas(int requestOrigin) {
                 continue;
             }
 
+            lock_read_table(p->d_name);
             char* path = string_duplicate(montajeTablas);
             string_append(&path, p->d_name);
             string_append(&path, "/Metadata.bin");
@@ -108,6 +110,8 @@ void mostrar_metadatas(int requestOrigin) {
 
             free(path);
             config_destroy(metadata);
+
+            unlock_rw_table(p->d_name);
         }
 
         closedir(d);

@@ -2,6 +2,12 @@
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
 
+    pthread_mutex_lock(&SEM_MEMTABLE);
+    lock_mx_drop(nombreTabla);
+    lock_write_table(nombreTabla);
+
+    uint64_t initTime = getCurrentTime();
+
     char* path = string_duplicate(montajeTablas);
     char* table = string_duplicate(nombreTabla);
     string_append(&path, table);
@@ -25,9 +31,17 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
         free(registrosADumpear);
     }
 
+    uint64_t finalTime = getCurrentTime();
+    uint64_t diff = finalTime - initTime;
+
+    log_info(log_FileSystem, "DUMP => Tabla <%s> tardo: <%lld>", nombreTabla, diff);
+
     free(path);
     free(table);
 
+    unlock_rw_table(nombreTabla);
+    unlock_mx_drop(nombreTabla);
+    pthread_mutex_unlock(&SEM_MEMTABLE);
 }
 
 int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {

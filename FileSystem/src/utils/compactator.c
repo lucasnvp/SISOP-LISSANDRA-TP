@@ -3,6 +3,8 @@
 compactation_table_tad* new_compactation_table_tad(create_tad* tableInfo) {
     compactation_table_tad* compactationTable = malloc(sizeof(compactation_table_tad));
     compactationTable->tableInfo = tableInfo;
+    pthread_rwlock_init(&compactationTable->rw_sem_table, NULL);
+    pthread_mutex_init(&compactationTable->mx_drop, NULL);
     return compactationTable;
 }
 
@@ -13,6 +15,7 @@ void free_compactation_table_tad(compactation_table_tad* compactationTable) {
 
 void init_list_compactation() {
     TABLES_COMPACTATION = dictionary_create();
+    LIST_SEM_TABLES = dictionary_create();
 }
 
 void runCompactation(char* table) {
@@ -34,7 +37,12 @@ void runCompactation(char* table) {
     }
 
     string_append(&path, "/");
+
+    // Bloqueamos tabla
+    lock_write_table(table);
     bool ok = tmpToTmpc(path);
+    unlock_rw_table(table);
+    // Desbloqueamos tabla
 
     if(ok) {
         list_add_all(registers, getRegistersFromTemporals(table, ".tmpc"));
@@ -44,6 +52,8 @@ void runCompactation(char* table) {
 
     bool mientrasExistanParticiones = true;
 
+    // Bloqueamos tablas, porque empezamos a modificar las particiones y tempc
+    lock_write_table(table);
     while (mientrasExistanParticiones == true) {
 
         char* pathPartition = string_duplicate(path);
@@ -63,6 +73,7 @@ void runCompactation(char* table) {
             bool _filterParticion(registro_tad* registro) {
                 return (registro->key % config_get_int_value(metadata, "PARTITIONS")) == partition;
             }
+
 
             t_list* listaFiltrada = list_filter(registers, (void*) _filterParticion);
 
@@ -144,6 +155,8 @@ void runCompactation(char* table) {
     eliminarTmpc(path);
 
     free(path);
+
+    unlock_rw_table(table);
 }
 
 void eliminarTmpc(char* path) {
@@ -261,34 +274,125 @@ void crearParticionCompactada(char* path, t_list* bloques, int size) {
 
 void createThreadCompactation(char* nameTable, char* consistencia, u_int32_t particiones, u_int32_t compactacion) {
     create_tad* tableInfo = new_create_tad(nameTable, consistencia, particiones, compactacion);
-    compactation_table_tad* compactationTable = new_compactation_table_tad(tableInfo);
+
+    compactation_table_tad* compactationTable_mx = new_compactation_table_tad(tableInfo);
+
+    pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
+    dictionary_put(TABLES_COMPACTATION, nameTable, compactationTable_mx);
+    pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
+
+    compactation_table_tad* compactationTable_sem = new_compactation_table_tad(tableInfo);
+
+    pthread_mutex_lock(&MX_LIST_SEM);
+    dictionary_put(LIST_SEM_TABLES, nameTable, compactationTable_sem);
+    pthread_mutex_unlock(&MX_LIST_SEM);
 
     char* toSend = string_duplicate(nameTable);
 
-    dictionary_put(TABLES_COMPACTATION, nameTable, compactationTable);
     pthread_create(&thread_compactation, NULL, (void*) execCompactation, (void*)toSend);
 
 }
 
 void execCompactation(void *param) {
     char* nameTable = param;
+    char* path = string_duplicate(montajeTablas);
+    string_append(&path, nameTable);
 
-    compactation_table_tad* compactationTable = dictionary_get(TABLES_COMPACTATION, nameTable);
+    if(ValidarArchivo(path) == true) {
 
-    bool forEverOrKillHim = true;
-    while(forEverOrKillHim) {
+        pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
+        bool exist = dictionary_has_key(TABLES_COMPACTATION, nameTable);
+        pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
 
-        if(dictionary_has_key(TABLES_COMPACTATION, nameTable) == true) {
-            usleep(compactationTable->tableInfo->compactacion*1000);
+        if(exist == true) {
 
-            // Una vez pasado el tiempo, compactamos
-            runCompactation(compactationTable->tableInfo->nameTable);
-            log_info(log_FileSystem, "Se compacta la tabla: %s", compactationTable->tableInfo->nameTable);
-        } else {
-            forEverOrKillHim = false;
+            pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
+            compactation_table_tad* compactationTable = dictionary_get(TABLES_COMPACTATION, nameTable);
+            pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
+
+            bool forEverOrKillHim = true;
+            while(forEverOrKillHim) {
+
+                pthread_mutex_lock(&MX_LIST_SEM);
+                pthread_mutex_unlock(&MX_LIST_SEM);
+
+
+                pthread_mutex_lock(&SEM_MX_MAP_COMPACTACTION);
+                bool existKey = dictionary_has_key(TABLES_COMPACTATION, nameTable);
+                pthread_mutex_unlock(&SEM_MX_MAP_COMPACTACTION);
+
+                if(existKey == true) {
+                    usleep(compactationTable->tableInfo->compactacion*1000);
+
+                    // Una vez pasado el tiempo, compactamos
+                    lock_mx_drop(nameTable);
+                    runCompactation(compactationTable->tableInfo->nameTable);
+                    unlock_mx_drop(nameTable);
+                    log_info(log_FileSystem, "Se compacto la tabla: %s", compactationTable->tableInfo->nameTable);
+                } else {
+                    forEverOrKillHim = false;
+                }
+
+
+            }
         }
-
     }
 
+    /*Eliminamos la entrada de la lista de semaforos*/
+    /*pthread_mutex_lock(&MX_LIST_SEM);
+    dictionary_remove(LIST_SEM_TABLES, nameTable);
+    pthread_mutex_unlock(&MX_LIST_SEM);*/
+
     pthread_exit(NULL);
+
+}
+
+void lock_mx_drop(char* tableName) {
+    pthread_mutex_lock(&MX_LIST_SEM);
+    compactation_table_tad* compactationTable = dictionary_get(LIST_SEM_TABLES, tableName);
+    pthread_mutex_unlock(&MX_LIST_SEM);
+
+    if(compactationTable != NULL) {
+        pthread_mutex_lock(&compactationTable->mx_drop);
+    }
+}
+
+void unlock_mx_drop(char* tableName) {
+    pthread_mutex_lock(&MX_LIST_SEM);
+    compactation_table_tad* compactationTable = dictionary_get(LIST_SEM_TABLES, tableName);
+    pthread_mutex_unlock(&MX_LIST_SEM);
+
+    if(compactationTable != NULL) {
+        pthread_mutex_unlock(&compactationTable->mx_drop);
+    }
+}
+
+void lock_read_table(char *tableName) {
+    pthread_mutex_lock(&MX_LIST_SEM);
+    compactation_table_tad* compactationTable = dictionary_get(LIST_SEM_TABLES, tableName);
+    pthread_mutex_unlock(&MX_LIST_SEM);
+
+    if(compactationTable != NULL) {
+        pthread_rwlock_rdlock(&compactationTable->rw_sem_table);
+    }
+}
+
+void lock_write_table(char *tableName) {
+    pthread_mutex_lock(&MX_LIST_SEM);
+    compactation_table_tad* compactationTable = dictionary_get(LIST_SEM_TABLES, tableName);
+    pthread_mutex_unlock(&MX_LIST_SEM);
+
+    if(compactationTable != NULL) {
+        pthread_rwlock_wrlock(&compactationTable->rw_sem_table);
+    }
+}
+
+void unlock_rw_table(char* tableName) {
+    pthread_mutex_lock(&MX_LIST_SEM);
+    compactation_table_tad* compactationTable = dictionary_get(LIST_SEM_TABLES, tableName);
+    pthread_mutex_unlock(&MX_LIST_SEM);
+
+    if(compactationTable != NULL) {
+        pthread_rwlock_unlock(&compactationTable->rw_sem_table);
+    }
 }

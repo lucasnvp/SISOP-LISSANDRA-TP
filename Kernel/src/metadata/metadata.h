@@ -40,5 +40,6 @@ void print_metadata(t_log* log);
 metadata_tad* search_table(char* table);
 uint32_t get_memory_socket_from_metadata(char* table);
 void drop_metadata(char* table);
+memory_tad* get_memory_from_metadata(char* table);
 
 #endif //TP_2019_1C_GANK_MID_METADATA_H

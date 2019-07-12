@@ -294,8 +294,10 @@ void memory_console() {
                 i++;
             }
             free(com);
-            //TODO Case con cada uno de los comandos que acepta la consola de memoria
-            if (!strcmp(comandos->comando, "exit")) {
+
+            string_to_upper(comandos->comando);
+
+            if (!strcmp(comandos->comando, "EXIT")) {
                 if (comandos->cantArgs == 0) {
                     free(comandos->comando);
                     break;
@@ -303,7 +305,7 @@ void memory_console() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "select")) {
+            else if (!strcmp(comandos->comando, "SELECT")) {
                 if (comandos->cantArgs == 2) {
                     select_tad* select = new_select_tad(comandos->arg[0], atoi(comandos->arg[1]));
                     comando_select(select, CONSOLE_REQUEST);
@@ -312,7 +314,7 @@ void memory_console() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "insert")) {
+            else if (!strcmp(comandos->comando, "INSERT")) {
                 if (comandos->cantArgs == 3) {
                     insert_tad* insert = new_insert_tad(comandos->arg[0],atoi(comandos->arg[1]),comandos->arg[2]);
                     comando_insert(insert, CONSOLE_REQUEST);
@@ -321,7 +323,7 @@ void memory_console() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "create")) {
+            else if (!strcmp(comandos->comando, "CREATE")) {
                 if (comandos->cantArgs == 4) {
                     create_tad* create = new_create_tad(comandos->arg[0], comandos->arg[1], atoi(comandos->arg[2]), atoi(comandos->arg[3]));
                     comando_create(create, CONSOLE_REQUEST);
@@ -330,7 +332,7 @@ void memory_console() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "describe")) {
+            else if (!strcmp(comandos->comando, "DESCRIBE")) {
                 if (comandos->cantArgs == 0) {
                     comando_describe_all(CONSOLE_REQUEST);
                 }
@@ -342,21 +344,21 @@ void memory_console() {
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "journal")) {
+            else if (!strcmp(comandos->comando, "JOURNAL")) {
                 if (comandos->cantArgs == 0) {
                     comando_journal(CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "drop")) {
+            else if (!strcmp(comandos->comando, "DROP")) {
                 if (comandos->cantArgs == 1) {
                     comando_drop(comandos->arg[0], CONSOLE_REQUEST);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
 
-            else if (!strcmp(comandos->comando, "help")) {
+            else if (!strcmp(comandos->comando, "HELP")) {
                 if (comandos->cantArgs == 0) {
                     printf("---------------------------------------------------------------------------------------------------------------------------\n");
                     printf("Comandos posibles\n");

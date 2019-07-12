@@ -215,8 +215,6 @@ void comando_drop(char* table, int requestOrigin){
 
     log_info(log_FileSystem, "EXECUTE DROP");
 
-    string_to_upper(table);
-
     char* tabla_objetivo = strdup(montajeTablas);
     string_append(&tabla_objetivo, table);
 

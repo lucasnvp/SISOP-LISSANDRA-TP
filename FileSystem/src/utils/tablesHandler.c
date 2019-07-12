@@ -193,7 +193,7 @@ void guardarEnBloques(char* value, t_list* bloques) {
     int limite = string_length(value);
     char* valorAGuardar = string_duplicate(value);
 
-    for(int i = 0; i < list_size(bloques); i++) {
+    for(int i = 0; i < list_size(bloques) && limite > 0; i++) {
 
         char* pathBloque = crear_path_bloque((int) list_get(bloques, i));
 
@@ -209,7 +209,7 @@ void guardarEnBloques(char* value, t_list* bloques) {
 
         char* take = string_substring(valorAGuardar, 0, limiteSuperior);
 
-        fwrite(take,1,limite,bloque);
+        fwrite(take,1,limiteSuperior,bloque);
 
         limite -= string_length(take);
 

@@ -191,6 +191,8 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             char* tabla = deserializar_string(socket);
 
+            string_to_upper(tabla);
+
             log_info(log_FileSystem, "DROP => TABLA: <%s>\t", tabla);
 
             usleep(config->RETARDO*1000);

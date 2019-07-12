@@ -2,7 +2,6 @@
 
 void _dumpearTabla(char* nombreTabla, t_list* registros){
 
-    pthread_mutex_lock(&SEM_MEMTABLE);
     lock_read_table(nombreTabla);
 
     uint64_t initTime = getCurrentTime();
@@ -39,7 +38,6 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
     free(table);
 
     unlock_rw_table(nombreTabla);
-    pthread_mutex_unlock(&SEM_MEMTABLE);
 }
 
 int getBloquesNecesariosParaEscribirRegistros(char *registros, t_list *bloquesAOcupar) {

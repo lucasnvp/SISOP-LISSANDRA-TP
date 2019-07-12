@@ -474,6 +474,7 @@ void dump() {
     while(FILESYSTEM_READY){
         usleep(config->TIEMPO_DUMP * 1000);
         log_info(log_FileSystem, "Se ejecuta el DUMP");
+
         comando_dump();
     }
 }

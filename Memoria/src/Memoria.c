@@ -55,14 +55,8 @@ int main(int argc, char *argv[]){
 
 
 void journaling(){
-    struct timeval timeJournal;
-
     while(MEMORY_READY){
-
-        timeJournal.tv_sec = 0;
-        timeJournal.tv_usec = (config->RETARDO_JOURNAL * 1000);
-
-        select(0, NULL, NULL, NULL, &timeJournal);
+        usleep(config->RETARDO_JOURNAL * 1000);
         sem_wait(&semaforoDrop);
         sem_wait(&semaforoInsert);
         funcionJournal(SERVIDOR_FILESYSTEM);
@@ -72,17 +66,10 @@ void journaling(){
 }
 
 void gossiping(){
-    struct timeval timeGossip;
-
     inicializarTablaDeGossiping();
 
     while(MEMORY_READY){
-
-        timeGossip.tv_sec = 0;
-        timeGossip.tv_usec = (config->RETARDO_GOSSIPING * 1000);
-
-        select(0, NULL, NULL, NULL, &timeGossip);
-
+        usleep(config->RETARDO_GOSSIPING * 1000);
         funcionGossip();
     }
 
@@ -403,10 +390,10 @@ void inicializarHilos() {
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de Journal
-//    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
     // Hilo de Gossiping
-//    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
+    pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");
 }
 
 void watching_config(){

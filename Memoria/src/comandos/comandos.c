@@ -38,17 +38,17 @@ void comando_select(select_tad* select, int requestOrigin){
 
 void comando_insert(insert_tad* insert, int requestOrigin){
     string_to_upper(insert->nameTable);
-    sem_wait(&semaforoInsert);
+//    sem_wait(&semaforoInsert);
     funcionInsert(requestOrigin, insert, true, 0);
-    sem_post(&semaforoInsert);
+//    sem_post(&semaforoInsert);
 }
 
 void comando_journal(int requestOrigin){
-    sem_wait(&semaforoDrop);
-    sem_wait(&semaforoInsert);
+//    sem_wait(&semaforoDrop);
+//    sem_wait(&semaforoInsert);
     funcionJournal(requestOrigin);
-    sem_post(&semaforoDrop);
-    sem_post(&semaforoInsert);
+//    sem_post(&semaforoDrop);
+//    sem_post(&semaforoInsert);
 }
 
 void comando_create(create_tad* create, int requestOrigin){
@@ -68,9 +68,9 @@ void comando_create(create_tad* create, int requestOrigin){
 void comando_drop(char* nombreTabla, int requestOrigin){
 
     char* tabla = string_duplicate(nombreTabla);
-    sem_wait(&semaforoDrop);
+//    sem_wait(&semaforoDrop);
     funcionDrop(tabla);
-    sem_post(&semaforoDrop);
+//    sem_post(&semaforoDrop);
     log_info(log_Memoria,
              "DROP EN MEMORIA => TABLA: <%s>\t",
              tabla);

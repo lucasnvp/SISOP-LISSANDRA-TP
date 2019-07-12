@@ -57,13 +57,13 @@ int main(int argc, char *argv[]){
 void journaling(){
     while(MEMORY_READY){
         usleep(config->RETARDO_JOURNAL * 1000);
-        sem_wait(&semaforoDrop);
-        sem_wait(&semaforoInsert);
+//        sem_wait(&semaforoDrop);
+//        sem_wait(&semaforoInsert);
         pthread_mutex_lock(&mutexLock);
         funcionJournal(SERVIDOR_FILESYSTEM);
         pthread_mutex_unlock(&mutexLock);
-        sem_post(&semaforoDrop);
-        sem_post(&semaforoInsert);
+//        sem_post(&semaforoDrop);
+//        sem_post(&semaforoInsert);
     }
 }
 
@@ -398,8 +398,8 @@ void memory_console() {
 void inicializarSemaforos() {
     pthread_mutex_init(&mutexConfig, NULL); // Inicializo el mutex de config
     pthread_mutex_init(&mutexLock, NULL);   // Inicializo el mutex de lock
-    sem_init(&semaforoDrop,0,1);
-    sem_init(&semaforoInsert,0,1);
+//    sem_init(&semaforoDrop,0,1);
+//    sem_init(&semaforoInsert,0,1);
 }
 
 void inicializarHilos() {

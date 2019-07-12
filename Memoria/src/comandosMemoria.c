@@ -109,9 +109,9 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
         registro_tad* registro = deserializar_registro(SERVIDOR_FILESYSTEM);
 
         insert_tad* insert = new_insert_tad(select->nameTable, registro->key, registro->value);
-        sem_wait(&semaforoInsert);
+//        sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false, registro->timestamp);
-        sem_post(&semaforoInsert);
+//        sem_post(&semaforoInsert);
         free_insert_tad(insert);
         return registro;
     } else {

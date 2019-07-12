@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
+#include <pthread.h>
 
 #include <commons/log.h>
 #include <commons/collections/list.h>
@@ -25,6 +26,7 @@ typedef struct {
     double difTime;
 } time_metric_tad;
 
+pthread_mutex_t mutexMetrics;
 t_list * LIST_METRICS;
 t_list * LIST_READ_LATENCY_METRICS;
 t_list * LIST_WRITE_LATENCY_METRICS;

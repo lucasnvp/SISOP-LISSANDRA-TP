@@ -170,9 +170,7 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "METRICS")) {
                 if (comandos->cantArgs == 0) {
-                    pthread_mutex_lock(&mutexMetricas);
                     showMetrics(log_Kernel);
-                    pthread_mutex_unlock(&mutexMetricas);
                 }
                 else print_console((void*) log_error, "Número de parámetros incorrecto.");
             }
@@ -193,9 +191,9 @@ void consola() {
 
             else if (!strcmp(comandos->comando, "JOURNAL")) {
                 if (comandos->cantArgs == 0) {
-                    pthread_mutex_lock(&mutexMetricas);
-                    bool confirm = api_journal();
                     pthread_mutex_lock(&mutexGossip);
+                    bool confirm = api_journal();
+                    pthread_mutex_unlock(&mutexGossip);
                     if (confirm) {
                         print_console((void*) log_info, "Journal ejecutado correctamente");
                     }
@@ -221,7 +219,7 @@ void init_queue_and_sem(){
     QUEUE_EXIT = queue_create();
     QUEUE_EXEC = queue_create();
 
-    pthread_mutex_init(&mutexMetricas, NULL);   // Inicializo el mutex de metricas
+    pthread_mutex_init(&mutexMetrics, NULL);   // Inicializo el mutex de metricas
     pthread_mutex_init(&mutexConfig, NULL);     // Inicializo el mutex de config
     pthread_mutex_init(&mutexGossip, NULL);     // Inicializo el mutex de gossip
 
@@ -232,9 +230,7 @@ void init_queue_and_sem(){
 void metricas(){
     while(KERNEL_READY){
         sleep(30);
-        pthread_mutex_lock(&mutexMetricas);
         showMetrics(log_Kernel);
-        pthread_mutex_unlock(&mutexMetricas);
     }
 }
 

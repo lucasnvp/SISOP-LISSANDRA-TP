@@ -124,16 +124,17 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_INSERT: {
             log_info(log_FileSystem, "Insert");
 
-            insert_tad* insert = deserializar_insert(socket);
+            char* nameTable = deserializar_string(socket);
+            registro_tad* registro = deserializar_registro(socket);
 
-            if(string_length(insert->value) > config->TAMANO_VALUE) {
-                log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", insert->value, config->TAMANO_VALUE);
+            if(string_length(registro->value) > config->TAMANO_VALUE) {
+                log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", registro->value, config->TAMANO_VALUE);
                 serializar_int(socket, false);
             }
 
             usleep(config->RETARDO*1000);
 
-            comando_insert(insert->nameTable, insert->key, insert->value, NOT_TIMESTAMP, socket);
+            comando_insert(nameTable, registro->key, registro->value, registro->timestamp, socket);
 
             break;
         }

@@ -8,8 +8,8 @@ void inicializarTablaDeGossiping(){
     LIST_GOSSIP = list_create();
 
     uint32_t index = 0;
-    while(config.IP_SEEDS[index] != NULL){
-        gossip_tad* gossip = new_gossip_tad(config.IP_SEEDS[index], atoi(config.PUERTO_SEEDS[index]));
+    while(config->IP_SEEDS[index] != NULL){
+        gossip_tad* gossip = new_gossip_tad(config->IP_SEEDS[index], atoi(config->PUERTO_SEEDS[index]));
         list_add(LIST_GOSSIP, gossip);
         index++;
     }

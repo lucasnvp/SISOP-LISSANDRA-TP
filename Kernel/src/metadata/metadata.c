@@ -111,18 +111,11 @@ metadata_tad* search_table (char* table) {
 }
 
 uint32_t get_memory_socket_from_metadata (char* table) {
-    metadata_tad* auxMetadata = search_table(table);
+    memory_tad* memory = get_memory_from_metadata(table);
 
-    if (auxMetadata == NULL) {
+    if (memory == NULL) {
         return -1;
-    } else if (string_equals_ignore_case(auxMetadata->DESCRIBE->consistencia, CRITERIO_SHC)) {
-        uint32_t memoryNumber = criterio_shc(table);
-        memory_tad* memory = search_memory(memoryNumber);
-        return memory->SOCKET;
-    } else if (string_equals_ignore_case(auxMetadata->DESCRIBE->consistencia, CRITERIO_EC)) {
-        return criterio_ramdom_memory_socket();
     } else {
-        memory_tad* memory = search_memory(auxMetadata->MEMORY_NUMBER);
         return memory->SOCKET;
     }
 }
@@ -133,4 +126,31 @@ void drop_metadata(char* table) {
     }
 
     list_remove_and_destroy_by_condition(LIST_METADATA, (void*) _is_the_table, free_metadata);
+}
+
+memory_tad* get_memory_from_metadata(char* table) {
+    metadata_tad* auxMetadata = search_table(table);
+
+    if (auxMetadata == NULL) {
+        return NULL;
+    } else if (string_equals_ignore_case(auxMetadata->DESCRIBE->consistencia, CRITERIO_SHC)) {
+        uint32_t memoryNumber = criterio_shc(table);
+        if (memoryNumber == -1) {
+            return NULL;
+        } else {
+            memory_tad* memory = search_memory(memoryNumber);
+            return memory;
+        }
+    } else if (string_equals_ignore_case(auxMetadata->DESCRIBE->consistencia, CRITERIO_EC)) {
+        int32_t memoryNumber = criterio_ramdom_memory_by(CRITERIO_EC);
+        if (memoryNumber == -1) {
+            return NULL;
+        } else{
+            memory_tad* memory = search_memory(memoryNumber);
+            return memory;
+        }
+    } else {
+        memory_tad* memory = search_memory(auxMetadata->MEMORY_NUMBER);
+        return memory;
+    }
 }

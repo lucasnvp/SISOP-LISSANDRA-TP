@@ -83,7 +83,7 @@ void new_metadata_setup(char* metadatabin){
     char* blocks = string_duplicate(CANTIDAD_BLOQUE);
     string_append(&blocks, string_itoa(config->BLOCKS));
     string_append(&blocks, "\n");
-    fwrite(CANTIDAD_BLOQUE,1,strlen(CANTIDAD_BLOQUE),metadata);
+    fwrite(blocks,1,strlen(blocks),metadata);
     free(blocks);
 
     fwrite(MAGIC_NUMBER,1,strlen(MAGIC_NUMBER),metadata);

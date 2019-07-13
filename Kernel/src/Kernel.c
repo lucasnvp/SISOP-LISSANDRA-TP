@@ -354,15 +354,14 @@ bool parser_line(char * line){
                 break;
             case INSERT:
                 pthread_mutex_lock(&mutexGossip);
-                bool valid = api_insert(parsed.argumentos.INSERT.tabla,
+                linea_valida = api_insert(parsed.argumentos.INSERT.tabla,
                         parsed.argumentos.INSERT.key,
                         parsed.argumentos.INSERT.value);
-                linea_valida = valid;
                 pthread_mutex_unlock(&mutexGossip);
                 break;
             case CREATE:
                 pthread_mutex_lock(&mutexGossip);
-                api_create(
+                linea_valida = api_create(
                         parsed.argumentos.CREATE.tabla,
                         parsed.argumentos.CREATE.consistencia,
                         parsed.argumentos.CREATE.particiones,

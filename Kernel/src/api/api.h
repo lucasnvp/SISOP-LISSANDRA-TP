@@ -23,7 +23,7 @@ t_log* log_Kernel_api;
 
 void api_select(char* tabla, u_int16_t key);
 bool api_insert(char* tabla, u_int16_t key, char* value);
-void api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
+bool api_create(char* tabla, char* consistencia, u_int32_t particiones, u_int32_t compactacion);
 void api_describe(char* tabla);
 void api_describe_all();
 void api_drop(char* tabla);

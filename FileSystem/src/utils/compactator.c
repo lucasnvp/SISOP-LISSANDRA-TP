@@ -38,9 +38,15 @@ void runCompactation(char* table) {
 
     string_append(&path, "/");
 
+    uint64_t initTime = getCurrentTime();
+
+    log_info(log_FileSystem, "COMPACTACION tabla: %s", table);
+
     // Bloqueamos tabla
     lock_write_table(table);
+    log_info(log_FileSystem, "COMPACTACION tabla: <%s> se bloquea para renombrar", table);
     bool ok = tmpToTmpc(path);
+    log_info(log_FileSystem, "COMPACTACION tabla: <%s> se desbloquea, termino de renombrar", table);
     unlock_rw_table(table);
     // Desbloqueamos tabla
 
@@ -54,6 +60,7 @@ void runCompactation(char* table) {
 
     // Bloqueamos tablas, porque empezamos a modificar las particiones y tempc
     lock_write_table(table);
+    log_info(log_FileSystem, "COMPACTACION tabla: <%s> se bloquea, comienza a modificar particiones", table);
     while (mientrasExistanParticiones == true) {
 
         char* pathPartition = string_duplicate(path);
@@ -156,6 +163,9 @@ void runCompactation(char* table) {
 
     free(path);
 
+    uint64_t finalTime = getCurrentTime();
+    uint64_t diff = finalTime - initTime;
+    log_info(log_FileSystem, "COMPACTACION tabla: <%s> finalizada \t duracion: <%lld> ms", table, diff);
     unlock_rw_table(table);
 }
 

@@ -125,6 +125,7 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_FileSystem, "Insert");
 
             char* nameTable = deserializar_string(socket);
+            string_to_upper(nameTable);
             registro_tad* registro = deserializar_registro(socket);
 
             if(string_length(registro->value) > config->TAMANO_VALUE) {
@@ -140,9 +141,11 @@ void connection_handler(uint32_t socket, uint32_t command){
         }
         case COMAND_SELECT: {
             select_tad* select = deserializar_select(socket);
-            comando_select(select->nameTable, select->key, socket);
+            char* tabla = string_duplicate(select->nameTable);
+            string_to_upper(tabla);
+            comando_select(tabla, select->key, socket);
             free_select_tad(select);
-
+            free(tabla);
             break;
         }
         case COMAND_CREATE: {
@@ -167,6 +170,8 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_FileSystem, "La memoria envio un describe");
 
             char* tabla = deserializar_string(socket);
+
+            string_to_upper(tabla);
 
             log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
 

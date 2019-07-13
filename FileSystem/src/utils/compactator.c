@@ -53,12 +53,13 @@ void runCompactation(char* table) {
     if(ok) {
         list_add_all(registers, getRegistersFromTemporals(table, ".tmpc"));
     } else {
+        log_info(log_FileSystem, "COMPACTACION tabla: <%s> => No hay nada para compactar", table);
         return;
     }
 
     bool mientrasExistanParticiones = true;
 
-    // Bloqueamos tablas, porque empezamos a modificar las particiones y tempc
+    // Bloqueamos tablas, porque empezamos a modificar las particiones y tmpc
     lock_write_table(table);
     log_info(log_FileSystem, "COMPACTACION tabla: <%s> se bloquea, comienza a modificar particiones", table);
     while (mientrasExistanParticiones == true) {
@@ -165,7 +166,7 @@ void runCompactation(char* table) {
 
     uint64_t finalTime = getCurrentTime();
     uint64_t diff = finalTime - initTime;
-    log_info(log_FileSystem, "COMPACTACION tabla: <%s> finalizada \t duracion: <%lld> ms", table, diff);
+    log_info(log_FileSystem, "COMPACTACION tabla: <%s> finalizada \t duracion total: <%lld> ms", table, diff);
     unlock_rw_table(table);
 }
 

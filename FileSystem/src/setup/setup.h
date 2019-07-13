@@ -13,15 +13,18 @@
 #include <commons/bitarray.h>
 #include <commons/config.h>
 #include <commons/string.h>
+#include "commons/config.h"
 
 #include "../comandos/comandos.h"
+#include "../config/Config_filesystem.h"
 #include "../setup/setup.h"
 
-static const char* TAMANIO_BLOQUE = "TAMANIO_BLOQUES=64\n";
-static const char* CANTIDAD_BLOQUE = "CANTIDAD_BLOQUES=5192\n";
+static const char* TAMANIO_BLOQUE = "BLOCK_SIZE=";
+static const char* CANTIDAD_BLOQUE = "BLOCKS=";
 static const char* MAGIC_NUMBER = "MAGIC_NUMBER=LISSANDRA\n";
 
 t_config * metadataConfig;
+Type_Config* config;
 
 FILE * metadata;
 FILE * bitmap;

@@ -245,18 +245,18 @@ void connection_handler(uint32_t socket, uint32_t command){
 
         case COMAND_GOSSIP: {
             log_info(log_Memoria, "Se solicito la Tabla de Gossiping");
-            pthread_mutex_lock(&mutexLock);
+            //pthread_mutex_lock(&mutexLock);
             comando_gossip(socket);
-            pthread_mutex_unlock(&mutexLock);
+            //pthread_mutex_unlock(&mutexLock);
             break;
         }
 
         case COMAND_GOSSIP_RECEIVED: {
             log_info(log_Memoria, "Se recibe la Tabla de Gossiping de la otra memoria");
-            pthread_mutex_lock(&mutexLock);
+            //pthread_mutex_lock(&mutexLock);
             t_list* gossipOtherMemory = deserializar_gossip_table(socket);
             compararTablasGossip(gossipOtherMemory);
-            pthread_mutex_unlock(&mutexLock);
+            //pthread_mutex_unlock(&mutexLock);
             list_destroy_and_destroy_elements(gossipOtherMemory, free_gossip_tad);
             break;
         }

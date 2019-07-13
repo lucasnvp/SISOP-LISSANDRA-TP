@@ -198,7 +198,7 @@ int cantidad_bloquesLibres(){
     int bloques_libres = 0;
     int bloque_libre;
     int bit = 0;
-    int tamMaximo = CANT_BLOQUES;
+    int tamMaximo = config->BLOCKS;
     while(bit < tamMaximo)
     {
         bloque_libre = bitarray_test_bit(bitarray,bit);

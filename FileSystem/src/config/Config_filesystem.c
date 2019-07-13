@@ -15,6 +15,8 @@ Type_Config* load_config(char* path){
     config->RETARDO = config_get_int_value(auxConfig, "RETARDO");
     config->TAMANO_VALUE = config_get_int_value(auxConfig, "TAMANO_VALUE");
     config->TIEMPO_DUMP = config_get_int_value(auxConfig, "TIEMPO_DUMP");
+    config->BLOCK_SIZE = config_get_int_value(auxConfig, "BLOCK_SIZE");
+    config->BLOCKS = config_get_int_value(auxConfig, "BLOCKS");
 
     config_destroy(auxConfig);
 
@@ -30,6 +32,8 @@ void print_config(Type_Config* auxConfig, t_log* log_Console){
     log_info(log_Console, "RETARDO = %d",auxConfig->RETARDO);
     log_info(log_Console, "TAMANO_VALUE = %d",auxConfig->TAMANO_VALUE);
     log_info(log_Console, "TIEMPO_DUMP = %d",auxConfig->TIEMPO_DUMP);
+    log_info(log_Console, "BLOCKS_SIZE = %d",auxConfig->BLOCK_SIZE);
+    log_info(log_Console, "BLOCKS = %d",auxConfig->BLOCKS);
     log_info(log_Console, "----------------------");
 }
 

@@ -66,15 +66,26 @@ void carpetas_setup(){
 void metadata_setup(char* metadatabin){
     //Obtener Datos Metadata
     metadataConfig = config_create(metadatabin);
-    CANT_BLOQUES = config_get_int_value(metadataConfig, "CANTIDAD_BLOQUES");
-    TAMANIO_BLOQUES = config_get_int_value(metadataConfig, "TAMANIO_BLOQUES");
+    CANT_BLOQUES = config_get_int_value(metadataConfig, "BLOCKS");
+    TAMANIO_BLOQUES = config_get_int_value(metadataConfig, "BLOCK_SIZE");
     config_destroy(metadataConfig);
 }
 
 void new_metadata_setup(char* metadatabin){
     metadata = fopen(metadatabin, "w+b");
-    fwrite(TAMANIO_BLOQUE,1,strlen(TAMANIO_BLOQUE),metadata);
+
+    char* blockSize = string_duplicate(TAMANIO_BLOQUE);
+    string_append(&blockSize, string_itoa(config->BLOCK_SIZE));
+    string_append(&blockSize, "\n");
+    fwrite(blockSize,1,strlen(blockSize),metadata);
+    free(blockSize);
+
+    char* blocks = string_duplicate(CANTIDAD_BLOQUE);
+    string_append(&blocks, string_itoa(config->BLOCKS));
+    string_append(&blocks, "\n");
     fwrite(CANTIDAD_BLOQUE,1,strlen(CANTIDAD_BLOQUE),metadata);
+    free(blocks);
+
     fwrite(MAGIC_NUMBER,1,strlen(MAGIC_NUMBER),metadata);
     fclose(metadata);
 }
@@ -92,15 +103,15 @@ void bitmap_setup(char* bitmapbin){
 void new_bitmap_setup(char* bitmapbin){
     bitmap = fopen(bitmapbin, "wb+");
     char* arrayLoco;
-    arrayLoco = calloc(1, CANT_BLOQUES);
-    fwrite(arrayLoco, 1, CANT_BLOQUES, bitmap);
+    arrayLoco = calloc(1, config->BLOCKS);
+    fwrite(arrayLoco, 1, config->BLOCKS, bitmap);
     free(arrayLoco);
     fclose(bitmap);
 }
 
 void bloques_setup(){
     FILE * newBloque;
-    for(i=0; i <= CANT_BLOQUES-1; i++){
+    for(i=0; i <= config->BLOCKS-1; i++){
         char* nroBloque = string_new();
         string_append(&nroBloque, montajeBloques);
         string_append(&nroBloque, string_itoa(i));

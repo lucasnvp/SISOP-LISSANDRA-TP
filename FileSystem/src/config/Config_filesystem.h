@@ -20,6 +20,9 @@ typedef struct ConfigType{
     uint32_t RETARDO;
     uint32_t TAMANO_VALUE;
     uint32_t TIEMPO_DUMP;
+    uint32_t BLOCK_SIZE;
+    uint32_t BLOCKS;
+
 } Type_Config;
 
 Type_Config* load_config(char* path);

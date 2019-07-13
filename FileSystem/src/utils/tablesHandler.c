@@ -32,7 +32,7 @@ void _dumpearTabla(char* nombreTabla, t_list* registros){
     uint64_t finalTime = getCurrentTime();
     uint64_t diff = finalTime - initTime;
 
-    log_info(log_FileSystem, "DUMP => Tabla <%s> tardo: <%lld>", nombreTabla, diff);
+    log_info(log_FileSystem, "DUMP => Tabla <%s> duracion: <%lld> ms", nombreTabla, diff);
 
     free(path);
     free(table);

@@ -41,7 +41,7 @@ void funcionJournal(int requestOrigin) {
     reinicializarRegistros();
 
     if(requestOrigin != CONSOLE_REQUEST) {
-        serializar_int(requestOrigin, true); // enivo a kernel que la memoria termino el journal
+        serializar_int(requestOrigin, true); // envio a kernel que la memoria termino el journal
     }
 
 }
@@ -50,6 +50,12 @@ void funcionDrop(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     if(_TablaDeSegmento != NULL){
         //encontro la tabla en memoria
+
+        reenlazarSegmentos(_TablaDeSegmento);
+        actualizarIdSegmentos(_TablaDeSegmento);
+        log_info(log_Memoria, "DROP EN MEMORIA => TABLA: <%s>\t",
+                 _TablaDeSegmento->registro.nombreTabla);
+
         struct tablaDePaginas* _TablaDePaginas = NULL;
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while (_TablaDePaginas != NULL){
@@ -58,10 +64,6 @@ void funcionDrop(char* nombreDeTabla){
             _TablaDePaginas =_TablaDePaginas->siguienteRegistroPagina;
             free(paginaALiberar);
         }
-        reenlazarSegmentos(_TablaDeSegmento);
-        actualizarIdSegmentos(_TablaDeSegmento);
-        log_info(log_Memoria, "DROP EN MEMORIA => TABLA: <%s>\t",
-                 _TablaDeSegmento->registro.nombreTabla);
         free(_TablaDeSegmento);
     }
 

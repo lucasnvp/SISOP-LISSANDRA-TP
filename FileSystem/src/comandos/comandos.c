@@ -244,14 +244,14 @@ void comando_drop(char* table, int requestOrigin){
 
         log_info(log_FileSystem, "SUCCESS DROP ==> La tabla <%s> se elimino correctamente ", table);
         if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(socket, true);
+            serializar_int(requestOrigin, true);
         }
 
     }else{
 
         log_info(log_FileSystem, "FAILED DROP ==> La tabla <%s> no existe", table);
         if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(socket, false);
+            serializar_int(requestOrigin, false);
         }
     }
 

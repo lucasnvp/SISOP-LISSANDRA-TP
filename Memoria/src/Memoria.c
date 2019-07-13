@@ -60,7 +60,7 @@ void journaling(){
 //        sem_wait(&semaforoDrop);
 //        sem_wait(&semaforoInsert);
         pthread_mutex_lock(&mutexLock);
-        funcionJournal(SERVIDOR_FILESYSTEM);
+        funcionJournal(CONSOLE_REQUEST);
         pthread_mutex_unlock(&mutexLock);
 //        sem_post(&semaforoDrop);
 //        sem_post(&semaforoInsert);
@@ -415,7 +415,7 @@ void inicializarHilos() {
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
     // Hilo de Journal
-    pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
+   // pthread_create(&thread_journaling, NULL, (void*) journaling,"Hilo de Journal");
 
     // Hilo de Gossiping
     pthread_create(&thread_gossiping, NULL, (void*) gossiping, "Hilo de Gossiping");

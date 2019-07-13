@@ -51,6 +51,7 @@ size_t bufferInotifySize;
 
 // Semaforos
 pthread_mutex_t mutexConfig;    // Bloqueo el hilo para cambiar la config
+pthread_mutex_t mutexLock;      // Bloqueo los hilos de gossip, journal y requests
 
 // Variables hilos
 pthread_t thread_server;

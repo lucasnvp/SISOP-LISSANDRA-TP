@@ -215,8 +215,6 @@ void comando_drop(char* table, int requestOrigin){
 
     log_info(log_FileSystem, "EXECUTE DROP");
 
-    string_to_upper(table);
-
     char* tabla_objetivo = strdup(montajeTablas);
     string_append(&tabla_objetivo, table);
 
@@ -246,14 +244,14 @@ void comando_drop(char* table, int requestOrigin){
 
         log_info(log_FileSystem, "SUCCESS DROP ==> La tabla <%s> se elimino correctamente ", table);
         if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(socket, true);
+            serializar_int(requestOrigin, true);
         }
 
     }else{
 
         log_info(log_FileSystem, "FAILED DROP ==> La tabla <%s> no existe", table);
         if(requestOrigin != CONSOLE_REQUEST){
-            serializar_int(socket, false);
+            serializar_int(requestOrigin, false);
         }
     }
 
@@ -264,9 +262,8 @@ void comando_drop(char* table, int requestOrigin){
 
 void comando_dump(){
 
-    dictionary_iterator(memtable, (void *) _dumpearTabla);
-
     pthread_mutex_lock(&SEM_MEMTABLE);
+    dictionary_iterator(memtable, (void *) _dumpearTabla);
     dictionary_clean(memtable);
     pthread_mutex_unlock(&SEM_MEMTABLE);
 

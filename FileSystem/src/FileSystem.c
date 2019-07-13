@@ -31,6 +31,9 @@ int main(){
     //Inicializa Memtable
     inicilizar_memtable();
 
+    //Filesystem ready
+    FILESYSTEM_READY = true;
+
     // Hilo de config
     pthread_create(&thread_config, NULL, (void*) watching_config, "WatchingConfig");
 
@@ -121,24 +124,28 @@ void connection_handler(uint32_t socket, uint32_t command){
         case COMAND_INSERT: {
             log_info(log_FileSystem, "Insert");
 
-            insert_tad* insert = deserializar_insert(socket);
+            char* nameTable = deserializar_string(socket);
+            string_to_upper(nameTable);
+            registro_tad* registro = deserializar_registro(socket);
 
-            if(string_length(insert->value) > config->TAMANO_VALUE) {
-                log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", insert->value, config->TAMANO_VALUE);
+            if(string_length(registro->value) > config->TAMANO_VALUE) {
+                log_info(log_FileSystem, "FAILED INSERT ==> El tamaño del value <%s> es mayor al permitido <%d>", registro->value, config->TAMANO_VALUE);
                 serializar_int(socket, false);
             }
 
             usleep(config->RETARDO*1000);
 
-            comando_insert(insert->nameTable, insert->key, insert->value, NOT_TIMESTAMP, socket);
+            comando_insert(nameTable, registro->key, registro->value, registro->timestamp, socket);
 
             break;
         }
         case COMAND_SELECT: {
             select_tad* select = deserializar_select(socket);
-            comando_select(select->nameTable, select->key, socket);
+            char* tabla = string_duplicate(select->nameTable);
+            string_to_upper(tabla);
+            comando_select(tabla, select->key, socket);
             free_select_tad(select);
-
+            free(tabla);
             break;
         }
         case COMAND_CREATE: {
@@ -164,6 +171,8 @@ void connection_handler(uint32_t socket, uint32_t command){
 
             char* tabla = deserializar_string(socket);
 
+            string_to_upper(tabla);
+
             log_info(log_FileSystem, "DESCRIBE => TABLA: <%s>\t", tabla);
 
             usleep(config->RETARDO*1000);
@@ -186,6 +195,8 @@ void connection_handler(uint32_t socket, uint32_t command){
             log_info(log_FileSystem, "La memoria envio un drop");
 
             char* tabla = deserializar_string(socket);
+
+            string_to_upper(tabla);
 
             log_info(log_FileSystem, "DROP => TABLA: <%s>\t", tabla);
 
@@ -427,7 +438,7 @@ void consola() {
 void watching_config(){
     bufferInotifySize = sizeof(struct inotify_event) + configFilePathSize + 1;
 
-    while (true){
+    while (FILESYSTEM_READY){
         fd_inotify = inotify_init();
 
         if (fd_inotify < 0) {
@@ -467,16 +478,10 @@ void init_queue_and_sem(){
 }
 
 void dump() {
-    struct timeval timeDump;
-
-    while(true){
-
-        timeDump.tv_sec = 0;
-        timeDump.tv_usec = config->TIEMPO_DUMP*1000;
-
-        select(0, NULL, NULL, NULL, &timeDump);
-
+    while(FILESYSTEM_READY){
+        usleep(config->TIEMPO_DUMP * 1000);
         log_info(log_FileSystem, "Se ejecuta el DUMP");
+
         comando_dump();
     }
 }

@@ -12,10 +12,13 @@ void funcionJournal(int requestOrigin) {
         while(_tablaDePaginas != NULL){
             if(_tablaDePaginas->registro.flagModificado){
                 serializar_int(SERVIDOR_FILESYSTEM, COMAND_INSERT);
-                insert_tad* insert = new_insert_tad(_TablaDeSegmento->registro.nombreTabla,
+                registro_tad* registro = new_registro_tad(_tablaDePaginas->registro.punteroAPagina->timestamp,
                                                     _tablaDePaginas->registro.punteroAPagina->key,
                                                     _tablaDePaginas->registro.punteroAPagina->value);
-                serializar_insert(SERVIDOR_FILESYSTEM, insert);
+                serializar_string(SERVIDOR_FILESYSTEM, _TablaDeSegmento->registro.nombreTabla);
+                serializar_registro(SERVIDOR_FILESYSTEM, registro);
+
+                free_registro_tad(registro);
     
                 uint32_t confirm = deserializar_int(SERVIDOR_FILESYSTEM);
     
@@ -38,7 +41,7 @@ void funcionJournal(int requestOrigin) {
     reinicializarRegistros();
 
     if(requestOrigin != CONSOLE_REQUEST) {
-        serializar_int(requestOrigin, true); // enivo a kernel que la memoria termino el journal
+        serializar_int(requestOrigin, true); // envio a kernel que la memoria termino el journal
     }
 
 }
@@ -47,6 +50,12 @@ void funcionDrop(char* nombreDeTabla){
     struct tablaDeSegmentos* _TablaDeSegmento = buscarSegmento(nombreDeTabla);
     if(_TablaDeSegmento != NULL){
         //encontro la tabla en memoria
+
+        reenlazarSegmentos(_TablaDeSegmento);
+        actualizarIdSegmentos(_TablaDeSegmento);
+        log_info(log_Memoria, "DROP EN MEMORIA => TABLA: <%s>\t",
+                 _TablaDeSegmento->registro.nombreTabla);
+
         struct tablaDePaginas* _TablaDePaginas = NULL;
         _TablaDePaginas = _TablaDeSegmento->registro.tablaDePaginas;
         while (_TablaDePaginas != NULL){
@@ -55,10 +64,6 @@ void funcionDrop(char* nombreDeTabla){
             _TablaDePaginas =_TablaDePaginas->siguienteRegistroPagina;
             free(paginaALiberar);
         }
-        reenlazarSegmentos(_TablaDeSegmento);
-        actualizarIdSegmentos(_TablaDeSegmento);
-        log_info(log_Memoria, "DROP EN MEMORIA => TABLA: <%s>\t",
-                 _TablaDeSegmento->registro.nombreTabla);
         free(_TablaDeSegmento);
     }
 
@@ -93,7 +98,7 @@ registro_tad* funcionSelect(int socket, select_tad* select){
 
 registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
 
-    log_info(log_Memoria, "SElECT a FS => TABLA: <%s>\tKEY: <%d>\t",
+    log_info(log_Memoria, "SELECT a FS => TABLA: <%s>\tKEY: <%d>\t",
              select->nameTable,select->key);
 
     select_tad* select_FS = new_select_tad(select->nameTable, select->key);
@@ -109,9 +114,9 @@ registro_tad* solicitarSelectAFileSystem(int socket, select_tad* select) {
         registro_tad* registro = deserializar_registro(SERVIDOR_FILESYSTEM);
 
         insert_tad* insert = new_insert_tad(select->nameTable, registro->key, registro->value);
-        sem_wait(&semaforoInsert);
+//        sem_wait(&semaforoInsert);
         funcionInsert(socket, insert, false, registro->timestamp);
-        sem_post(&semaforoInsert);
+//        sem_post(&semaforoInsert);
         free_insert_tad(insert);
         return registro;
     } else {

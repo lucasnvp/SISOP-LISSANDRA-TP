@@ -21,7 +21,6 @@ registro_tad* getValueFromMemtable(char *table, int key) {
 
         pthread_mutex_lock(&SEM_MEMTABLE);
         t_list* list = dictionary_get(memtable, table);
-        pthread_mutex_unlock(&SEM_MEMTABLE);
 
         bool _mismaKey(registro_tad* registro) {
             return registro->key == key;
@@ -39,18 +38,18 @@ registro_tad* getValueFromMemtable(char *table, int key) {
             list_get(listaFiltrada,0);
 
         } else {
+            pthread_mutex_unlock(&SEM_MEMTABLE);
             return NULL;
         }
-
+        pthread_mutex_unlock(&SEM_MEMTABLE);
     } else {
         return NULL;
     }
 }
 
 void insertValue(char* table, registro_tad* registroTad) {
-    t_list * list;
-
     pthread_mutex_lock(&SEM_MEMTABLE);
+    t_list * list;
     if(!dictionary_has_key(memtable, table)) {
         list = list_create();
     } else {

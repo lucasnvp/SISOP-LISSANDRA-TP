@@ -1,4 +1,5 @@
-# tp-2019-1c-Gank-mid
+# TP Sistemas Operativos 2019 1c 
+# Gank-mid
 
 ## Integrantes
 - Lucas Visser
